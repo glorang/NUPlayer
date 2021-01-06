@@ -33,3 +33,13 @@ For now only tested on Google 2020 Chromecast (the one with remote). Any recent 
 - Install
 - Enjoy!
 
+# Screenshots
+
+## Home
+![Home screen](/screenshots/screenshot_home.png?raw=true "Home screen")
+
+## Catalog
+![Catalog](/screenshots/screenshot_catalog.png?raw=true "Catalog")
+
+## Program detail
+![Program detail](/screenshots/screenshot_journaal.png?raw=true "Program detail")
