@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <string name="app_name"><![CDATA[NUPlayer]]></string>
+    <string name="browse_title"><![CDATA[NUPlayer]]></string>
+    <string name="author">by Geert Lorang</string>
+
+    <!-- Login Activity strings -->
+    <string name="pref_title_screen_signin">Please Login</string>
+    <string name="pref_title_login_description">Please enter the e-mail address and password you use on VRT.NU.\n\nOptionally you can press \"Back\" here but you won\'t be able to watch on-demand content.</string>
+    <string name="pref_title_email">E-mail</string>
+    <string name="pref_title_password">Password</string>
+    <string name="pref_title_login">Login</string>
+    <string name="pref_title_empty_username">Please fill in your e-mail address</string>
+    <string name="pref_title_empty_password">Please fill in your password</string>
+
+    <!-- Favorites -->
+    <string name="no_favorites_found">No favorites found</string>
+
+    <!-- ProgramPresenter strings -->
+    <string name="season">Season</string>
+    <string name="episode">Episode</string>
+    <string name="runtime">Runtime</string>
+    <string name="airdate">Airdate</string>
+    <string name="runtime_one_minute">minute</string>
+    <string name="runtime_multiple_minutes">minutes</string>
+
+    <!-- BrowseErrorFragment - unused for now -->
+    <string name="error_fragment">Error Fragment</string>
+    <string name="error_fragment_message">An error occurred</string>
+    <string name="dismiss_error">Dismiss</string>
+
+</resources>

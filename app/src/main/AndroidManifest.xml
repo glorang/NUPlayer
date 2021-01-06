@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="be.lorang.nuplayer">
+
+    <permission
+        android:name="${applicationId}.ACCESS_VIDEO_DATA"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="${applicationId}.ACCESS_VIDEO_DATA" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <uses-feature
+        android:name="android.hardware.microphone"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+    <uses-feature
+        android:name="android.software.leanback"
+        android:required="true" />
+
+    <application
+        android:allowBackup="false"
+        android:banner="@drawable/ic_logo"
+        android:icon="@drawable/ic_logo"
+        android:label="@string/app_name"
+        android:logo="@drawable/ic_logo"
+        android:theme="@style/Theme.Leanback"
+        tools:ignore="GoogleAppIndexingWarning">
+        <service
+            android:name="be.lorang.nuplayer.services.StreamService"
+            android:exported="false" />
+        <service
+            android:name="be.lorang.nuplayer.services.VrtPlayerTokenService"
+            android:exported="false" />
+        <service
+            android:name="be.lorang.nuplayer.services.AuthService"
+            android:exported="false" />
+        <service
+            android:name="be.lorang.nuplayer.services.ProgramService"
+            android:exported="false" />
+        <service
+            android:name="be.lorang.nuplayer.services.CatalogService"
+            android:exported="false" />
+
+        <activity
+            android:name="be.lorang.nuplayer.ui.MainActivity"
+            android:icon="@drawable/ic_logo"
+            android:label="@string/app_name"
+            android:logo="@drawable/ic_logo"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme.Leanback.Browse">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name="be.lorang.nuplayer.ui.SearchActivity" />
+        <activity android:name="be.lorang.nuplayer.ui.ProgramActivity" />
+        <activity android:name="be.lorang.nuplayer.ui.LoginActivity" />
+        <activity
+            android:name="be.lorang.nuplayer.player.VideoPlaybackActivity"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|layoutDirection"
+            android:launchMode="singleTask"
+            android:resizeableActivity="true" />
+    </application>
+
+</manifest>
