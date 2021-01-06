@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="vrtnu_white">#ffffff</color>
+    <color name="vrtnu_grey">#e5e5e5</color>
+    <color name="vrtnu_black_tint_1">#0e0e0e</color>
+    <color name="vrtnu_black_tint_2">#191919</color>
+    <color name="vrtnu_blue">#063e8a</color>
+
+    <!-- must be defined -->
+    <color name="fastlane_background">@color/vrtnu_black_tint_1</color>
+
+</resources>

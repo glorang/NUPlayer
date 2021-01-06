@@ -1,0 +1,217 @@
+/*
+ * Copyright 2021 Geert Lorang
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+package be.lorang.nuplayer.utils;
+
+/*
+ *
+ * Helper class for all HTTP requests
+ *
+ */
+
+import android.util.Log;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.CookieManager;
+import java.net.HttpCookie;
+import java.net.URLEncoder;
+import java.util.List;
+import java.util.Map;
+
+import javax.net.ssl.HttpsURLConnection;
+
+public class HTTPClient {
+
+    private static String TAG = "HTTPClient";
+
+    private HttpsURLConnection urlConnection ;
+    private BufferedReader reader;
+    private OutputStream writer;
+    private CookieManager cookieManager;
+    private JSONObject returnObject;
+    private int responseCode;
+    private String responseMessage;
+
+    public HTTPClient() {}
+
+    /**
+     * Perform GET/POST request
+     *
+     * Cookies are stored in cookieManager
+     * The HTTP response code (200, 404, etc) is stored in returnCode
+     * The HTTP response message is stored in returnMessage
+     *
+     * All of them can be queried via the respective get methods
+     *
+     * @param urlString - String: URL
+     * @param requestMethod - String: request method
+     *                      (GET/POST)
+     * @param contentType - String: content type
+     *                    (application/json, application/x-www-form-urlencoded)
+     * @param postData - JSONObject: data for POST request
+     * @param headers - HashMap: additional headers to set
+     *
+     * @return JSONObject with result
+     */
+    private JSONObject doRequest(String urlString, String requestMethod, String contentType, JSONObject postData, Map<String, String> headers) throws IOException  {
+
+        try {
+
+            java.net.URL url = new java.net.URL(urlString);
+
+            urlConnection = (HttpsURLConnection) url.openConnection();
+
+            // add request method (if set)
+            if(requestMethod != null) {
+                urlConnection.setRequestMethod(requestMethod);
+            }
+
+            // add headers (if any)
+            if(headers != null) {
+                for (Map.Entry<String, String> header : headers.entrySet()) {
+                    urlConnection.addRequestProperty(header.getKey(), header.getValue());
+                }
+            }
+
+            // set content type header (if set)
+            if(contentType != null) {
+                urlConnection.setRequestProperty("Content-Type", contentType);
+            }
+
+            if(requestMethod.equals("POST")) {
+
+                // transform JSON postData to an URL encoded string if type is of x-www-form-urlencoded
+                String data;
+                if(contentType.equals("application/x-www-form-urlencoded")) {
+
+                    StringBuilder stringBuilder = new StringBuilder();
+                    String separator = "";
+
+                    for (int i = 0; i < postData.names().length(); i++) {
+                        String key = postData.names().getString(i);
+                        String value = postData.getString(key);
+                        stringBuilder.append(separator);
+                        stringBuilder.append(URLEncoder.encode(key, "UTF-8") + "=" +
+                                 URLEncoder.encode(value, "UTF-8"));
+                        separator = "&";
+                    }
+                    data = stringBuilder.toString();
+                } else {
+                   data = postData.toString();
+                }
+
+                urlConnection.setRequestProperty("Content-Length", String.valueOf(data.length()));
+                urlConnection.setDoOutput(true);
+
+                // write POST body
+                writer = urlConnection.getOutputStream();
+                byte[] input = data.getBytes("utf-8");
+                writer.write(input, 0, input.length);
+            }
+
+            // store Cookies (if any)
+            cookieManager = new CookieManager();
+
+            List<String> cookies = urlConnection.getHeaderFields().get("Set-Cookie");
+            if (cookies != null) {
+                for (String cookie : cookies) {
+                    cookieManager.getCookieStore().add(null, HttpCookie.parse(cookie).get(0));
+                }
+            }
+
+            // set return code and message
+            responseCode = urlConnection.getResponseCode();
+            responseMessage = urlConnection.getResponseMessage();
+
+            // read response
+            reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "utf-8"));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
+            }
+
+            // parse response to JSON
+            String json = sb.toString();
+
+            // the VRT.NU API sometimes returns JSONObjects (e.g. Episode lists)
+            // but sometimes also JSONArrays (e.g. Catalog)
+            // If it's an array add it to a single JSONObject called "data"
+
+            Object jsonTestObj = null;
+            try {
+                jsonTestObj = new JSONTokener(json).nextValue();
+            } catch(JSONException e) {
+                // ignore exception as we're testing what the Object would be
+            }
+
+            if (jsonTestObj instanceof JSONObject) {
+                returnObject = new JSONObject(json);
+            } else if(jsonTestObj instanceof JSONArray) {
+                returnObject = new JSONObject();
+                JSONArray jsonArr = new JSONArray(json);
+                returnObject.put("data", jsonArr);
+            }
+
+        } catch (Exception e) {
+            Log.d("TAG", "Exception caught" + e.getMessage());
+            e.printStackTrace();
+
+            // In case of an exception we set error code to 500 (Internal Server Error)
+            // and the message to the one from the exception
+            responseCode = 500;
+            responseMessage = e.getMessage();
+
+        } finally {
+            urlConnection.disconnect();
+        }
+
+        return returnObject;
+    }
+
+    public JSONObject getRequest(String url) throws IOException{
+        return doRequest(url, "GET", null, null, null);
+    }
+
+    public JSONObject getRequest(String url, String contentType, Map<String, String> headers) throws IOException{
+        return doRequest(url, "GET", contentType, null, headers);
+    }
+
+    public JSONObject postRequest(String url, String contentType, JSONObject postData) throws IOException {
+        return doRequest(url, "POST", contentType, postData, null);
+    }
+
+    public int getResponseCode() {
+        return responseCode;
+    }
+
+    public String getResponseMessage() {
+        return responseMessage;
+    }
+
+    public CookieManager getCookies() {
+        return cookieManager;
+    }
+
+}
