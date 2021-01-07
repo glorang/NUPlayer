@@ -93,7 +93,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
-                            android:text="Thanks for using NUPlayer!\n\nThis remains beta software so you will most likely encouter\na lot of bugs.\n\nPlease do report them on the project's GitHub page at\nhttps://github.com/glorang/NUPlayer/\n\nNote that this program is nor developed nor supported by VRT.\nPlease do not contact them with issues or questions you might have.\n\nHappy streaming!" />
+                            android:text="Thanks for using NUPlayer!\n\nThis remains beta software so you will most likely encouter\na lot of bugs.\n\nPlease do report them on the project's GitHub page at\nhttps://github.com/glorang/NUPlayer/\n\nNote that this program is not developed nor supported by VRT.\nPlease do not contact them with issues or questions you might have.\n\nHappy streaming!" />
 
                     </LinearLayout>
 
