@@ -31,7 +31,7 @@
 
     <LinearLayout
         android:id="@+id/info"
-        android:layout_width="600dp"
+        android:layout_width="500dp"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:paddingLeft="11dp"

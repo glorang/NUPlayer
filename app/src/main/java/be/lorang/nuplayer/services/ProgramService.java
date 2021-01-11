@@ -35,15 +35,22 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 public class ProgramService extends IntentService {
     private static final String TAG = "ProgramService";
     public final static String BUNDLED_LISTENER = "listener";
     private Bundle resultData = new Bundle();
 
+    private HTTPClient httpClient = new HTTPClient();
     private Program program;
-    private String sortOrder = "";
     private JSONObject returnObject;
-    private String season = "";
+    private LinkedHashMap<String,String> seasons;
+    private int size = 10;
 
     public static final String TAG_TITLE = "title";
     public static final String TAG_DESCRIPTION = "shortDescription";
@@ -60,53 +67,108 @@ public class ProgramService extends IntentService {
         super(TAG);
     }
 
-    private String parseSeason(JSONObject inputData) {
 
-        String result = "";
+    // Try to make the best out of the season parsing, all in all it's not a real problem
+    // if this fails, in this case it will return an empty map and we search for all episode
+    // regardless of the season. Episodes might be mixed up because of this but seems accurate for now
+    private LinkedHashMap<String,String> parseSeason(JSONObject inputData) {
+
+        LinkedHashMap<String,String> result = new LinkedHashMap<>();
 
         try {
 
             // https://www.vrt.be/vrtnu/a-z/het-journaal.model.json
-            // [":items"].parsys[":items"].container[":items"].banner[":items"].navigation[":itemsOrder"]               // generic, valid for most cases
-            // [":items"].parsys[":items"].container[":items"]["episodes-list"][":items"].navigation[":itemsOrder"]     // la-theorie-du-y.model.json
+            // path1 : [":items"].parsys[":items"].container[":items"].banner[":items"].navigation[":itemsOrder"]               // generic, valid for most cases
+            // path2 : [":items"].parsys[":items"].container[":items"]["episodes-list"][":items"].navigation[":itemsOrder"]     // la-theorie-du-y.model.json
+            // path3 : [":items"].parsys[":items"].container[":items"].navigation[":items"].container.title (=trailer)          // trailer available
             // [":items"].parsys[":items"].container[":items"].banner[":items"] (empty)                                 // albatros.model.json, unreleased, no seasons/episodes yet
 
-            JSONObject level1 = (JSONObject) inputData.get(":items");
-            JSONObject level2 = (JSONObject) level1.get("parsys");
-            JSONObject level3 = (JSONObject) level2.get(":items");
-            JSONObject level4 = (JSONObject) level3.get("container");
-            JSONObject level5 = (JSONObject) level4.get(":items");
+            JSONObject parseObject = null;
 
-            JSONObject level6;
+            // try path1
             try {
-                level6 = (JSONObject) level5.get("banner");
+                parseObject = inputData
+                        .getJSONObject(":items")
+                        .getJSONObject("parsys")
+                        .getJSONObject(":items")
+                        .getJSONObject("container")
+                        .getJSONObject(":items")
+                        .getJSONObject("banner")
+                        .getJSONObject(":items")
+                        .getJSONObject("navigation");
             } catch(JSONException e) {
                 e.printStackTrace();
-                // if banner is not set, try with "episodes-list"
+            }
+
+            // try path2
+            if(parseObject == null) {
                 try {
-                    level6 = (JSONObject) level5.get("episodes-list");
-                } catch(JSONException ee) {
-                    ee.printStackTrace();
-                    Log.d(TAG, "Can not determine season");
-                    return "";
+                    parseObject = inputData
+                            .getJSONObject(":items")
+                            .getJSONObject("parsys")
+                            .getJSONObject(":items")
+                            .getJSONObject("container")
+                            .getJSONObject(":items")
+                            .getJSONObject("episodes-list")
+                            .getJSONObject(":items")
+                            .getJSONObject("navigation");
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
             }
 
-            JSONObject level7 = (JSONObject) level6.get(":items");
-            JSONObject level8;
-            try {
-                 level8 = (JSONObject) level7.get("navigation");
-            } catch(JSONException e) {
-                e.printStackTrace();
-                // No episodes or seasons probably exist for this show
-                return "";
-            }
-            JSONArray itemsOrder = (JSONArray) level8.get(":itemsOrder");
+            if(parseObject != null) {
+                JSONArray itemsOrder = parseObject.getJSONArray(":itemsOrder");
+                JSONObject items = parseObject.getJSONObject(":items");
 
-            // FIXME: for now we only support current season
-            //  To check how we can implement this in the GUI
-            Log.d(TAG, "Seasons discovered: " + itemsOrder.toString());
-            result = itemsOrder.get(0).toString().replaceFirst("^0","");
+                Log.d(TAG, "Seasons discovered: " + itemsOrder.toString());
+
+                // Get season names
+                Map<String, String> seasonNames = new HashMap<>();
+                Iterator<String> keys = items.keys();
+                while(keys.hasNext()) {
+                    String key = keys.next();
+                    if (items.get(key) instanceof JSONObject) {
+                        String value = items.getJSONObject(key).get("title").toString();
+                        seasonNames.put(key, value);
+                    }
+                }
+
+                // Return result in correct sort order
+                for (int i = 0; i < items.length(); i++) {
+                    String key = itemsOrder.get(i).toString();
+                    result.put(key, seasonNames.get(key));
+                }
+            }
+
+            // try path3 (trailer) to see if we should add a "Trailer season"
+            try {
+                parseObject = inputData
+                        .getJSONObject(":items")
+                        .getJSONObject("parsys")
+                        .getJSONObject(":items")
+                        .getJSONObject("container")
+                        .getJSONObject(":items")
+                        .getJSONObject("navigation")
+                        .getJSONObject(":items")
+                        .getJSONObject("container");
+
+                if(parseObject instanceof JSONObject) {
+                    if(parseObject.getString("title").equals("Trailer")) {
+                        Log.d(TAG, "Adding Trailer season");
+                        result.put("trailer", "Trailer");
+                    }
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            // if parseObject is still null here everything failed
+            if(parseObject == null) {
+                Log.d(TAG, "Cannot determine season or find trailer");
+                return null;
+            }
 
         } catch(Exception e) {
             e.printStackTrace();
@@ -115,51 +177,126 @@ public class ProgramService extends IntentService {
         return result;
     }
 
+    // define sort order based on programType
+    private String defineSortOrder(String programType) {
+        if(programType.equals("reeksaflopend") || programType.equals("daily")) {
+            return "desc";
+        } else {
+            return "asc";
+        }
+    }
+
     @Override
     protected void onHandleIntent(Intent workIntent) {
 
         ResultReceiver receiver = workIntent.getParcelableExtra(CatalogService.BUNDLED_LISTENER);
-        VideoList videoList = new VideoList();
         String url;
 
         try {
+
+            // Setup VideoList object
+            VideoList videoList;
 
             // get passed Program object
             String programJson = workIntent.getExtras().getString("PROGRAM_OBJECT");
             program = new Gson().fromJson(programJson, Program.class);
 
-            // Get list of available seasons
-            url = String.format(getString(R.string.service_program_seasons_url), program.getProgramName());
-            Log.d(TAG, "Getting season info at " + url);
-            HTTPClient client = new HTTPClient();
-            returnObject = client.getRequest(url);
-            if(client.getResponseCode() == 200) {
-                season = parseSeason(returnObject);
-            }
-            Log.d(TAG, "Set season to: " + season);
+            // get passed seasons Map
+            String seasonJson = workIntent.getExtras().getString("SEASON_LIST");
+            seasons = new Gson().fromJson(seasonJson, LinkedHashMap.class);
 
-            url = String.format(getString(R.string.service_program_program_url), program.getProgramUrl());
-            if(season.length() > 0) {
-                url = url + "&facets[seasonTitle]=" + season;
+            // get passed season index, this maps to the index inside the map as keys are defined as strings (2020, 2020-nj)
+            int seasonIndex = workIntent.getExtras().getInt("SEASON_INDEX");
+
+            // get passed start index from where we should start loading videos (offset)
+            int startIndex = workIntent.getExtras().getInt("START_INDEX");
+
+            // Initiate videoList or get existing one if passed
+            if(startIndex == 1) {
+                videoList = new VideoList();
+            } else {
+                String videoListJson = workIntent.getExtras().getString("VIDEO_LIST");
+                videoList = new Gson().fromJson(videoListJson, VideoList.class);
+
+                // Add an additional check to make sure we don't create a loading loop
+                // This should never happen: we already catch any non-200 HTTP response
+                // and any JSON parsing exception but better be sure we don't flood VRT.NU search API
+                // This could theoretically happen when the first request is successful but any
+                // next request returns an unwanted, but valid JSON, response
+                int va = videoList.getVideosAvailable();
+                if(va > 0 && startIndex > va) {
+                    resultData.putString("MSG", "Start index (" + startIndex + ") > videos available (" + va + "). This should never happen.");
+                    receiver.send(Activity.RESULT_CANCELED, resultData);
+                    return;
+                }
             }
+
+            // Get list of available seasons
+            if(seasons == null) {
+                url = String.format(getString(R.string.service_program_seasons_url), program.getProgramName());
+                Log.d(TAG, "Getting season info at " + url);
+                returnObject = httpClient.getRequest(url);
+                if (httpClient.getResponseCode() == 200) {
+                    seasons = parseSeason(returnObject);
+                }
+                Log.d(TAG, "Set season to: " + seasons);
+            }
+
+            url = String.format(getString(R.string.service_program_program_url),
+                    defineSortOrder(program.getProgramType()),
+                    Integer.toString(size),
+                    Integer.toString(startIndex),
+                    program.getProgramUrl()
+            );
+
+            // get selected season
+            if(seasons != null && seasons.size() > 0) {
+                String seasonName = (new ArrayList<String>(seasons.keySet())).get(seasonIndex);
+                url = url + "&facets[seasonName]=" + seasonName;
+            } else {
+                // If seasons is still null here we either failed to decode the JSON or failed to
+                // fetch the model.json, create dummy season
+                seasons = new LinkedHashMap<>();
+                seasons.put("0", "Unknown");
+            }
+
             Log.d(TAG, "Getting program details at: " + url);
-            returnObject = new HTTPClient().getRequest(url);
+
+            // Get program details
+            returnObject = httpClient.getRequest(url);
+
+            if (httpClient.getResponseCode() != 200) {
+                resultData.putString("MSG", "Could not get details: " + httpClient.getResponseMessage());
+                receiver.send(Activity.RESULT_CANCELED, resultData);
+                return;
+            }
+
+            JSONObject meta = returnObject.getJSONObject("meta");
             JSONArray items = returnObject.getJSONArray("results");
+
+            // Update VideoList object with latest numbers of available / loaded
+            int videosAvailable = meta.getInt("total_results");
+            int videosLoaded = videoList.getVideosLoaded() + items.length();
+
+            videoList.setVideosAvailable(videosAvailable);
+            videoList.setVideosLoaded(videosLoaded);
+
+            Log.d(TAG, "Available = " + videosAvailable);
+            Log.d(TAG, "Loaded = " + videosLoaded);
 
             for (int i = 0; i < items.length(); i++) {
                 JSONObject program = items.getJSONObject(i);
 
-                String title = program.optString(TAG_TITLE);
+                // fields get with getString are mandatory and will throw a JSONException if not set
+                // fields get with optString are optional and have a default value of ""
+                String title = program.getString(TAG_TITLE);
                 String description = program.optString(TAG_DESCRIPTION);
                 String seasonName = program.optString(TAG_SEASONNAME);
                 int episodeNumber = program.optInt(TAG_EPISODENR);
                 int duration = program.optInt(TAG_DURATION);
-                String videoId  = program.optString(TAG_VIDEOID);
-                String pubId  = program.optString(TAG_PUBID);
+                String videoId  = program.getString(TAG_VIDEOID);
+                String pubId  = program.getString(TAG_PUBID);
                 String formattedBroadcastDate = program.optString(TAG_BROADCASTDATE);
-
-                // get sort order (data is not available in Program)
-                sortOrder = program.optString(TAG_PROGRAMTYPE);
 
                 // we replace the image server with the one defined in urls.xml
                 // this prepends the (often) 'missing' 'https://' and allows us to query our own size ('orig' can go up to 18MB each(!))
@@ -173,9 +310,7 @@ public class ProgramService extends IntentService {
                 Log.d(TAG, "Adding video : " + title + " " + episodeNumber);
             }
 
-            // sort result
-            videoList.sort(sortOrder);
-
+            resultData.putString("SEASON_LIST", (new Gson()).toJson(seasons));
             resultData.putString("VIDEO_LIST", (new Gson()).toJson(videoList));
             receiver.send(Activity.RESULT_OK, resultData);
 

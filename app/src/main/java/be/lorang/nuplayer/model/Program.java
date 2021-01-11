@@ -31,6 +31,7 @@ public class Program {
     @SerializedName("title") private String mTitle = "";
     @SerializedName("description") private String mDescription = "";
     @SerializedName("programName") private String mProgramName = "";
+    @SerializedName("programType") private String mProgramType = "";
     @SerializedName("programUrl") private String mProgramUrl = "";
     @SerializedName("thumbnail") private String mThumbnail = "";
     @SerializedName("altImage") private String mAltImage = "";
@@ -44,6 +45,7 @@ public class Program {
     public Program(String title,
                    String description,
                    String programName,
+                   String programType,
                    String programUrl,
                    String thumbnail,
                    String altImage,
@@ -54,6 +56,7 @@ public class Program {
         mTitle = title;
         mDescription = description;
         mProgramName = programName;
+        mProgramType = programType;
         mProgramUrl = programUrl;
         mThumbnail = thumbnail;
         mAltImage = altImage;
@@ -82,6 +85,13 @@ public class Program {
     }
     public void setProgramName(String programName) {
         mProgramName = programName;
+    }
+
+    public String getProgramType() {
+        return mProgramType;
+    }
+    public void setProgramType(String programType) {
+        mProgramType = programType;
     }
 
     public String getProgramUrl() {
