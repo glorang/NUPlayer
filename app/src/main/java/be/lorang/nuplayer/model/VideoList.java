@@ -32,28 +32,40 @@ public class VideoList {
 
     final static String TAG = "VideoList";
 
+    @SerializedName("videosLoaded") private int mVideosLoaded;
+    @SerializedName("videosAvailable") private int mVideosAvailable;
     @SerializedName("videos") private List<Video> mVideos = new ArrayList<Video>();
 
-    public VideoList() {}
-
-    // sortOrder is one of daily, oneoff, reeksaflopend, reeksoplopend
-    // it is passed like that from VRT.NU API
-    public void sort(String sortOrder) {
-        if(sortOrder.equals("reeksaflopend") || sortOrder.equals("daily")) {
-            Log.d(TAG, "Sorting desc = [" + sortOrder + "]");
-            mVideos.sort(Comparator.comparing(Video::getEpisodeNumber).reversed());
-        } else {
-            Log.d(TAG, "Sorting asc = [" + sortOrder + "]");
-            mVideos.sort(Comparator.comparing(Video::getEpisodeNumber));
-        }
+    public VideoList() {
+        mVideosLoaded = 0;
+        mVideosAvailable = 0;
     }
 
     public List<Video> getVideos() {
         return mVideos;
     }
+    public Video getVideo(int index) { return mVideos.get(index); }
 
     public void addVideo(Video v) {
         mVideos.add(v);
     }
+
+    public int getVideosLoaded() {
+        return mVideosLoaded;
+    }
+
+    public void setVideosLoaded(int videosLoaded) {
+        this.mVideosLoaded = videosLoaded;
+    }
+
+    public int getVideosAvailable() {
+        return mVideosAvailable;
+    }
+
+    public void setVideosAvailable(int videosAvailable) {
+        this.mVideosAvailable = videosAvailable;
+    }
+
+    public boolean moreVideosAvailable() { return mVideosLoaded < mVideosAvailable; }
 
 }

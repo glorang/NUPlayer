@@ -37,6 +37,14 @@ import java.util.ArrayList;
 public class CatalogService extends IntentService {
     private static final String TAG = "CatalogService";
     public final static String BUNDLED_LISTENER = "listener";
+
+    // Unfortunately programType is not available in the data returned by the Suggest API
+    // So we define it here as a static list (shouldn't update too often) as we need it to query
+    // the VideoList in the correct order (asc|desc sorting) in ProgramService
+    private final static String[] programTypes = {"daily","oneoff","reeksaflopend", "reeksoplopend"};
+
+    private HTTPClient httpClient = new HTTPClient();
+    private String url;
     private Bundle resultData = new Bundle();
     private JSONObject jsonObject;
     private JSONArray items;
@@ -94,11 +102,10 @@ public class CatalogService extends IntentService {
                 */
 
                 // Get all "time limited" series, we'll mark them as time limited when creating the Program object
-                HTTPClient client = new HTTPClient();
-                jsonObject = client.getRequest(getString(R.string.service_catalog_series_url));
+                jsonObject = httpClient.getRequest(getString(R.string.service_catalog_series_url));
 
-                if(client.getResponseCode() != 200) {
-                    resultData.putString("MSG", "Error occurred in downloading VRT.NU catalog: " + client.getResponseMessage());
+                if(httpClient.getResponseCode() != 200) {
+                    resultData.putString("MSG", "Error occurred in downloading VRT.NU catalog: " + httpClient.getResponseMessage());
                     receiver.send(Activity.RESULT_CANCELED, resultData);
                     return;
                 }
@@ -110,38 +117,57 @@ public class CatalogService extends IntentService {
                     timeLimitedSeries.add(programJSON.getString("programName"));
                 }
 
-                // Get entire catalog of available Programs
-                jsonObject = new HTTPClient().getRequest(getString(R.string.service_catalog_catalog_url));
-                items = jsonObject.getJSONArray("data");
+                // Get entire catalog of available Programs per programType
+                for(String programType : programTypes) {
 
-                for (int i = 0; i < items.length(); i++) {
-                    JSONObject programJSON = items.getJSONObject(i);
+                    url = String.format(getString(R.string.service_catalog_catalog_url), programType);
+                    Log.d(TAG, "Getting catalog part " + programType + " at " + url);
+                    jsonObject = new HTTPClient().getRequest(url);
 
-                    String title = programJSON.optString(TAG_TITLE);
-                    String description = programJSON.optString(TAG_DESCRIPTION);
-                    String programName = programJSON.optString(TAG_PROGNAME);
-                    String programUrl = programJSON.optString(TAG_PROGURL);
-                    JSONArray brands = programJSON.optJSONArray(TAG_BRANDS);
+                    items = jsonObject.getJSONArray("data");
 
-                    // we replace the image server with the one defined in urls.xml
-                    // this prepends the (often) 'missing' 'https://' and allows us to query our own size ('orig' can go up to 18MB each(!))
-                    String thumbnail = programJSON.optString(TAG_THUMBNAIL).replaceFirst("^(https:)?//images.vrt.be/orig/", "");
-                    String altImage  = programJSON.optString(TAG_ALTIMAGE).replaceFirst("^(https:)?//images.vrt.be/orig/", "");;
-                    String imageServer = getString(R.string.model_image_server);
+                    for (int i = 0; i < items.length(); i++) {
+                        JSONObject programJSON = items.getJSONObject(i);
 
-                    // we only use the 1st brand for now in the array
-                    String brand = (String)brands.get(0);
+                        String title = programJSON.optString(TAG_TITLE);
+                        String description = programJSON.optString(TAG_DESCRIPTION);
+                        String programName = programJSON.optString(TAG_PROGNAME);
+                        String programUrl = programJSON.optString(TAG_PROGURL);
+                        JSONArray brands = programJSON.optJSONArray(TAG_BRANDS);
 
-                    // Check if program is marked as favorite
-                    boolean isFavorite = favorites.contains(title);
+                        // we replace the image server with the one defined in urls.xml
+                        // this prepends the (often) 'missing' 'https://' and allows us to query our own size ('orig' can go up to 18MB each(!))
+                        String thumbnail = programJSON.optString(TAG_THUMBNAIL).replaceFirst("^(https:)?//images.vrt.be/orig/", "");
+                        String altImage = programJSON.optString(TAG_ALTIMAGE).replaceFirst("^(https:)?//images.vrt.be/orig/", "");
+                        String imageServer = getString(R.string.model_image_server);
 
-                    // Check if program is part of time limited series
-                    boolean isTimeLimited = timeLimitedSeries.contains(programName);
+                        // we only use the 1st brand for now in the array
+                        String brand = (String)brands.get(0);
 
-                    Program program = new Program(title, description, programName, programUrl, thumbnail, altImage, brand, imageServer, isFavorite, isTimeLimited);
-                    programList.addProgram(program);
+                        // Check if program is marked as favorite
+                        boolean isFavorite = favorites.contains(title);
 
-                    Log.d(TAG, "Adding to catalog : " + title + " " + programName + " " + programUrl);
+                        // Check if program is part of time limited series
+                        boolean isTimeLimited = timeLimitedSeries.contains(programName);
+
+                        Program program = new Program(
+                                title,
+                                description,
+                                programName,
+                                programType,
+                                programUrl,
+                                thumbnail,
+                                altImage,
+                                brand,
+                                imageServer,
+                                isFavorite,
+                                isTimeLimited
+                        );
+
+                        programList.addProgram(program);
+
+                        Log.d(TAG, "Adding to catalog : " + title + " " + programName + " " + programType + " " + programUrl);
+                    }
                 }
 
                 receiver.send(Activity.RESULT_OK, resultData);

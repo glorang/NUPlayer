@@ -8,12 +8,12 @@
     <string name="model_image_server">https://images.vrt.be</string>
     <string name="service_auth_authentication_server">https://accounts.vrt.be/accounts.login</string>
     <string name="service_auth_token_server">https://token.vrt.be</string>
-    <string name="service_catalog_catalog_url">https://vrtnu-api.vrt.be/suggest?facets[transcodingStatus]=AVAILABLE</string>
+    <string name="service_catalog_catalog_url">https://vrtnu-api.vrt.be/suggest?facets[transcodingStatus]=AVAILABLE&amp;facets[programType]=%s</string>
     <string name="service_catalog_favorites_url">https://video-user-data.vrt.be/favorites</string>
     <string name="service_catalog_series_url">https://search.vrt.be/suggest?facets[programTags.parentTitle]=Tijdsgerelateerd&amp;facets[assetStatus]=AVAILABLE&amp;facets[categories]=series</string>
     <string name="service_playertoken_player_token_server">https://media-services-public.vrt.be/vualto-video-aggregator-web/rest/external/v1/tokens</string>
     <string name="service_program_seasons_url">https://www.vrt.be/vrtnu/a-z/%s.model.json</string>
-    <string name="service_program_program_url">https://vrtnu-api.vrt.be/search?orderBy=episodeNumber&amp;facets[programUrl]=%s</string>
+    <string name="service_program_program_url">https://vrtnu-api.vrt.be/search?orderBy=episodeNumber&amp;order=%s&amp;size=%s&amp;from=%s&amp;facets[programUrl]=%s</string>
     <string name="service_stream_stream_info_server">https://media-services-public.vrt.be/vualto-video-aggregator-web/rest/external/v1/videos/</string>
     <string name="service_video_resume_points">https://video-user-data.vrt.be/resume_points</string>
     <string name="vudrm_server">https://widevine-license.vudrm.tech/proxy?token=%s</string>
