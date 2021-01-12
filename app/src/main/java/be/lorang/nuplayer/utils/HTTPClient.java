@@ -36,6 +36,7 @@ import java.io.OutputStream;
 import java.net.CookieManager;
 import java.net.HttpCookie;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -126,7 +127,7 @@ public class HTTPClient {
 
                 // write POST body
                 writer = urlConnection.getOutputStream();
-                byte[] input = data.getBytes("utf-8");
+                byte[] input = data.getBytes(StandardCharsets.UTF_8);
                 writer.write(input, 0, input.length);
             }
 
@@ -145,7 +146,7 @@ public class HTTPClient {
             responseMessage = urlConnection.getResponseMessage();
 
             // read response
-            reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), "utf-8"));
+            reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), StandardCharsets.UTF_8));
             StringBuilder sb = new StringBuilder();
             String line;
             while ((line = reader.readLine()) != null) {
