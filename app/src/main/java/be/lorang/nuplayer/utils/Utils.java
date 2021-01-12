@@ -157,25 +157,6 @@ public class Utils {
                 context.getResources().getResourceEntryName(resID));
     }
 
-    /* https://stackoverflow.com/a/35250539/5414711 */
-    /**
-     * @param bitmap The source bitmap.
-     * @param opacity a value between 0 (completely transparent) and 255 (completely
-     * opaque).
-     * @return The opacity-adjusted bitmap.  If the source bitmap is mutable it will be
-     * adjusted and returned, otherwise a new bitmap is created.
-     */
-    public static Bitmap adjustOpacity(Bitmap bitmap, int opacity)
-    {
-        Bitmap mutableBitmap = bitmap.isMutable()
-                ? bitmap
-                : bitmap.copy(Bitmap.Config.ARGB_8888, true);
-        Canvas canvas = new Canvas(mutableBitmap);
-        int colour = (opacity & 0xFF) << 24;
-        canvas.drawColor(colour, PorterDuff.Mode.DST_IN);
-        return mutableBitmap;
-    }
-
     // Check if vrtPlayerToken is expired
     public static boolean isVrtPlayerTokenExpired(String expirationDate) {
         if(expirationDate.length() == 0) { return true; }
@@ -185,11 +166,7 @@ public class Utils {
                 DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH)
         ).atZone(ZoneId.of("UTC")).toInstant();
 
-        if(Instant.now().compareTo(parsedDate) > 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return Instant.now().compareTo(parsedDate) > 0;
     }
 
 
