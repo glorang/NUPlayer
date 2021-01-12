@@ -170,6 +170,9 @@ public class CatalogService extends IntentService {
                     }
                 }
 
+                // Sort catalog
+                programList.sort();
+
                 receiver.send(Activity.RESULT_OK, resultData);
 
             } catch (Exception e) {

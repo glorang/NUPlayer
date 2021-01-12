@@ -46,6 +46,10 @@ public class ProgramList {
         mPrograms.add(p);
     }
 
+    public void sort() {
+        mPrograms.sort(Comparator.comparing(Program::getTitle));
+    }
+
     public List<Program> getFavorites() {
         List<Program> result = new ArrayList<Program>();
         for(Program program : mPrograms) {
