@@ -26,6 +26,7 @@ import androidx.leanback.media.PlayerAdapter;
 import androidx.leanback.media.SurfaceHolderGlueHost;
 import be.lorang.nuplayer.R;
 
+import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
 import android.view.SurfaceHolder;
 
@@ -36,6 +37,7 @@ import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -44,6 +46,7 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
+import com.google.android.exoplayer2.video.VideoListener;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -51,7 +54,7 @@ import java.net.URLEncoder;
 /**
  * This implementation extends the {@link PlayerAdapter} with a {@link SimpleExoPlayer}.
  */
-public class ExoPlayerAdapter extends PlayerAdapter implements ExoPlayer.EventListener{
+public class ExoPlayerAdapter extends PlayerAdapter implements ExoPlayer.EventListener, VideoListener {
 
     private static String TAG = "ExoPlayerAdapter";
 
@@ -74,15 +77,22 @@ public class ExoPlayerAdapter extends PlayerAdapter implements ExoPlayer.EventLi
     boolean mBufferingStart;
     @C.StreamType int mAudioStreamType;
 
+    private MediaSessionCompat mediaSession;
+    private MediaSessionConnector mediaSessionConnector;
+
     /**
      * Constructor.
      */
     public ExoPlayerAdapter(Context context) {
         mContext = context;
-        mPlayer = ExoPlayerFactory.newSimpleInstance(mContext,
-                new DefaultTrackSelector(),
-                new DefaultLoadControl());
+
+        mPlayer = new SimpleExoPlayer.Builder(context).build();
         mPlayer.addListener(this);
+        mPlayer.addVideoListener(this);
+
+        mediaSession = new MediaSessionCompat(context, "NUPlayer");
+        mediaSessionConnector = new MediaSessionConnector(mediaSession);
+        mediaSessionConnector.setPlayer(mPlayer);
     }
 
     @Override
@@ -126,6 +136,10 @@ public class ExoPlayerAdapter extends PlayerAdapter implements ExoPlayer.EventLi
      * Release internal {@link SimpleExoPlayer}. Should not use the object after call release().
      */
     public void release() {
+        if (mediaSession != null) {
+            mediaSession.release();
+        }
+
         changeToUninitialized();
         mHasDisplay = false;
         mPlayer.release();
@@ -257,29 +271,6 @@ public class ExoPlayerAdapter extends PlayerAdapter implements ExoPlayer.EventLi
         this.drmToken = drmToken;
     }
 
-    public int getAudioStreamType() {
-        return mAudioStreamType;
-    }
-
-    public void setAudioStreamType(@C.StreamType int audioStreamType) {
-        mAudioStreamType = audioStreamType;
-    }
-
-    /**
-     * Set {@link MediaSource} for {@link SimpleExoPlayer}. An app may override this method in order
-     * to use different {@link MediaSource}.
-     * @param uri The url of media source
-     * @return MediaSource for the player
-     */
-    public MediaSource onCreateMediaSource(Uri uri) {
-        String userAgent = Util.getUserAgent(mContext, "ExoPlayerAdapter");
-        return new ExtractorMediaSource(uri,
-                new DefaultDataSourceFactory(mContext, userAgent),
-                new DefaultExtractorsFactory(),
-                null,
-                null);
-    }
-
     private void prepareMediaForPlaying() throws UnsupportedEncodingException {
 
         reset();
@@ -312,18 +303,6 @@ public class ExoPlayerAdapter extends PlayerAdapter implements ExoPlayer.EventLi
         mPlayer.setMediaItem(mediaItem);
         mPlayer.prepare();
 
-        mPlayer.setAudioStreamType(mAudioStreamType);
-        mPlayer.setVideoListener(new SimpleExoPlayer.VideoListener() {
-            @Override
-            public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees,
-                                           float pixelWidthHeightRatio) {
-                getCallback().onVideoSizeChanged(ExoPlayerAdapter.this, width, height);
-            }
-
-            @Override
-            public void onRenderedFirstFrame() {
-            }
-        });
         notifyBufferingStartEnd();
         getCallback().onPlayStateChanged(ExoPlayerAdapter.this);
     }
@@ -335,6 +314,12 @@ public class ExoPlayerAdapter extends PlayerAdapter implements ExoPlayer.EventLi
     @Override
     public boolean isPrepared() {
         return mInitialized && (mSurfaceHolderGlueHost == null || mHasDisplay);
+    }
+
+    public void setMediaSessionState(boolean state) {
+        if(mediaSession != null) {
+            mediaSession.setActive(state);
+        }
     }
 
     /**
@@ -358,6 +343,16 @@ public class ExoPlayerAdapter extends PlayerAdapter implements ExoPlayer.EventLi
     }
 
     // ExoPlayer Event Listeners
+
+    @Override
+    public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees,
+                                   float pixelWidthHeightRatio) {
+        getCallback().onVideoSizeChanged(ExoPlayerAdapter.this, width, height);
+    }
+
+    @Override
+    public void onRenderedFirstFrame() {
+    }
 
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
