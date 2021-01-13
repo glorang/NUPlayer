@@ -20,6 +20,7 @@ package be.lorang.nuplayer.ui;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -40,7 +41,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -97,6 +100,36 @@ public class ProgramFragment extends VerticalGridFragment implements OnItemViewS
     private void setupUi() {
         setTitle(program.getTitle());
         updateBackground(program.getThumbnail("w1920hx"));
+        setBrandImage(program.getBrand().replaceAll("-", ""));
+    }
+
+    private void setBrandImage(String brand) {
+        try {
+
+            ImageView brandImageLogo = (ImageView) getActivity().findViewById(R.id.brandImageLogo);
+            if (brandImageLogo != null) {
+                int resourceID = getResources().getIdentifier("ic_" + brand, "drawable", getActivity().getPackageName());
+                if (resourceID > 0) {
+                    brandImageLogo.setImageDrawable(getResources().getDrawable(resourceID, null));
+                }
+            }
+
+        } catch(Exception e) {
+            // don't crash if we can't find / load brand image
+            e.printStackTrace();
+        }
+    }
+
+    private void setEpisodeCount(int episodeCount, int episodesLoaded) {
+        try {
+            if(episodeCount > 0) {
+                TextView episodeCountText = (TextView) getActivity().findViewById(R.id.episodeCountText);
+                episodeCountText.setText("Episodes: " + episodeCount + "\nEpisodes loaded: " + episodesLoaded);
+            }
+        } catch(Exception e) {
+            // don't crash if we can't find / load brand image
+            e.printStackTrace();
+        }
     }
 
     private void setupAdapter() {
@@ -153,6 +186,7 @@ public class ProgramFragment extends VerticalGridFragment implements OnItemViewS
                     videoList = new Gson().fromJson(resultData.getString("VIDEO_LIST"), VideoList.class);
                     seasons = new Gson().fromJson(resultData.getString("SEASON_LIST"), LinkedHashMap.class);
 
+                    setEpisodeCount(videoList.getVideosAvailable(), videoList.getVideosLoaded());
                     updateSeasons(seasons);
 
                     // Add all new videos to the adapter

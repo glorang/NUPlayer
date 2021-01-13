@@ -24,27 +24,26 @@
 
     <ImageView
         android:id="@+id/main_image"
-        android:layout_width="200dp"
-        android:layout_height="112dp"
-        lb:layout_viewType="main"
-        />
+        android:layout_width="180dp"
+        android:layout_height="101dp"
+        lb:layout_viewType="main" />
 
     <LinearLayout
         android:id="@+id/info"
-        android:layout_width="500dp"
+        android:layout_width="450dp"
         android:layout_height="match_parent"
+        android:background="@color/vrtnu_black_tint_2"
         android:orientation="vertical"
         android:paddingLeft="11dp"
-        android:paddingRight="11dp"
         android:paddingTop="7dp"
-        android:background="@color/vrtnu_black_tint_2">
+        android:paddingRight="11dp">
 
         <TextView
             android:id="@+id/primary_text"
             style="@style/Widget.Leanback.ImageCardView.TitleStyle"
             android:fontFamily="sans-serif-condensed"
             android:maxLines="1"
-            android:textSize="16sp"/>
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/secondary_text"
@@ -52,13 +51,13 @@
             android:layout_marginTop="4dp"
             android:fontFamily="sans-serif-condensed"
             android:maxLines="2"
-            android:textColor="#EEEEEE"/>
+            android:textColor="#EEEEEE" />
 
         <TextView
             android:id="@+id/extra_text"
             style="@style/Widget.Leanback.ImageCardView.ContentStyle"
             android:layout_marginTop="6dp"
             android:fontFamily="sans-serif-condensed"
-            android:maxLines="5"/>
+            android:maxLines="5" />
     </LinearLayout>
 </LinearLayout>
