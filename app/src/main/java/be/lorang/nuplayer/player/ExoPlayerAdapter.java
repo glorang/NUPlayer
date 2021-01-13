@@ -26,26 +26,23 @@ import androidx.leanback.media.PlayerAdapter;
 import androidx.leanback.media.SurfaceHolderGlueHost;
 import be.lorang.nuplayer.R;
 
+import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 import android.view.SurfaceHolder;
 
 import com.google.android.exoplayer2.C;
-import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector;
-import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
-import com.google.android.exoplayer2.source.ExtractorMediaSource;
+import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.TrackGroupArray;
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
-import com.google.android.exoplayer2.util.Util;
 import com.google.android.exoplayer2.video.VideoListener;
 
 import java.io.UnsupportedEncodingException;
@@ -79,20 +76,39 @@ public class ExoPlayerAdapter extends PlayerAdapter implements ExoPlayer.EventLi
 
     private MediaSessionCompat mediaSession;
     private MediaSessionConnector mediaSessionConnector;
-
     /**
      * Constructor.
      */
-    public ExoPlayerAdapter(Context context) {
+    public ExoPlayerAdapter(Context context, String title, String description) {
         mContext = context;
 
         mPlayer = new SimpleExoPlayer.Builder(context).build();
         mPlayer.addListener(this);
         mPlayer.addVideoListener(this);
 
+        // Setup Media Session
         mediaSession = new MediaSessionCompat(context, "NUPlayer");
         mediaSessionConnector = new MediaSessionConnector(mediaSession);
         mediaSessionConnector.setPlayer(mPlayer);
+        mediaSessionConnector.setQueueNavigator(new TimelineQueueNavigator(mediaSession) {
+            @Override
+            public MediaDescriptionCompat getMediaDescription(Player player, int windowIndex) {
+                return new MediaDescriptionCompat.Builder()
+                        .setTitle(title)
+                        .setDescription(description + " " + windowIndex)
+                        .build();
+            }
+        });
+
+        mediaSessionConnector.setEnabledPlaybackActions(
+                PlaybackStateCompat.ACTION_PLAY_PAUSE
+                        | PlaybackStateCompat.ACTION_PLAY
+                        | PlaybackStateCompat.ACTION_PAUSE
+                        | PlaybackStateCompat.ACTION_SEEK_TO
+                        | PlaybackStateCompat.ACTION_FAST_FORWARD
+                        | PlaybackStateCompat.ACTION_REWIND
+                        | PlaybackStateCompat.ACTION_STOP
+        );
     }
 
     @Override
@@ -187,7 +203,7 @@ public class ExoPlayerAdapter extends PlayerAdapter implements ExoPlayer.EventLi
     }
 
     int getUpdatePeriod() {
-        return 16;
+        return 1000;
     }
 
     @Override

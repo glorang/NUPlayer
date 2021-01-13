@@ -49,7 +49,7 @@ public class VideoPlaybackFragment extends VideoFragment {
         videoUrl = vpa.getVideoUrl();
         drmToken = vpa.getDrmToken();
 
-        playerAdapter = new ExoPlayerAdapter(getActivity());
+        playerAdapter = new ExoPlayerAdapter(getActivity(), video.getTitle(), video.getDescription());
         mMediaPlayerGlue = new VideoMediaPlayerGlue(getActivity(), playerAdapter);
         mMediaPlayerGlue.setHost(mHost);
         mMediaPlayerGlue.setTitle(video.getTitle());
@@ -58,7 +58,6 @@ public class VideoPlaybackFragment extends VideoFragment {
         mMediaPlayerGlue.getPlayerAdapter().setDataSource(Uri.parse(videoUrl));
 
         playWhenReady(mMediaPlayerGlue);
-        setBackgroundType(BG_LIGHT);
 
     }
 
@@ -88,16 +87,16 @@ public class VideoPlaybackFragment extends VideoFragment {
 
     @Override
     public void onStart() {
-        if (playerAdapter != null) {
-            playerAdapter.setMediaSessionState(true);
+        if (mMediaPlayerGlue != null) {
+            mMediaPlayerGlue.getPlayerAdapter().setMediaSessionState(true);
         }
         super.onStart();
     }
 
     @Override
     public void onStop() {
-        if (playerAdapter != null) {
-            playerAdapter.setMediaSessionState(false);
+        if (mMediaPlayerGlue != null) {
+            mMediaPlayerGlue.getPlayerAdapter().setMediaSessionState(false);
         }
         super.onStop();
     }
