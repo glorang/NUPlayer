@@ -31,6 +31,7 @@ public class VideoPlaybackFragment extends VideoFragment {
 
     public static final String TAG = "VideoPlaybackFragment";
     private VideoMediaPlayerGlue<ExoPlayerAdapter> mMediaPlayerGlue;
+    private ExoPlayerAdapter playerAdapter;
     final VideoFragmentGlueHost mHost = new VideoFragmentGlueHost(this);
 
     private Video video;
@@ -48,7 +49,7 @@ public class VideoPlaybackFragment extends VideoFragment {
         videoUrl = vpa.getVideoUrl();
         drmToken = vpa.getDrmToken();
 
-        ExoPlayerAdapter playerAdapter = new ExoPlayerAdapter(getActivity());
+        playerAdapter = new ExoPlayerAdapter(getActivity());
         mMediaPlayerGlue = new VideoMediaPlayerGlue(getActivity(), playerAdapter);
         mMediaPlayerGlue.setHost(mHost);
         mMediaPlayerGlue.setTitle(video.getTitle());
@@ -83,6 +84,22 @@ public class VideoPlaybackFragment extends VideoFragment {
             mMediaPlayerGlue.pause();
         }
         super.onPause();
+    }
+
+    @Override
+    public void onStart() {
+        if (playerAdapter != null) {
+            playerAdapter.setMediaSessionState(true);
+        }
+        super.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        if (playerAdapter != null) {
+            playerAdapter.setMediaSessionState(false);
+        }
+        super.onStop();
     }
 
 }
