@@ -22,7 +22,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
 import be.lorang.nuplayer.R;
 
@@ -30,7 +29,6 @@ public class MainActivity extends LeanbackActivity {
 
     public static String PREFERENCES_NAME = "VRTNUPreferences";
     private static String TAG = "MainActivity";
-    private long backPressedTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,15 +53,4 @@ public class MainActivity extends LeanbackActivity {
         }
     }
 
-    @Override
-    public void onBackPressed() {
-        if (backPressedTime + 1000 > System.currentTimeMillis()) {
-            super.onBackPressed();
-        } else {
-            Toast.makeText(getBaseContext(),
-                    "Press return again to exit.", Toast.LENGTH_SHORT)
-                    .show();
-        }
-        backPressedTime = System.currentTimeMillis();
-    }
 }

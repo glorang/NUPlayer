@@ -64,7 +64,7 @@ public class MainFragment extends BrowseFragment {
         setBadgeDrawable(getActivity().getResources().getDrawable(R.drawable.ic_logo, null));
         setTitle(getString(R.string.browse_title)); // Badge, when set, takes precedent over title
         setHeadersState(HEADERS_ENABLED);
-        setHeadersTransitionOnBackEnabled(false);
+        setHeadersTransitionOnBackEnabled(true);
 
         // set menu background (left)
         setBrandColor(getResources().getColor(R.color.vrtnu_black_tint_1));
