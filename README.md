@@ -19,8 +19,6 @@ For now only tested on Google 2020 Chromecast (the one with remote). Any recent 
 
 ## Doesn't work yet
 
-- Season selection, only the last / current season can be played
-- Only last 10 episodes of a season can be played for now (this is highest prio on backlog)
 - Resume points / video progress
 - Favorites
 - All stuff I didn't think about
@@ -32,6 +30,16 @@ For now only tested on Google 2020 Chromecast (the one with remote). Any recent 
 - Download APK from releases and transfer via file manager
 - Install
 - Enjoy!
+
+# Release history
+## v1.0.1-beta (2020-01-13)
+- All seasons, episodes and trailers can now be discovered and browsed through
+- Fixed bug on Chromecast where video playback was paused after 10 minutes by "Ambient Mode"
+- Implemented Media Session
+- Improved Program detail view
+
+## v1.0.0-beta (2020-01-07)
+- First beta release
 
 # Screenshots
 
