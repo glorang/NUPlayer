@@ -195,8 +195,8 @@ public class HTTPClient {
         return doRequest(url, "GET", null, null, null);
     }
 
-    public JSONObject getRequest(String url, String contentType, Map<String, String> headers) throws IOException{
-        return doRequest(url, "GET", contentType, null, headers);
+    public JSONObject getRequest(String url, Map<String, String> headers) throws IOException{
+        return doRequest(url, "GET", null, null, headers);
     }
 
     public JSONObject postRequest(String url, String contentType, JSONObject postData) throws IOException {
