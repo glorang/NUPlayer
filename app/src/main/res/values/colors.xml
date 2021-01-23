@@ -11,6 +11,9 @@
 
     <color name="vrtnu_black_tint_2">#191919</color>
     <color name="vrtnu_blue">#063e8a</color>
+    <color name="vrtnu_green">#00B600</color>
+    <color name="vrtnu_red">#B60000</color>
+
 
     <!-- must be defined -->
     <color name="fastlane_background">@color/vrtnu_black_tint_1</color>

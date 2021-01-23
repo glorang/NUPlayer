@@ -17,11 +17,10 @@
 package be.lorang.nuplayer.utils;
 
 /*
- *
  * Helper class for all HTTP requests
- *
  */
 
+import android.os.Build;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -30,9 +29,12 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.HttpCookie;
 import java.net.URLEncoder;
@@ -42,24 +44,38 @@ import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import be.lorang.nuplayer.BuildConfig;
+
 public class HTTPClient {
 
     private static String TAG = "HTTPClient";
 
+    // Singleton instance
+    private static HTTPClient instance = null;
+
     private HttpsURLConnection urlConnection ;
     private BufferedReader reader;
     private OutputStream writer;
-    private CookieManager cookieManager;
     private JSONObject returnObject;
     private int responseCode;
     private String responseMessage;
 
-    public HTTPClient() {}
+    private HTTPClient() {}
+
+    public static HTTPClient getInstance() {
+        if(instance == null) {
+            instance = new HTTPClient();
+
+            // setup application wide CookieManager
+            CookieHandler.setDefault(new CookieManager());
+        }
+        return instance;
+    }
 
     /**
      * Perform GET/POST request
      *
-     * Cookies are stored in cookieManager
+     * Cookies are stored automatically in the global cookieManager
      * The HTTP response code (200, 404, etc) is stored in returnCode
      * The HTTP response message is stored in returnMessage
      *
@@ -82,21 +98,27 @@ public class HTTPClient {
             java.net.URL url = new java.net.URL(urlString);
 
             urlConnection = (HttpsURLConnection) url.openConnection();
+            urlConnection.setRequestProperty("Accept", "*/*");
+            urlConnection.setRequestProperty("User-Agent", "NUPlayer/" + BuildConfig.VERSION_NAME);
+            urlConnection.setFollowRedirects(true);
 
             // add request method (if set)
             if(requestMethod != null) {
+                Log.d(TAG, "Setting requestMethod: " + requestMethod);
                 urlConnection.setRequestMethod(requestMethod);
             }
 
             // add headers (if any)
             if(headers != null) {
                 for (Map.Entry<String, String> header : headers.entrySet()) {
+                    Log.d(TAG, "Adding header: " + header.getKey() + " with value: " + header.getValue());
                     urlConnection.addRequestProperty(header.getKey(), header.getValue());
                 }
             }
 
             // set content type header (if set)
             if(contentType != null) {
+                Log.d(TAG, "Setting contentType: " + contentType);
                 urlConnection.setRequestProperty("Content-Type", contentType);
             }
 
@@ -105,7 +127,6 @@ public class HTTPClient {
                 // transform JSON postData to an URL encoded string if type is of x-www-form-urlencoded
                 String data;
                 if(contentType.equals("application/x-www-form-urlencoded")) {
-
                     StringBuilder stringBuilder = new StringBuilder();
                     String separator = "";
 
@@ -129,16 +150,8 @@ public class HTTPClient {
                 writer = urlConnection.getOutputStream();
                 byte[] input = data.getBytes(StandardCharsets.UTF_8);
                 writer.write(input, 0, input.length);
-            }
-
-            // store Cookies (if any)
-            cookieManager = new CookieManager();
-
-            List<String> cookies = urlConnection.getHeaderFields().get("Set-Cookie");
-            if (cookies != null) {
-                for (String cookie : cookies) {
-                    cookieManager.getCookieStore().add(null, HttpCookie.parse(cookie).get(0));
-                }
+                writer.flush();
+                writer.close();
             }
 
             // set return code and message
@@ -146,8 +159,8 @@ public class HTTPClient {
             responseMessage = urlConnection.getResponseMessage();
 
             // read response
-            reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), StandardCharsets.UTF_8));
             StringBuilder sb = new StringBuilder();
+            reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), StandardCharsets.UTF_8));
             String line;
             while ((line = reader.readLine()) != null) {
                 sb.append(line);
@@ -181,8 +194,8 @@ public class HTTPClient {
 
             // In case of an exception we set error code to 500 (Internal Server Error)
             // and the message to the one from the exception
-            responseCode = 500;
-            responseMessage = e.getMessage();
+            //responseCode = 500;
+            //responseMessage = e.getMessage();
 
         } finally {
             urlConnection.disconnect();
@@ -203,6 +216,10 @@ public class HTTPClient {
         return doRequest(url, "POST", contentType, postData, null);
     }
 
+    public JSONObject postRequest(String url, String contentType, JSONObject postData, Map<String, String> headers) throws IOException {
+        return doRequest(url, "POST", contentType, postData, headers);
+    }
+
     public int getResponseCode() {
         return responseCode;
     }
@@ -212,7 +229,7 @@ public class HTTPClient {
     }
 
     public CookieManager getCookies() {
-        return cookieManager;
+        return (CookieManager)CookieHandler.getDefault();
     }
 
 }

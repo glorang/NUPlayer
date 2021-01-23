@@ -21,9 +21,9 @@ package be.lorang.nuplayer.ui;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 
 import be.lorang.nuplayer.R;
+import be.lorang.nuplayer.services.AuthService;
 
 public class MainActivity extends LeanbackActivity {
 
@@ -35,20 +35,17 @@ public class MainActivity extends LeanbackActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        //
-        // Developer mode: Set fixed X-VRT-Cookie at start
-        //
+        // Open SharedPreferences
+        //SharedPreferences.Editor editor = getSharedPreferences(MainActivity.PREFERENCES_NAME, MODE_PRIVATE).edit();
+        //editor.putString("X-VRT-Token", "jf9");
+        //editor.apply();
 
-        // SharedPreferences.Editor editor = getSharedPreferences(MainActivity.PREFERENCES_NAME, MODE_PRIVATE).edit();
-        // editor.remove("X-VRT-Token");
-        // editor.putString("X-VRT-Token", "<set your token here>");
-        // editor.apply();
+        // Check if user is authenticated
+        SharedPreferences prefs = getSharedPreferences(MainActivity.PREFERENCES_NAME, MODE_PRIVATE);
+        boolean isAuthenticated = prefs.getBoolean(AuthService.COMPLETED_AUTHENTICATION, false);
 
-        // Start Login Activity if no X-VRT-Token is present //FIXME: token expired (or invalid?)
-        SharedPreferences prefs = getSharedPreferences(PREFERENCES_NAME, MODE_PRIVATE);
-        String xvrttoken = prefs.getString("X-VRT-Token", "");
-        Log.d(TAG, "Found X-VRT-Token at startup : " + xvrttoken);
-        if(xvrttoken.length() == 0) {
+        // Start Login Activity if not
+        if(!isAuthenticated) {
             startActivity(new Intent(this, LoginActivity.class));
         }
     }

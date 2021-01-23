@@ -112,7 +112,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:paddingTop="50dp"
+                android:paddingTop="40dp"
                 android:paddingBottom="20dp"
                 android:text="User data"
                 android:textSize="24sp"
@@ -184,6 +184,31 @@
                         android:layout_weight="1"
                         android:paddingRight="50dp"
                         android:text="X-VRT-Token" />
+
+                    <TextView
+                        android:id="@+id/label_vrtlogin_at"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:paddingRight="50dp"
+                        android:text="vrtlogin-at" />
+
+                    <TextView
+                        android:id="@+id/label_vrtlogin_rf"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:paddingRight="50dp"
+                        android:text="vrtlogin-rf" />
+
+                    <TextView
+                        android:id="@+id/label_vrtlogin_expiry"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:paddingRight="50dp"
+                        android:text="vrtlogin-expiry" />
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -224,6 +249,21 @@
 
                     <TextView
                         android:id="@+id/text_xvrttoken"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:id="@+id/text_vrtlogin_at"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:id="@+id/text_vrtlogin_rt"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:id="@+id/text_vrtlogin_expiry"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 

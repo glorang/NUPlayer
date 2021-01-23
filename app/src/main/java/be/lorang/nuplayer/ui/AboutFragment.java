@@ -20,6 +20,7 @@ package be.lorang.nuplayer.ui;
 
 import android.app.Fragment;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,16 +28,33 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
 import androidx.leanback.app.BaseFragment;
 import androidx.leanback.app.BrowseFragment;
 import androidx.leanback.app.ErrorFragment;
 import androidx.leanback.app.RowsFragment;
 
+import com.google.gson.Gson;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.net.HttpCookie;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 import be.lorang.nuplayer.R;
 import be.lorang.nuplayer.services.VrtPlayerTokenService;
+import be.lorang.nuplayer.utils.Utils;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -69,7 +87,7 @@ public class AboutFragment extends Fragment implements BrowseFragment.MainFragme
         // get shared preferences
         SharedPreferences prefs = getActivity().getSharedPreferences(MainActivity.PREFERENCES_NAME, MODE_PRIVATE);
 
-        // Map SharedPreference key to TextView in layout
+        // Map SharedPreference key to TextView in layout to update text fields (no formatting)
         Map<String, String> prefKeyToLabel = new HashMap<>();
         prefKeyToLabel.put("firstName", "text_firstName");
         prefKeyToLabel.put("lastName", "text_lastName");
@@ -78,6 +96,9 @@ public class AboutFragment extends Fragment implements BrowseFragment.MainFragme
         prefKeyToLabel.put(VrtPlayerTokenService.VRTPLAYERTOKEN_AUTHENTICATED, "text_vrtPlayerTokenAuth");
         prefKeyToLabel.put(VrtPlayerTokenService.VRTPLAYERTOKEN_AUTHENTICATED_EXPIRY, "text_vrtPlayerTokenAuthDate");
         prefKeyToLabel.put("X-VRT-Token", "text_xvrttoken");
+        prefKeyToLabel.put("vrtlogin-at", "text_vrtlogin_at");
+        prefKeyToLabel.put("vrtlogin-rt", "text_vrtlogin_rt");
+        prefKeyToLabel.put("vrtlogin-expiry", "text_vrtlogin_expiry");
 
         // Update TextFields
         for (Map.Entry<String, String> entry : prefKeyToLabel.entrySet()) {
@@ -87,8 +108,62 @@ public class AboutFragment extends Fragment implements BrowseFragment.MainFragme
                             "id", getActivity().getPackageName()));
 
             String value = prefs.getString(entry.getKey(), "None");
-            if(value.length() > 40) { value = value.substring(0,40) + " [...]"; }
 
+            // Format all date fields
+            if(!value.equals("None")) {
+
+                Instant date = null;
+
+                // dates in ISO8601 format
+                try {
+                    if (entry.getKey().equals(VrtPlayerTokenService.VRTPLAYERTOKEN_AUTHENTICATED_EXPIRY) ||
+                            entry.getKey().equals(VrtPlayerTokenService.VRTPLAYERTOKEN_ANONYMOUS_EXPIRY)
+                    ) {
+                        date = Utils.parseDateISO8601(value);
+                    }
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
+
+                // dates in a cookie (timestamp format)
+                try {
+                    if(entry.getKey().equals("X-VRT-Token") ||
+                            entry.getKey().equals("vrtlogin-at") ||
+                            entry.getKey().equals("vrtlogin-rt") ||
+                            entry.getKey().equals("vrtlogin-expiry")
+                    ) {
+                        JSONObject cookieJSON = new JSONObject(value);
+                        long expireDate = cookieJSON.getLong("whenCreated") +
+                                (cookieJSON.getLong("maxAge")*1000); // Time in milliseconds
+                        date = new Timestamp(expireDate).toInstant();
+                    }
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
+
+                if(date != null) {
+                    try {
+                        if (Utils.isDateInPast(date.toString())) {
+                            destField.setTextColor(ContextCompat.getColor(getContext(), R.color.vrtnu_red));
+                        } else {
+                            destField.setTextColor(ContextCompat.getColor(getContext(), R.color.vrtnu_green));
+                        }
+
+                        DateTimeFormatter formatter =
+                                DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
+                                        .withLocale(Locale.UK)
+                                        .withZone(ZoneId.of("Europe/Brussels"));
+
+                        value = formatter.format(date);
+
+                    } catch(Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+
+            if(value.length() > 40) { value = value.substring(0,40) + " [...]"; }
             destField.setText(value);
         }
 
