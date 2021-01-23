@@ -157,16 +157,21 @@ public class Utils {
                 context.getResources().getResourceEntryName(resID));
     }
 
-    // Check if vrtPlayerToken is expired
-    public static boolean isVrtPlayerTokenExpired(String expirationDate) {
-        if(expirationDate.length() == 0) { return true; }
-
+    public static Instant parseDate(String inputString, String pattern) {
         //2020-12-22T18:14:39.827Z
-        Instant parsedDate = LocalDateTime.parse(expirationDate,
-                DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.ENGLISH)
+        return LocalDateTime.parse(inputString,
+                DateTimeFormatter.ofPattern(pattern, Locale.ENGLISH)
         ).atZone(ZoneId.of("UTC")).toInstant();
+    }
 
-        return Instant.now().compareTo(parsedDate) > 0;
+    public static Instant parseDateISO8601(String inputString) {
+        return parseDate(inputString, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    }
+
+    // Check if a ISO8601 date is in the past (token expired?)
+    public static boolean isDateInPast(String inputDate) {
+        if(inputDate.length() == 0) { return true; }
+        return Instant.now().compareTo(parseDateISO8601(inputDate)) > 0;
     }
 
 

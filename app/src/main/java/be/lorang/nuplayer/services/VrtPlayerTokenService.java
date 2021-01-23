@@ -38,7 +38,7 @@ import org.json.JSONObject;
  * There are two kinds of vrtPLayerTokens:
  *
  * - Anonymous tokens, those start with b0000@ and are used in (geolimited?) live TV
- * - Authenticated tokens (X-VRT-Token), those start with b1000@ and are used for on-demand services
+ * - Authenticated tokens, those start with b1000@ and are used for on-demand services
  *
  * The token and expiry date of each token is saved in a Shared Preference
  *
@@ -49,7 +49,7 @@ import org.json.JSONObject;
 
 public class VrtPlayerTokenService extends IntentService {
 
-    private static final String TAG = "PlayerTokenService";
+    private static final String TAG = "VrtPlayerTokenService";
     public final static String BUNDLED_LISTENER = "listener";
 
     public final static String VRTPLAYERTOKEN_ANONYMOUS = "vrtPlayerTokenAnonymous";
@@ -57,6 +57,7 @@ public class VrtPlayerTokenService extends IntentService {
     public final static String VRTPLAYERTOKEN_ANONYMOUS_EXPIRY = "vrtPlayerTokenAnonymousExpiry";
     public final static String VRTPLAYERTOKEN_AUTHENTICATED_EXPIRY = "vrtPlayerTokenAuthenticatedExpiry";
 
+    private HTTPClient httpClient = HTTPClient.getInstance();
     private Bundle resultData = new Bundle();
 
     private SharedPreferences prefs;
@@ -78,11 +79,9 @@ public class VrtPlayerTokenService extends IntentService {
 
             // get passed token type
             String tokenType = workIntent.getExtras().getString("TOKEN_TYPE", VRTPLAYERTOKEN_ANONYMOUS);
+            String xvrttoken = workIntent.getExtras().getString("X-VRT-Token", "");
 
             postData = new JSONObject();
-
-            prefs = getSharedPreferences(MainActivity.PREFERENCES_NAME, MODE_PRIVATE);
-            String xvrttoken = prefs.getString("X-VRT-Token", "");
 
             if(tokenType.equals(VRTPLAYERTOKEN_AUTHENTICATED) && xvrttoken.length() == 0) {
                 resultData.putString("MSG", "Trying to get authenticated vrtPlayerToken without logging in.");
@@ -97,7 +96,7 @@ public class VrtPlayerTokenService extends IntentService {
                 postData.put("identityToken", xvrttoken);
             }
 
-            JSONObject returnData = new HTTPClient().postRequest(
+            JSONObject returnData = httpClient.postRequest(
                     getString(R.string.service_playertoken_player_token_server),
                     "application/json", postData);
 
@@ -113,10 +112,9 @@ public class VrtPlayerTokenService extends IntentService {
 
         } catch (Exception e) {
             Log.e(TAG, "Could not get vrtPlayerToken");
-            resultData.putString("MSG", e.getMessage());
             e.printStackTrace();
+            resultData.putString("MSG","Could not get vrtPlayerToken: " + e.getMessage());
             receiver.send(Activity.RESULT_CANCELED, resultData);
-            return;
         }
     }
 }

@@ -38,6 +38,7 @@ import com.google.gson.Gson;
 import be.lorang.nuplayer.model.Program;
 import be.lorang.nuplayer.model.Video;
 import be.lorang.nuplayer.player.VideoPlaybackActivity;
+import be.lorang.nuplayer.services.AccessTokenService;
 import be.lorang.nuplayer.services.StreamService;
 import be.lorang.nuplayer.services.VrtPlayerTokenService;
 import be.lorang.nuplayer.utils.Utils;
@@ -131,11 +132,11 @@ public class VideoProgramListener implements OnItemViewClickedListener {
 
         Log.d(TAG, "Stream type = " + streamType);
         Log.d(TAG, "Token type = " + tokenType);
-        Log.d(TAG, "Token expired = " + Utils.isVrtPlayerTokenExpired(vrtPlayerTokenExpiry));
+        Log.d(TAG, "Token expired = " + Utils.isDateInPast(vrtPlayerTokenExpiry));
         Log.d(TAG, "Token date = " + vrtPlayerTokenExpiry);
 
         // Start extra Intent if we don't have a vrtPlayerToken or if it's expired
-        if(vrtPlayerToken.length() == 0 || Utils.isVrtPlayerTokenExpired(vrtPlayerTokenExpiry)) {
+        if(vrtPlayerToken.length() == 0 || Utils.isDateInPast(vrtPlayerTokenExpiry)) {
 
             Intent playerTokenIntent = new Intent(fragment.getActivity(), VrtPlayerTokenService.class);
             playerTokenIntent.putExtra("TOKEN_TYPE", tokenType);
@@ -157,13 +158,34 @@ public class VideoProgramListener implements OnItemViewClickedListener {
                 }
             });
 
-            fragment.getActivity().startService(playerTokenIntent);
+            // Get X-VRT-Player token for on-demand content
+            if(tokenType.equals(VrtPlayerTokenService.VRTPLAYERTOKEN_AUTHENTICATED)) {
+                Intent accessTokenIntent = new Intent(fragment.getActivity(), AccessTokenService.class);
+                accessTokenIntent.putExtra(AccessTokenService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
+                    @Override
+                    protected void onReceiveResult(int resultCode, Bundle resultData) {
+                        super.onReceiveResult(resultCode, resultData);
+                        if (resultCode == Activity.RESULT_OK) {
+                            String token = resultData.getString("X-VRT-Token", "");
+                            Log.d(TAG, "Successfully obtained X-VRT-Token:" + token);
+                            playerTokenIntent.putExtra("X-VRT-Token", token);
+                            fragment.getActivity().startService(playerTokenIntent);
+                        }
+                    }
+                });
+
+                fragment.getActivity().startService(accessTokenIntent);
+
+            } else {
+                // live-tv content, doesn't need an authenticated token,
+                // start VrtPlayerTokenService immediately
+                fragment.getActivity().startService(playerTokenIntent);
+            }
 
         } else {
             // we already have a valid vrtPLayerToken, start Stream Intent immediately
             fragment.getActivity().startService(streamIntent);
         }
-
     }
 
     @Override
