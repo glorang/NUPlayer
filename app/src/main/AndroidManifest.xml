@@ -31,23 +31,26 @@
         android:theme="@style/Theme.Leanback"
         tools:ignore="GoogleAppIndexingWarning">
         <service
-            android:name="be.lorang.nuplayer.services.StreamService"
+            android:name=".services.AccessTokenService"
             android:exported="false" />
         <service
-            android:name="be.lorang.nuplayer.services.VrtPlayerTokenService"
+            android:name=".services.StreamService"
             android:exported="false" />
         <service
-            android:name="be.lorang.nuplayer.services.AuthService"
+            android:name=".services.VrtPlayerTokenService"
             android:exported="false" />
         <service
-            android:name="be.lorang.nuplayer.services.ProgramService"
+            android:name=".services.AuthService"
             android:exported="false" />
         <service
-            android:name="be.lorang.nuplayer.services.CatalogService"
+            android:name=".services.ProgramService"
+            android:exported="false" />
+        <service
+            android:name=".services.CatalogService"
             android:exported="false" />
 
         <activity
-            android:name="be.lorang.nuplayer.ui.MainActivity"
+            android:name=".ui.MainActivity"
             android:icon="@drawable/ic_logo"
             android:label="@string/app_name"
             android:logo="@drawable/ic_logo"
@@ -59,11 +62,11 @@
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="be.lorang.nuplayer.ui.SearchActivity" />
-        <activity android:name="be.lorang.nuplayer.ui.ProgramActivity" />
-        <activity android:name="be.lorang.nuplayer.ui.LoginActivity" />
+        <activity android:name=".ui.SearchActivity" />
+        <activity android:name=".ui.ProgramActivity" />
+        <activity android:name=".ui.LoginActivity" />
         <activity
-            android:name="be.lorang.nuplayer.player.VideoPlaybackActivity"
+            android:name=".player.VideoPlaybackActivity"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|layoutDirection"
             android:launchMode="singleTask"
             android:resizeableActivity="true" />
