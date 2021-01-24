@@ -30,9 +30,11 @@ import be.lorang.nuplayer.ui.MainActivity;
 import be.lorang.nuplayer.utils.HTTPClient;
 import be.lorang.nuplayer.model.Video;
 
+import com.bumptech.glide.load.HttpException;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URLEncoder;
@@ -49,6 +51,7 @@ public class StreamService extends IntentService {
     public static final String STREAMTYPE_ONDEMAND = "ondemand";
     public static final String STREAMTYPE_LIVETV = "livetv";
 
+    private HTTPClient httpClient = HTTPClient.getInstance();
     private Bundle resultData = new Bundle();
 
     private String vrtPlayerToken;
@@ -93,7 +96,20 @@ public class StreamService extends IntentService {
 
             }
             Log.d(TAG, "Requesting video info at " + url);
-            JSONObject returnObject = new HTTPClient().getRequest(url);
+            JSONObject returnObject = httpClient.getRequest(url);
+
+            if (httpClient.getResponseCode() != 200) {
+
+                String message = "";
+                try {
+                    message = returnObject.getString("message");
+                }catch (JSONException e) {
+                    message = httpClient.getResponseCode() + "; " + httpClient.getResponseMessage();
+                    e.printStackTrace();
+                }
+
+                throw new HttpException(message);
+            }
 
             // Get DRM token if set
             String drm = returnObject.getString("drm");
@@ -114,11 +130,11 @@ public class StreamService extends IntentService {
             receiver.send(Activity.RESULT_OK, resultData);
 
         } catch (Exception e) {
-            Log.e(TAG, "Could not get stream info");
-            resultData.putString("MSG", e.getMessage());
+            String message = "Could not get stream info: " + e.getMessage();
+            Log.e(TAG, message);
             e.printStackTrace();
+            resultData.putString("MSG", message);
             receiver.send(Activity.RESULT_CANCELED, resultData);
-            return;
         }
     }
 }

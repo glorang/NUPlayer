@@ -24,6 +24,8 @@ import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.util.Log;
 
+import com.bumptech.glide.load.HttpException;
+
 import be.lorang.nuplayer.R;
 import be.lorang.nuplayer.utils.HTTPClient;
 import be.lorang.nuplayer.model.Program;
@@ -43,7 +45,7 @@ public class CatalogService extends IntentService {
     // the VideoList in the correct order (asc|desc sorting) in ProgramService
     private final static String[] programTypes = {"daily","oneoff","reeksaflopend", "reeksoplopend"};
 
-    private HTTPClient httpClient = new HTTPClient();
+    private HTTPClient httpClient = HTTPClient.getInstance();
     private String url;
     private Bundle resultData = new Bundle();
     private JSONObject jsonObject;
@@ -103,11 +105,8 @@ public class CatalogService extends IntentService {
 
                 // Get all "time limited" series, we'll mark them as time limited when creating the Program object
                 jsonObject = httpClient.getRequest(getString(R.string.service_catalog_series_url));
-
                 if(httpClient.getResponseCode() != 200) {
-                    resultData.putString("MSG", "Error occurred in downloading VRT.NU catalog: " + httpClient.getResponseMessage());
-                    receiver.send(Activity.RESULT_CANCELED, resultData);
-                    return;
+                    throw new HttpException(httpClient.getResponseCode() + ": " + httpClient.getResponseMessage());
                 }
 
                 items = jsonObject.getJSONArray("data");
@@ -122,7 +121,11 @@ public class CatalogService extends IntentService {
 
                     url = String.format(getString(R.string.service_catalog_catalog_url), programType);
                     Log.d(TAG, "Getting catalog part " + programType + " at " + url);
-                    jsonObject = new HTTPClient().getRequest(url);
+                    jsonObject = httpClient.getRequest(url);
+
+                    if (httpClient.getResponseCode() != 200) {
+                        continue;
+                    }
 
                     items = jsonObject.getJSONArray("data");
 
@@ -176,9 +179,10 @@ public class CatalogService extends IntentService {
                 receiver.send(Activity.RESULT_OK, resultData);
 
             } catch (Exception e) {
-                Log.e(TAG, "Error occurred in downloading VRT.NU catalog");
-                resultData.putString("MSG", "Error occurred in downloading VRT.NU catalog: " + e.getMessage());
+                String message = "Could not download VRT.NU catalog:: " + e.getMessage();
+                Log.e(TAG, message);
                 e.printStackTrace();
+                resultData.putString("MSG", message);
                 receiver.send(Activity.RESULT_CANCELED, resultData);
             }
         } else {
