@@ -30,6 +30,7 @@ public class ProgramList {
     // Singleton instance
     private static ProgramList instance = null;
     private int seriesCount = 0;
+    private int favoritesCount = 0;
     private List<Program> mPrograms = new ArrayList<Program>();
 
     private ProgramList() {}
@@ -59,6 +60,19 @@ public class ProgramList {
         }
         result.sort(Comparator.comparing(Program::getTitle));
         return result;
+    }
+
+    public void setIsFavorite(String programTitle) {
+        for(Program program : mPrograms) {
+            if(program.getTitle().equals(programTitle)) {
+                program.setIsFavorite(true);
+                favoritesCount++;
+            }
+        }
+    }
+
+    public int getFavoritesCount() {
+        return favoritesCount;
     }
 
     public void setIsSerie(String programName) {

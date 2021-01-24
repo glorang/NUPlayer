@@ -35,23 +35,24 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /*
- * This class will download (once) a list of series from the VRT.NU search API and mark
- * each serie in the Catalog as a (time-limited complete) Serie
+ * This class will download the all favorites and mark the program as favorite in the Catalog
  *
  * The list is only shown on the Home Fragment.
  *
  */
 
-public class SeriesService extends IntentService {
-    private static final String TAG = "SeriesService";
+public class FavoriteService extends IntentService {
+    private static final String TAG = "FavoriteService";
     public final static String BUNDLED_LISTENER = "listener";
 
     private HTTPClient httpClient = HTTPClient.getInstance();
     private Bundle resultData = new Bundle();
 
-    public SeriesService() {
+    public FavoriteService() {
         super(TAG);
     }
 
@@ -61,26 +62,31 @@ public class SeriesService extends IntentService {
         ResultReceiver receiver = workIntent.getParcelableExtra(CatalogService.BUNDLED_LISTENER);
         ProgramList programList = ProgramList.getInstance();
 
-        // Return immediately if series list already set
-        if(programList.getSeriesCount() > 0){
+        // Return immediately if favorites list already set
+        if(programList.getFavoritesCount() > 0){
             receiver.send(Activity.RESULT_OK, resultData);
             return;
         }
 
         try {
 
-            // Get all "time limited" series
-            JSONObject returnObject = httpClient.getRequest(getString(R.string.service_catalog_series_url));
+            // Get all favorites
+            //
+            // Note that we need to have a valid vrtlogin-{at,rt,expiry} cookies for this call
+            // to succeed. As they are passed automatically by the application wide CookieHandler
+            // there is no explicit reference to them here
+            JSONObject returnObject = httpClient.getRequest(getString(R.string.service_catalog_favorites_url));
             if(httpClient.getResponseCode() != 200) {
                 throw new HttpException(httpClient.getResponseCode() + ": " + httpClient.getResponseMessage());
             }
 
-            JSONArray items = returnObject.getJSONArray("data");
-
-            for (int i = 0; i < items.length(); i++) {
-                JSONObject programJSON = items.getJSONObject(i);
-                Log.d(TAG, "Setting isSerie = true for: " + programJSON.get("programName"));
-                programList.setIsSerie(programJSON.getString("programName"));
+            // FIXME: matching on Title might not be the best (worksforme[tm] though)
+            //  Might be better to match on "whatsonId"
+            for (int i = 0; i < returnObject.names().length(); i++) {
+                String key = returnObject.names().getString(i);
+                JSONObject favorite = returnObject.getJSONObject(key).getJSONObject("value");
+                programList.setIsFavorite(favorite.getString("title"));
+                Log.d(TAG, "Adding favorite: " + favorite.getString("title"));
             }
 
             receiver.send(Activity.RESULT_OK, resultData);
