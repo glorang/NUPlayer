@@ -189,7 +189,7 @@ public class HTTPClient {
             }
 
         } catch (Exception e) {
-            Log.d("TAG", "Exception caught" + e.getMessage());
+            Log.d(TAG, "Exception caught: " + e.getMessage());
             e.printStackTrace();
 
             // In case of an exception we set error code to 500 (Internal Server Error)

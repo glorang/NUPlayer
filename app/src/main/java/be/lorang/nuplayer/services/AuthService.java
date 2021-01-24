@@ -25,12 +25,14 @@ import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.util.Log;
 
+import com.bumptech.glide.load.HttpException;
 import com.google.gson.Gson;
 
 import be.lorang.nuplayer.R;
 import be.lorang.nuplayer.utils.HTTPClient;
 import be.lorang.nuplayer.ui.MainActivity;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.HttpCookie;
@@ -113,10 +115,8 @@ public class AuthService extends IntentService {
             // Get OIDCXSRF and SESSION cookie from init login
             httpClient.getRequest(getString(R.string.service_auth_initlogin_server));
 
-            if(httpClient.getResponseCode() != 200) {
-                resultData.putString("MSG", "Could not init login: " + httpClient.getResponseMessage());
-                receiver.send(Activity.RESULT_CANCELED, resultData);
-                return;
+            if (httpClient.getResponseCode() != 200) {
+                throw new HttpException(httpClient.getResponseCode() + ": " + httpClient.getResponseMessage());
             }
 
             cookieIterator = httpClient.getCookies().getCookieStore().getCookies().iterator();
@@ -152,9 +152,15 @@ public class AuthService extends IntentService {
 
             statusCode = returnObject.getInt("statusCode");
             if(statusCode != 200) {
-                resultData.putString("MSG", "Authentication failed: " + returnObject.getString("errorDetails"));
-                receiver.send(Activity.RESULT_CANCELED, resultData);
-                return;
+                String message = "";
+                try {
+                    message = returnObject.getString("errorDetails");
+                }catch (JSONException e) {
+                    message = statusCode + ": " + httpClient.getResponseMessage();
+                    e.printStackTrace();
+                }
+
+                throw new HttpException(message);
             }
 
             UID = returnObject.getString("UID");
@@ -184,9 +190,7 @@ public class AuthService extends IntentService {
                     "application/x-www-form-urlencoded", postData);
 
             if(httpClient.getResponseCode() != 200) {
-                resultData.putString("MSG", "Authentication failed: " + httpClient.getResponseMessage());
-                receiver.send(Activity.RESULT_CANCELED, resultData);
-                return;
+                throw new HttpException(httpClient.getResponseCode() + ": " + httpClient.getResponseMessage());
             }
 
             cookieIterator = httpClient.getCookies().getCookieStore().getCookies().iterator();
@@ -220,9 +224,10 @@ public class AuthService extends IntentService {
             editor.apply();
 
         } catch (Exception e) {
-            Log.e(TAG, "Could not authenticate");
+            String message = "Could not authenticate: " + e.getMessage();
+            Log.e(TAG, message);
             e.printStackTrace();
-            resultData.putString("MSG", "Could not authenticate: " + e.getMessage());
+            resultData.putString("MSG", message);
             receiver.send(Activity.RESULT_CANCELED, resultData);
         }
     }

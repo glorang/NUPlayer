@@ -29,6 +29,8 @@ import be.lorang.nuplayer.model.Program;
 import be.lorang.nuplayer.utils.HTTPClient;
 import be.lorang.nuplayer.model.Video;
 import be.lorang.nuplayer.model.VideoList;
+
+import com.bumptech.glide.load.HttpException;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -46,7 +48,7 @@ public class ProgramService extends IntentService {
     public final static String BUNDLED_LISTENER = "listener";
     private Bundle resultData = new Bundle();
 
-    private HTTPClient httpClient = new HTTPClient();
+    private HTTPClient httpClient = HTTPClient.getInstance();
     private Program program;
     private JSONObject returnObject;
     private LinkedHashMap<String,String> seasons;
@@ -266,9 +268,7 @@ public class ProgramService extends IntentService {
             returnObject = httpClient.getRequest(url);
 
             if (httpClient.getResponseCode() != 200) {
-                resultData.putString("MSG", "Could not get details: " + httpClient.getResponseMessage());
-                receiver.send(Activity.RESULT_CANCELED, resultData);
-                return;
+                throw new HttpException(httpClient.getResponseCode() + ": " + httpClient.getResponseMessage());
             }
 
             JSONObject meta = returnObject.getJSONObject("meta");
@@ -315,10 +315,11 @@ public class ProgramService extends IntentService {
             receiver.send(Activity.RESULT_OK, resultData);
 
         } catch (Exception e) {
-            resultData.putString("MSG", "Could not get program info: " + e.getMessage());
+            String message = "Could not get program info: " + e.getMessage();
+            Log.e(TAG, message);
             e.printStackTrace();
+            resultData.putString("MSG", message);
             receiver.send(Activity.RESULT_CANCELED, resultData);
-            return;
         }
 
     }

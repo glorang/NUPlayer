@@ -25,6 +25,7 @@ import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.util.Log;
 
+import com.bumptech.glide.load.HttpException;
 import com.google.gson.Gson;
 
 import be.lorang.nuplayer.R;
@@ -134,9 +135,7 @@ public class AccessTokenService extends IntentService {
                 Log.d(TAG, "Refresh token result = " + returnObject.toString());
 
                 if(httpClient.getResponseCode() != 200) {
-                    resultData.putString("MSG", "Token refresh failed: " + httpClient.getResponseMessage());
-                    receiver.send(Activity.RESULT_CANCELED, resultData);
-                    return;
+                    throw new HttpException(httpClient.getResponseCode() + ": " + httpClient.getResponseMessage());
                 }
 
                 // Store cookies
@@ -175,9 +174,10 @@ public class AccessTokenService extends IntentService {
             receiver.send(Activity.RESULT_OK, resultData);
 
         } catch (Exception e) {
-            Log.e(TAG, "Could not obtain token");
+            String message = "Could not obtain token: " + e.getMessage();
+            Log.e(TAG, message);
             e.printStackTrace();
-            resultData.putString("MSG", "Could not obtain token: " + e.getMessage());
+            resultData.putString("MSG", message);
             receiver.send(Activity.RESULT_CANCELED, resultData);
         }
     }

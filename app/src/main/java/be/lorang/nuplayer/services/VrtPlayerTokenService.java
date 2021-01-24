@@ -25,10 +25,13 @@ import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.util.Log;
 
+import com.bumptech.glide.load.HttpException;
+
 import be.lorang.nuplayer.R;
 import be.lorang.nuplayer.utils.HTTPClient;
 import be.lorang.nuplayer.ui.MainActivity;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -100,6 +103,10 @@ public class VrtPlayerTokenService extends IntentService {
                     getString(R.string.service_playertoken_player_token_server),
                     "application/json", postData);
 
+            if (httpClient.getResponseCode() != 200) {
+                throw new HttpException(httpClient.getResponseCode() + ": " + httpClient.getResponseMessage());
+            }
+
             Log.d(TAG, "Obtained vrtPlayerToken. Data: " + returnData.toString());
 
             // store received token as SharedPreference
@@ -111,9 +118,10 @@ public class VrtPlayerTokenService extends IntentService {
             receiver.send(Activity.RESULT_OK, resultData);
 
         } catch (Exception e) {
-            Log.e(TAG, "Could not get vrtPlayerToken");
+            String message = "Could not get vrtPlayerToken: " + e.getMessage();
+            Log.e(TAG, message);
             e.printStackTrace();
-            resultData.putString("MSG","Could not get vrtPlayerToken: " + e.getMessage());
+            resultData.putString("MSG", message);
             receiver.send(Activity.RESULT_CANCELED, resultData);
         }
     }
