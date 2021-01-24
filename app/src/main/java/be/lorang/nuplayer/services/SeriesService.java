@@ -36,6 +36,14 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+/*
+ * This class will download (once) a list of series from the VRT.NU search API and mark
+ * each serie in the Catalog as a (time-limited complete) Serie
+ *
+ * The list is only shown on the Home Fragment.
+ *
+ */
+
 public class SeriesService extends IntentService {
     private static final String TAG = "SeriesService";
     public final static String BUNDLED_LISTENER = "listener";
