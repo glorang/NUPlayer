@@ -31,7 +31,6 @@ import androidx.leanback.widget.HeaderItem;
 import androidx.leanback.widget.ListRow;
 import androidx.leanback.widget.ListRowPresenter;
 
-import be.lorang.nuplayer.R;
 import be.lorang.nuplayer.model.ChannelList;
 import be.lorang.nuplayer.model.Program;
 import be.lorang.nuplayer.model.ProgramList;
@@ -39,6 +38,7 @@ import be.lorang.nuplayer.model.Video;
 import be.lorang.nuplayer.presenter.LiveTVPresenter;
 import be.lorang.nuplayer.presenter.SeriesPresenter;
 import be.lorang.nuplayer.services.CatalogService;
+import be.lorang.nuplayer.services.SeriesService;
 
 public class HomeFragment extends RowsFragment {
 
@@ -48,12 +48,15 @@ public class HomeFragment extends RowsFragment {
     private HeaderItem headerItem;
     private ArrayObjectAdapter adapter;
 
+    private Intent seriesIntent;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupAdapter();
         populateCatalog();
         addLiveTV();
+        addCompleteSeries();
         getMainFragmentAdapter().getFragmentHost().notifyDataReady(getMainFragmentAdapter());
     }
 
@@ -82,11 +85,39 @@ public class HomeFragment extends RowsFragment {
 
     }
 
-    public void populateCatalog() {
+    private void populateCatalog() {
 
         // start an Intent to download the Catalog
-        Intent serviceIntent = new Intent(getActivity(), CatalogService.class);
-        serviceIntent.putExtra(CatalogService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
+        Intent catalogIntent = new Intent(getActivity(), CatalogService.class);
+        catalogIntent.putExtra(CatalogService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
+            @Override
+            protected void onReceiveResult(int resultCode, Bundle resultData) {
+                super.onReceiveResult(resultCode, resultData);
+
+                // show messages, if any
+                if (resultData.getString("MSG", "").length() > 0) {
+                    Toast.makeText(getActivity(), resultData.getString("MSG"), Toast.LENGTH_SHORT).show();
+                }
+
+                if (resultCode == Activity.RESULT_OK) {
+
+                    getActivity().startService(seriesIntent);
+
+                }
+            }
+        });
+
+        getActivity().startService(catalogIntent);
+    }
+
+    private void addCompleteSeries() {
+
+        // start an Intent to get all complete series from the Catalog
+        // the intent will only start once the catalog has been downloaded, e.g. it is started
+        // from populateCatalog() above
+
+        seriesIntent = new Intent(getActivity(), SeriesService.class);
+        seriesIntent.putExtra(SeriesService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
             @Override
             protected void onReceiveResult(int resultCode, Bundle resultData) {
                 super.onReceiveResult(resultCode, resultData);
@@ -105,7 +136,7 @@ public class HomeFragment extends RowsFragment {
                     headerItem = new HeaderItem("Complete series");
                     adapter = new ArrayObjectAdapter(seriesPresenter);
 
-                    for(Program program : programList.getTimeLimitedSeries()) {
+                    for(Program program : programList.getSeries()) {
                         adapter.add(program);
                     }
 
@@ -115,7 +146,6 @@ public class HomeFragment extends RowsFragment {
             }
         });
 
-        getActivity().startService(serviceIntent);
     }
 
     // Always show row titles

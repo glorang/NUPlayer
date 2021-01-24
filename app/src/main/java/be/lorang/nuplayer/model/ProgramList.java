@@ -29,7 +29,7 @@ public class ProgramList {
 
     // Singleton instance
     private static ProgramList instance = null;
-
+    private int seriesCount = 0;
     private List<Program> mPrograms = new ArrayList<Program>();
 
     private ProgramList() {}
@@ -61,10 +61,23 @@ public class ProgramList {
         return result;
     }
 
-    public List<Program> getTimeLimitedSeries() {
+    public void setIsSerie(String programName) {
+        for(Program program : mPrograms) {
+            if(program.getProgramName().equals(programName)) {
+                program.setIsSerie(true);
+                seriesCount++;
+            }
+        }
+    }
+
+    public int getSeriesCount() {
+        return seriesCount;
+    }
+
+    public List<Program> getSeries() {
         List<Program> result = new ArrayList<Program>();
         for(Program program : mPrograms) {
-            if(program.isTimeLimited()) {
+            if(program.isSerie()) {
                 result.add(program);
             }
         }
