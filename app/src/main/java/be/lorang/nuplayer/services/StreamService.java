@@ -51,7 +51,7 @@ public class StreamService extends IntentService {
     public static final String STREAMTYPE_ONDEMAND = "ondemand";
     public static final String STREAMTYPE_LIVETV = "livetv";
 
-    private HTTPClient httpClient = HTTPClient.getInstance();
+    private HTTPClient httpClient = new HTTPClient();
     private Bundle resultData = new Bundle();
 
     private String vrtPlayerToken;

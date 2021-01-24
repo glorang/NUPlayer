@@ -54,7 +54,7 @@ public class AccessTokenService extends IntentService {
 
     private static final String TAG = "AccessTokenService";
     public final static String BUNDLED_LISTENER = "listener";
-    private HTTPClient httpClient = HTTPClient.getInstance();
+    private HTTPClient httpClient = new HTTPClient();
     private Bundle resultData = new Bundle();
 
     private String xvrttokenJSON;

@@ -50,9 +50,6 @@ public class HTTPClient {
 
     private static String TAG = "HTTPClient";
 
-    // Singleton instance
-    private static HTTPClient instance = null;
-
     private HttpsURLConnection urlConnection ;
     private BufferedReader reader;
     private OutputStream writer;
@@ -60,17 +57,7 @@ public class HTTPClient {
     private int responseCode;
     private String responseMessage;
 
-    private HTTPClient() {}
-
-    public static HTTPClient getInstance() {
-        if(instance == null) {
-            instance = new HTTPClient();
-
-            // setup application wide CookieManager
-            CookieHandler.setDefault(new CookieManager());
-        }
-        return instance;
-    }
+    public HTTPClient() {}
 
     /**
      * Perform GET/POST request

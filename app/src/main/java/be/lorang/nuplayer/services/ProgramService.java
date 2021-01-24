@@ -48,7 +48,7 @@ public class ProgramService extends IntentService {
     public final static String BUNDLED_LISTENER = "listener";
     private Bundle resultData = new Bundle();
 
-    private HTTPClient httpClient = HTTPClient.getInstance();
+    private HTTPClient httpClient = new HTTPClient();
     private Program program;
     private JSONObject returnObject;
     private LinkedHashMap<String,String> seasons;

@@ -45,7 +45,7 @@ public class CatalogService extends IntentService {
     // the VideoList in the correct order (asc|desc sorting) in ProgramService
     private final static String[] programTypes = {"daily","oneoff","reeksaflopend", "reeksoplopend"};
 
-    private HTTPClient httpClient = HTTPClient.getInstance();
+    private HTTPClient httpClient = new HTTPClient();
     private String url;
     private Bundle resultData = new Bundle();
     private JSONObject jsonObject;
