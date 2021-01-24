@@ -13,7 +13,7 @@
     <string name="service_access_token_refresh">https://token.vrt.be/refreshtoken?legacy=false</string>
     <string name="service_catalog_catalog_url">https://vrtnu-api.vrt.be/suggest?facets[transcodingStatus]=AVAILABLE&amp;facets[programType]=%s</string>
     <string name="service_catalog_favorites_url">https://video-user-data.vrt.be/favorites</string>
-    <string name="service_series_series_url">https://search.vrt.be/suggest?facets[programTags.parentTitle]=Tijdsgerelateerd&amp;facets[assetStatus]=AVAILABLE&amp;facets[categories]=series</string>
+    <string name="service_catalog_series_url">https://search.vrt.be/suggest?facets[programTags.parentTitle]=Tijdsgerelateerd&amp;facets[assetStatus]=AVAILABLE&amp;facets[categories]=series</string>
     <string name="service_playertoken_player_token_server">https://media-services-public.vrt.be/vualto-video-aggregator-web/rest/external/v1/tokens</string>
     <string name="service_program_seasons_url">https://www.vrt.be/vrtnu/a-z/%s.model.json</string>
     <string name="service_program_program_url">https://vrtnu-api.vrt.be/search?orderBy=episodeNumber&amp;order=%s&amp;size=%s&amp;from=%s&amp;facets[programUrl]=%s</string>

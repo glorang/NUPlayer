@@ -31,6 +31,9 @@
         android:theme="@style/Theme.Leanback"
         tools:ignore="GoogleAppIndexingWarning">
         <service
+            android:name=".services.FavoriteService"
+            android:exported="false"></service>
+        <service
             android:name=".services.SeriesService"
             android:exported="false" />
         <service

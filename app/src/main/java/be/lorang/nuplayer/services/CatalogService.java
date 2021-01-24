@@ -73,33 +73,6 @@ public class CatalogService extends IntentService {
 
             try {
 
-                // If user is authenticated we first we get all favorites,
-                // if there are any they will be marked as favorite when we create the Program object
-
-                // This requires a X-VRT-Token "user" variant
-
-                /*
-                SharedPreferences prefs = getSharedPreferences(MainActivity.PREFERENCES_NAME, MODE_PRIVATE);
-                String xvrttoken = prefs.getString("X-VRT-Token", "");
-                if(xvrttoken.length() > 0) {
-
-                    String url = getString(R.string.service_catalog_favorites_url);
-                    Map<String, String> headers = new HashMap<>();
-                    headers.put("Authorization", "Bearer " + xvrttoken);
-
-                    JSONObject returnObject = new HTTPClient().getRequest(url, "application/json", headers);
-                    Log.d(TAG, returnObject.toString());
-
-                    for (int i = 0; i < returnObject.names().length(); i++) {
-                        String key = returnObject.names().getString(i);
-                        JSONObject favorite = returnObject.getJSONObject(key).getJSONObject("value");
-                        favorites.add(favorite.getString("title"));
-                        Log.d(TAG, "Adding favorite: " + favorite.getString("title"));
-                    }
-
-                }
-                */
-
                 // Get entire catalog of available Programs per programType
                 for(String programType : programTypes) {
 

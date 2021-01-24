@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.leanback.app.RowsFragment;
@@ -35,9 +36,12 @@ import be.lorang.nuplayer.model.ChannelList;
 import be.lorang.nuplayer.model.Program;
 import be.lorang.nuplayer.model.ProgramList;
 import be.lorang.nuplayer.model.Video;
+import be.lorang.nuplayer.presenter.FavoritesPresenter;
 import be.lorang.nuplayer.presenter.LiveTVPresenter;
 import be.lorang.nuplayer.presenter.SeriesPresenter;
+import be.lorang.nuplayer.services.AccessTokenService;
 import be.lorang.nuplayer.services.CatalogService;
+import be.lorang.nuplayer.services.FavoriteService;
 import be.lorang.nuplayer.services.SeriesService;
 
 public class HomeFragment extends RowsFragment {
@@ -49,6 +53,8 @@ public class HomeFragment extends RowsFragment {
     private ArrayObjectAdapter adapter;
 
     private Intent seriesIntent;
+    private Intent accessTokenIntent;
+    private Intent favoritesIntent;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -57,6 +63,7 @@ public class HomeFragment extends RowsFragment {
         populateCatalog();
         addLiveTV();
         addCompleteSeries();
+        addFavorites();
         getMainFragmentAdapter().getFragmentHost().notifyDataReady(getMainFragmentAdapter());
     }
 
@@ -101,7 +108,10 @@ public class HomeFragment extends RowsFragment {
 
                 if (resultCode == Activity.RESULT_OK) {
 
+                    // series intent
                     getActivity().startService(seriesIntent);
+                    // favorites intent (via accesstokenintent)
+                    getActivity().startService(accessTokenIntent);
 
                 }
             }
@@ -142,6 +152,55 @@ public class HomeFragment extends RowsFragment {
 
                     mRowsAdapter.add(new ListRow(headerItem, adapter));
 
+                }
+            }
+        });
+
+    }
+
+    private void addFavorites() {
+
+        // start an Intent to get all favorites from the Catalog
+        // the intent will only start once the catalog has been downloaded, e.g. it is started
+        // from populateCatalog() above
+
+        favoritesIntent = new Intent(getActivity(), FavoriteService.class);
+        favoritesIntent.putExtra(FavoriteService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
+            @Override
+            protected void onReceiveResult(int resultCode, Bundle resultData) {
+                super.onReceiveResult(resultCode, resultData);
+
+                // show messages, if any
+                if (resultData.getString("MSG", "").length() > 0) {
+                    Toast.makeText(getActivity(), resultData.getString("MSG"), Toast.LENGTH_SHORT).show();
+                }
+
+                if (resultCode == Activity.RESULT_OK) {
+
+                    // add favorites to the front page
+                    FavoritesPresenter favoritesPresenter = new FavoritesPresenter();
+                    ProgramList programList = ProgramList.getInstance();
+
+                    headerItem = new HeaderItem("Favorites");
+                    adapter = new ArrayObjectAdapter(favoritesPresenter);
+
+                    for(Program program : programList.getFavorites()) {
+                        adapter.add(program);
+                    }
+
+                    mRowsAdapter.add(new ListRow(headerItem, adapter));
+
+                }
+            }
+        });
+
+        accessTokenIntent = new Intent(getActivity(), AccessTokenService.class);
+        accessTokenIntent.putExtra(AccessTokenService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
+            @Override
+            protected void onReceiveResult(int resultCode, Bundle resultData) {
+                super.onReceiveResult(resultCode, resultData);
+                if (resultCode == Activity.RESULT_OK) {
+                    getActivity().startService(favoritesIntent);
                 }
             }
         });
