@@ -60,7 +60,7 @@ public class VrtPlayerTokenService extends IntentService {
     public final static String VRTPLAYERTOKEN_ANONYMOUS_EXPIRY = "vrtPlayerTokenAnonymousExpiry";
     public final static String VRTPLAYERTOKEN_AUTHENTICATED_EXPIRY = "vrtPlayerTokenAuthenticatedExpiry";
 
-    private HTTPClient httpClient = HTTPClient.getInstance();
+    private HTTPClient httpClient = new HTTPClient();
     private Bundle resultData = new Bundle();
 
     private SharedPreferences prefs;

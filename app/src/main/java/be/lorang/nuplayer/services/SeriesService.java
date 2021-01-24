@@ -48,7 +48,7 @@ public class SeriesService extends IntentService {
     private static final String TAG = "SeriesService";
     public final static String BUNDLED_LISTENER = "listener";
 
-    private HTTPClient httpClient = HTTPClient.getInstance();
+    private HTTPClient httpClient = new HTTPClient();
     private Bundle resultData = new Bundle();
 
     public SeriesService() {

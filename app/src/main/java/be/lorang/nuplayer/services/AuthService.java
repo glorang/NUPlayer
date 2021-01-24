@@ -69,7 +69,7 @@ public class AuthService extends IntentService {
     public final static String BUNDLED_LISTENER = "listener";
     public final static String COMPLETED_AUTHENTICATION = "completedAuthentication";
 
-    private HTTPClient httpClient = HTTPClient.getInstance();
+    private HTTPClient httpClient = new HTTPClient();
     private Bundle resultData = new Bundle();
 
     private String UID;

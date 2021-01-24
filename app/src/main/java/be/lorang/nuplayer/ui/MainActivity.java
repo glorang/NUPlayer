@@ -22,6 +22,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import java.net.CookieHandler;
+import java.net.CookieManager;
+
 import be.lorang.nuplayer.R;
 import be.lorang.nuplayer.services.AuthService;
 
@@ -35,11 +38,6 @@ public class MainActivity extends LeanbackActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        // Open SharedPreferences
-        //SharedPreferences.Editor editor = getSharedPreferences(MainActivity.PREFERENCES_NAME, MODE_PRIVATE).edit();
-        //editor.putString("X-VRT-Token", "jf9");
-        //editor.apply();
-
         // Check if user is authenticated
         SharedPreferences prefs = getSharedPreferences(MainActivity.PREFERENCES_NAME, MODE_PRIVATE);
         boolean isAuthenticated = prefs.getBoolean(AuthService.COMPLETED_AUTHENTICATION, false);
@@ -48,6 +46,9 @@ public class MainActivity extends LeanbackActivity {
         if(!isAuthenticated) {
             startActivity(new Intent(this, LoginActivity.class));
         }
+
+        // setup application wide CookieManager
+        CookieHandler.setDefault(new CookieManager());
     }
 
 }
