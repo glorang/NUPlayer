@@ -31,6 +31,9 @@
         android:theme="@style/Theme.Leanback"
         tools:ignore="GoogleAppIndexingWarning">
         <service
+            android:name=".services.SeriesService"
+            android:exported="false" />
+        <service
             android:name=".services.AccessTokenService"
             android:exported="false" />
         <service

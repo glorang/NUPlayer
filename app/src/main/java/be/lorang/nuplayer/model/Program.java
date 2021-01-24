@@ -38,7 +38,7 @@ public class Program {
     @SerializedName("brand") private String mBrand = "";
     @SerializedName("imageServer") private String mImageServer = "";
     @SerializedName("isFavorite") private boolean mIsFavorite = false;
-    @SerializedName("isTimeLimited") private boolean mIsTimeLimited = false;
+    @SerializedName("isSerie") private boolean mIsSerie = false;
 
     @SerializedName("validImageSizes") private static String[] mValidImageSizes = {"w160hx", "w320hx", "w640hx", "w1280hx", "w1600hx", "w1920hx", "VV_4x3_120", "VV_4x3_240", "VV_4x3_480"};
 
@@ -52,7 +52,7 @@ public class Program {
                    String brand,
                    String imageServer,
                    boolean isFavorite,
-                   boolean isTimeLimited) {
+                   boolean isSerie) {
         mTitle = title;
         mDescription = description;
         mProgramName = programName;
@@ -63,7 +63,7 @@ public class Program {
         mBrand = brand;
         mImageServer = imageServer;
         mIsFavorite = isFavorite;
-        mIsTimeLimited = isTimeLimited;
+        mIsSerie = isSerie;
     }
 
     public String getTitle() {
@@ -152,9 +152,9 @@ public class Program {
     }
     public void setIsFavorite(boolean isFavorite) { mIsFavorite = isFavorite; }
 
-    public boolean isTimeLimited() {
-        return mIsTimeLimited;
+    public boolean isSerie() {
+        return mIsSerie;
     }
-    public void setIsTimeLimited(boolean isTimeLimited) { mIsTimeLimited = isTimeLimited; }
+    public void setIsSerie(boolean isSerie) { mIsSerie = isSerie; }
 
 }

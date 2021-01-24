@@ -59,9 +59,6 @@ public class CatalogService extends IntentService {
     private static final String TAG_ALTIMAGE = "alternativeImage";
     private static final String TAG_BRANDS = "brands";
 
-    private ArrayList<String> favorites = new ArrayList<String>();
-    private ArrayList<String> timeLimitedSeries = new ArrayList<String>();
-
     public CatalogService() {
         super(TAG);
     }
@@ -103,19 +100,6 @@ public class CatalogService extends IntentService {
                 }
                 */
 
-                // Get all "time limited" series, we'll mark them as time limited when creating the Program object
-                jsonObject = httpClient.getRequest(getString(R.string.service_catalog_series_url));
-                if(httpClient.getResponseCode() != 200) {
-                    throw new HttpException(httpClient.getResponseCode() + ": " + httpClient.getResponseMessage());
-                }
-
-                items = jsonObject.getJSONArray("data");
-
-                for (int i = 0; i < items.length(); i++) {
-                    JSONObject programJSON = items.getJSONObject(i);
-                    timeLimitedSeries.add(programJSON.getString("programName"));
-                }
-
                 // Get entire catalog of available Programs per programType
                 for(String programType : programTypes) {
 
@@ -147,12 +131,6 @@ public class CatalogService extends IntentService {
                         // we only use the 1st brand for now in the array
                         String brand = (String)brands.get(0);
 
-                        // Check if program is marked as favorite
-                        boolean isFavorite = favorites.contains(title);
-
-                        // Check if program is part of time limited series
-                        boolean isTimeLimited = timeLimitedSeries.contains(programName);
-
                         Program program = new Program(
                                 title,
                                 description,
@@ -163,8 +141,8 @@ public class CatalogService extends IntentService {
                                 altImage,
                                 brand,
                                 imageServer,
-                                isFavorite,
-                                isTimeLimited
+                                false,
+                                false
                         );
 
                         programList.addProgram(program);
