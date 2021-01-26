@@ -37,8 +37,13 @@ public class Video {
     @SerializedName("videoId") private String mVideoId = "";
     @SerializedName("pubId") private String mPubId = "";
     @SerializedName("formattedBroadcastDate") private String mFormattedBroadcastDate = "";
+    @SerializedName("formattedBroadcastShortDate") private String mFormattedBroadcastShortDate = "";
+    @SerializedName("brand") private String mBrand = "";
+    @SerializedName("program") private String mProgram = "";
+    @SerializedName("assetPath") private String mAssetPath = "";
     @SerializedName("imageServer") private String mImageServer = "";
     @SerializedName("streamType") private String mStreamType = "";
+    @SerializedName("progressPct") private int mProgressPct = 0;
     @SerializedName("validImageSizes") private static String[] mValidImageSizes = {"w160hx", "w320hx", "w640hx", "w1280hx", "w1600hx", "w1920hx", "VV_4x3_120", "VV_4x3_240", "VV_4x3_480"};
 
     public Video(String title,
@@ -50,6 +55,10 @@ public class Video {
                  String videoId,
                  String pubId,
                  String formattedBroadcastDate,
+                 String formattedBroadcastShortDate,
+                 String brand,
+                 String program,
+                 String assetPath,
                  String imageServer,
                  String streamType) {
         mTitle = title;
@@ -61,6 +70,10 @@ public class Video {
         mVideoId = videoId;
         mPubId = pubId;
         mFormattedBroadcastDate = formattedBroadcastDate;
+        mFormattedBroadcastShortDate = formattedBroadcastShortDate;
+        mBrand = brand;
+        mProgram = program;
+        mAssetPath = assetPath;
         mImageServer = imageServer;
         mStreamType = streamType;
 
@@ -126,7 +139,22 @@ public class Video {
     public String getFormattedBroadcastDate() { return mFormattedBroadcastDate; }
     public void setFormattedBroadcastDate(String formattedBroadcastDate) { mFormattedBroadcastDate = formattedBroadcastDate; }
 
+    public String getFormattedBroadcastShortDate() { return mFormattedBroadcastShortDate; }
+    public void setFormattedBroadcastShortDate(String formattedBroadcastShortDate) { mFormattedBroadcastShortDate = formattedBroadcastShortDate; }
+
+    public String getBrand() { return mBrand; }
+    public void setBrand(String brand) { mBrand = brand; }
+
+    public String getProgram() { return mProgram; }
+    public void setProgram(String program) { mProgram = program; }
+
+    public String getAssetPath() { return mAssetPath; }
+    public void setAssetPath(String assetPath) { mAssetPath = assetPath; }
+
     public String getStreamType() { return mStreamType; }
     public void setStreamType(String streamType) { mStreamType = streamType; }
+
+    public int getProgressPct() { return mProgressPct; }
+    public void setProgressPct(int progress) { mProgressPct = progress; }
 
 }
