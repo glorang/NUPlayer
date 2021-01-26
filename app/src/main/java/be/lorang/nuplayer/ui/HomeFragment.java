@@ -23,7 +23,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.leanback.app.RowsFragment;
@@ -32,16 +31,21 @@ import androidx.leanback.widget.HeaderItem;
 import androidx.leanback.widget.ListRow;
 import androidx.leanback.widget.ListRowPresenter;
 
+import be.lorang.nuplayer.R;
 import be.lorang.nuplayer.model.ChannelList;
 import be.lorang.nuplayer.model.Program;
 import be.lorang.nuplayer.model.ProgramList;
 import be.lorang.nuplayer.model.Video;
+import be.lorang.nuplayer.model.VideoContinueWatchingList;
+import be.lorang.nuplayer.model.VideoWatchLaterList;
 import be.lorang.nuplayer.presenter.FavoritesPresenter;
 import be.lorang.nuplayer.presenter.LiveTVPresenter;
 import be.lorang.nuplayer.presenter.SeriesPresenter;
+import be.lorang.nuplayer.presenter.VideoPresenter;
 import be.lorang.nuplayer.services.AccessTokenService;
 import be.lorang.nuplayer.services.CatalogService;
 import be.lorang.nuplayer.services.FavoriteService;
+import be.lorang.nuplayer.services.ResumePointsService;
 import be.lorang.nuplayer.services.SeriesService;
 
 public class HomeFragment extends RowsFragment {
@@ -49,46 +53,111 @@ public class HomeFragment extends RowsFragment {
     private static String TAG = "HomeFragment";
 
     private ArrayObjectAdapter mRowsAdapter;
-    private HeaderItem headerItem;
-    private ArrayObjectAdapter adapter;
+
+    private ArrayObjectAdapter liveTVAdapter;
+    private ArrayObjectAdapter seriesAdapter;
+    private ArrayObjectAdapter favoritesAdapter;
+    private ArrayObjectAdapter watchLaterAdapter;
+    private ArrayObjectAdapter continueWatchingAdapter;
+
+    private ListRow liveTVListRow;
+    private ListRow seriesListRow;
+    private ListRow favoritesListRow;
+    private ListRow watchLaterListRow;
+    private ListRow continueWatchingListRow;
 
     private Intent seriesIntent;
     private Intent accessTokenIntent;
     private Intent favoritesIntent;
+    private Intent resumePointsIntent;
+
+    private boolean seriesLoaded = false;
+    private boolean favoritesLoaded = false;
+    private boolean resumePointsLoaded = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setupAdapter();
+
+        // Setup adapters with fixed order
+        setupAdapters();
+
+        // setup intents for all stuff we want to add to the front page
+        setupSeriesIntent();
+        setupResumePointsIntent();
+        setupFavoritesIntent();
+        setupAccessTokenIntent();
+
+        // populate the catalog
         populateCatalog();
+
+        // add live TV
         addLiveTV();
-        addCompleteSeries();
-        addFavorites();
-        getMainFragmentAdapter().getFragmentHost().notifyDataReady(getMainFragmentAdapter());
+
     }
 
-    private void setupAdapter() {
+    public void notifyDataReady() {
+        if(seriesLoaded && favoritesLoaded && resumePointsLoaded) {
+            getMainFragmentAdapter().getFragmentHost().notifyDataReady(getMainFragmentAdapter());
+        }
+    }
+
+    private void setupAdapters() {
 
         // setup listener
         setOnItemViewClickedListener(new VideoProgramListener(this));
 
         mRowsAdapter = new ArrayObjectAdapter(new ListRowPresenter());
         setAdapter(mRowsAdapter);
+
+        // Live TV Adapter
+        LiveTVPresenter liveTVpresenter = new LiveTVPresenter();
+        HeaderItem liveTVHeader = new HeaderItem(getString(R.string.livetv_title));
+        liveTVAdapter = new ArrayObjectAdapter(liveTVpresenter);
+        liveTVListRow = new ListRow(liveTVHeader, liveTVAdapter);
+        mRowsAdapter.add(liveTVListRow);
+
+        // Favorites Adapter
+        FavoritesPresenter favoritesPresenter = new FavoritesPresenter();
+        HeaderItem favoritesHeader = new HeaderItem(getString(R.string.favorites_title));
+        favoritesAdapter = new ArrayObjectAdapter(favoritesPresenter);
+        favoritesListRow = new ListRow(favoritesHeader, favoritesAdapter);
+        mRowsAdapter.add(favoritesListRow);
+
+        // Continue watching Adapter
+        VideoPresenter continueWatchingPresenter = new VideoPresenter(getContext());
+        HeaderItem continueWatchingHeader = new HeaderItem(getString(R.string.continuewatching_title));
+        continueWatchingAdapter = new ArrayObjectAdapter(continueWatchingPresenter);
+        continueWatchingListRow = new ListRow(continueWatchingHeader, continueWatchingAdapter);
+        mRowsAdapter.add(continueWatchingListRow);
+
+        // Watch Later Adapter
+        VideoPresenter watchLaterPresenter = new VideoPresenter(getContext());
+        HeaderItem watchLaterHeader = new HeaderItem(getString(R.string.watchlater_title));
+        watchLaterAdapter = new ArrayObjectAdapter(watchLaterPresenter);
+        watchLaterListRow = new ListRow(watchLaterHeader, watchLaterAdapter);
+        mRowsAdapter.add(watchLaterListRow);
+
+        // Series Adapter
+        SeriesPresenter seriesPresenter = new SeriesPresenter();
+        HeaderItem seriesHeader = new HeaderItem(getString(R.string.series_title));
+        seriesAdapter = new ArrayObjectAdapter(seriesPresenter);
+        seriesListRow = new ListRow(seriesHeader, seriesAdapter);
+        mRowsAdapter.add(seriesListRow);
     }
 
     private void addLiveTV() {
 
         // Live TV
         ChannelList channelList = ChannelList.getInstance();
-        LiveTVPresenter liveTVpresenter = new LiveTVPresenter();
-        headerItem = new HeaderItem("Live TV");
-        adapter = new ArrayObjectAdapter(liveTVpresenter);
 
         for(Video channel : channelList.getChannels()) {
-            adapter.add(channel);
+            liveTVAdapter.add(channel);
         }
 
-        mRowsAdapter.add(new ListRow(headerItem, adapter));
+        if(liveTVAdapter.size() == 0) {
+            mRowsAdapter.remove(liveTVListRow);
+        }
 
     }
 
@@ -108,10 +177,11 @@ public class HomeFragment extends RowsFragment {
 
                 if (resultCode == Activity.RESULT_OK) {
 
-                    // series intent
-                    getActivity().startService(seriesIntent);
-                    // favorites intent (via accesstokenintent)
+                    // Start AccessTokenIntent which will populate Favorites, Watch Later and Resume Points
                     getActivity().startService(accessTokenIntent);
+
+                    // Add Series
+                    getActivity().startService(seriesIntent);
 
                 }
             }
@@ -120,7 +190,7 @@ public class HomeFragment extends RowsFragment {
         getActivity().startService(catalogIntent);
     }
 
-    private void addCompleteSeries() {
+    private void setupSeriesIntent() {
 
         // start an Intent to get all complete series from the Catalog
         // the intent will only start once the catalog has been downloaded, e.g. it is started
@@ -140,25 +210,44 @@ public class HomeFragment extends RowsFragment {
                 if (resultCode == Activity.RESULT_OK) {
 
                     // add "complete series" to the front page
-                    SeriesPresenter seriesPresenter = new SeriesPresenter();
                     ProgramList programList = ProgramList.getInstance();
-
-                    headerItem = new HeaderItem("Complete series");
-                    adapter = new ArrayObjectAdapter(seriesPresenter);
-
                     for(Program program : programList.getSeries()) {
-                        adapter.add(program);
+                        seriesAdapter.add(program);
                     }
 
-                    mRowsAdapter.add(new ListRow(headerItem, adapter));
+                    if(seriesAdapter.size() == 0) {
+                        mRowsAdapter.remove(seriesListRow);
+                    }
 
                 }
+
+                seriesLoaded = true;
+                notifyDataReady();
             }
         });
 
     }
 
-    private void addFavorites() {
+    private void setupAccessTokenIntent() {
+        accessTokenIntent = new Intent(getActivity(), AccessTokenService.class);
+        accessTokenIntent.putExtra(AccessTokenService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
+            @Override
+            protected void onReceiveResult(int resultCode, Bundle resultData) {
+                super.onReceiveResult(resultCode, resultData);
+                if (resultCode == Activity.RESULT_OK) {
+
+                    // Get Favorites
+                    getActivity().startService(favoritesIntent);
+
+                    // Get Watch Later + Continue Watching
+                    getActivity().startService(resumePointsIntent);
+
+                }
+            }
+        });
+    }
+
+    private void setupFavoritesIntent() {
 
         // start an Intent to get all favorites from the Catalog
         // the intent will only start once the catalog has been downloaded, e.g. it is started
@@ -178,30 +267,67 @@ public class HomeFragment extends RowsFragment {
                 if (resultCode == Activity.RESULT_OK) {
 
                     // add favorites to the front page
-                    FavoritesPresenter favoritesPresenter = new FavoritesPresenter();
                     ProgramList programList = ProgramList.getInstance();
-
-                    headerItem = new HeaderItem("Favorites");
-                    adapter = new ArrayObjectAdapter(favoritesPresenter);
-
                     for(Program program : programList.getFavorites()) {
-                        adapter.add(program);
+                        favoritesAdapter.add(program);
                     }
 
-                    mRowsAdapter.add(new ListRow(headerItem, adapter));
+                    if(favoritesAdapter.size() == 0) {
+                        mRowsAdapter.remove(favoritesListRow);
+                    }
 
                 }
+
+                favoritesLoaded = true;
+                notifyDataReady();
             }
         });
+    }
 
-        accessTokenIntent = new Intent(getActivity(), AccessTokenService.class);
-        accessTokenIntent.putExtra(AccessTokenService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
+    private void setupResumePointsIntent() {
+
+        // start an Intent to get all "Continue Watching" and "Watch Later" from VRT NU API
+        // It does not depend on the Catalog to be populated but does require a valid token
+
+        resumePointsIntent = new Intent(getActivity(), ResumePointsService.class);
+        resumePointsIntent.putExtra("ACTION", "GET_CONTINUE_WATCHING_WATCH_LATER");
+        resumePointsIntent.putExtra(ResumePointsService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
             @Override
             protected void onReceiveResult(int resultCode, Bundle resultData) {
                 super.onReceiveResult(resultCode, resultData);
-                if (resultCode == Activity.RESULT_OK) {
-                    getActivity().startService(favoritesIntent);
+
+                // show messages, if any
+                if (resultData.getString("MSG", "").length() > 0) {
+                    Toast.makeText(getActivity(), resultData.getString("MSG"), Toast.LENGTH_SHORT).show();
                 }
+
+                if (resultCode == Activity.RESULT_OK) {
+
+                    // add Continue Watching
+                    VideoContinueWatchingList videoContinueWatchingList = VideoContinueWatchingList.getInstance();
+                    for(Video video : videoContinueWatchingList.getVideos()) {
+                        continueWatchingAdapter.add(video);
+                    }
+
+                    if(continueWatchingAdapter.size() == 0) {
+                        mRowsAdapter.remove(continueWatchingListRow);
+                    }
+
+                    // add Watch Later
+                    VideoWatchLaterList videoWatchLaterList = VideoWatchLaterList.getInstance();
+                    for(Video video : videoWatchLaterList.getVideos()) {
+                        watchLaterAdapter.add(video);
+                    }
+
+                    if(watchLaterAdapter.size() == 0) {
+                        mRowsAdapter.remove(watchLaterListRow);
+                    }
+
+                }
+
+                resumePointsLoaded = true;
+                notifyDataReady();
+
             }
         });
 
