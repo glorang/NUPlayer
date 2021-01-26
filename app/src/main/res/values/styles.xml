@@ -9,7 +9,13 @@
     </style>
 
     <!-- Use in ProgramPresenter -->
-    <style name="SideInfoCardStyle" parent="Widget.Leanback.BaseCardViewStyle">
+    <style name="ProgramListCardStyle" parent="Widget.Leanback.BaseCardViewStyle">
+        <item name="cardType">mainOnly</item>
+        <item name="cardBackground">@null</item>
+    </style>
+
+    <!-- Use in VideoPresenter -->
+    <style name="VideoCardStyle" parent="Widget.Leanback.BaseCardViewStyle">
         <item name="cardType">mainOnly</item>
         <item name="cardBackground">@null</item>
     </style>

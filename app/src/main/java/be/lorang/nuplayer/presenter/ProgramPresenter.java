@@ -19,7 +19,6 @@ package be.lorang.nuplayer.presenter;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -76,7 +75,7 @@ public class ProgramPresenter<T extends BaseCardView> extends Presenter {
     }
 
     protected BaseCardView onCreateView() {
-        final BaseCardView cardView = new BaseCardView(getContext(), null, R.style.SideInfoCardStyle) {
+        final BaseCardView cardView = new BaseCardView(getContext(), null, R.style.ProgramListCardStyle) {
             @Override
             public void setSelected(boolean selected) {
                 updateCardBackgroundColor(this, selected);
@@ -84,7 +83,7 @@ public class ProgramPresenter<T extends BaseCardView> extends Presenter {
             }
         };
         cardView.setFocusable(true);
-        cardView.addView(LayoutInflater.from(getContext()).inflate(R.layout.side_info_card, null));
+        cardView.addView(LayoutInflater.from(getContext()).inflate(R.layout.programlist_card, null));
         return cardView;
     }
 
