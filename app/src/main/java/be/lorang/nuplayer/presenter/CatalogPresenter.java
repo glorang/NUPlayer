@@ -42,8 +42,8 @@ public class CatalogPresenter extends BasePresenter {
 
             // Set card size from dimension resources.
             Resources res = cardView.getResources();
-            int width = res.getDimensionPixelSize(R.dimen.card_width);
-            int height = res.getDimensionPixelSize(R.dimen.card_height);
+            int width = res.getDimensionPixelSize(R.dimen.catalog_width);
+            int height = res.getDimensionPixelSize(R.dimen.catalog_height);
             cardView.setMainImageDimensions(width, height);
 
             Glide.with(cardView.getContext())

@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <resources>
-    <dimen name="card_width">160dp</dimen>
-    <dimen name="card_height">90dp</dimen>
+    <dimen name="catalog_width">160dp</dimen>
+    <dimen name="catalog_height">90dp</dimen>
+    <dimen name="video_width">200dp</dimen>
+    <dimen name="video_height">112dp</dimen>
     <dimen name="program_width">200dp</dimen>
     <dimen name="program_height">112dp</dimen>
     <dimen name="livetv_width">320dp</dimen>
