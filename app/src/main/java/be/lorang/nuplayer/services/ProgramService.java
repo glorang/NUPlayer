@@ -63,6 +63,10 @@ public class ProgramService extends IntentService {
     public static final String TAG_VIDEOID = "videoId";
     public static final String TAG_PUBID = "publicationId";
     public static final String TAG_BROADCASTDATE = "formattedBroadcastDate";
+    public static final String TAG_BROADCASTSHORTDATEDATE = "formattedBroadcastShortDate";
+    public static final String TAG_BRANDS = "brands";
+    public static final String TAG_PROGRAM = "program";
+    public static final String TAG_ASSETPATH = "assetPath";
     public static final String TAG_PROGRAMTYPE = "programType";
 
     public ProgramService() {
@@ -286,28 +290,10 @@ public class ProgramService extends IntentService {
 
             for (int i = 0; i < items.length(); i++) {
                 JSONObject program = items.getJSONObject(i);
-
-                // fields get with getString are mandatory and will throw a JSONException if not set
-                // fields get with optString are optional and have a default value of ""
-                String title = program.getString(TAG_TITLE);
-                String description = program.optString(TAG_DESCRIPTION);
-                String seasonName = program.optString(TAG_SEASONNAME);
-                int episodeNumber = program.optInt(TAG_EPISODENR);
-                int duration = program.optInt(TAG_DURATION);
-                String videoId  = program.getString(TAG_VIDEOID);
-                String pubId  = program.getString(TAG_PUBID);
-                String formattedBroadcastDate = program.optString(TAG_BROADCASTDATE);
-
-                // we replace the image server with the one defined in urls.xml
-                // this prepends the (often) 'missing' 'https://' and allows us to query our own size ('orig' can go up to 18MB each(!))
-                String thumbnail = program.optString(TAG_THUMBNAIL).replaceFirst("^(https:)?//images.vrt.be/orig/", "");
-                String imageServer = getString(R.string.model_image_server);
-                String streamType = StreamService.STREAMTYPE_ONDEMAND;
-
-                Video video = new Video(title, description, seasonName, episodeNumber, duration, thumbnail, videoId, pubId, formattedBroadcastDate, imageServer, streamType);
+                String imageServer = getString(R.string.model_image_server); // FIXME: quick hack
+                Video video = parseVideoFromJSON(program, imageServer);
                 videoList.addVideo(video);
-
-                Log.d(TAG, "Adding video : " + title + " " + episodeNumber);
+                Log.d(TAG, "Adding video : " + video.getTitle());
             }
 
             resultData.putString("SEASON_LIST", (new Gson()).toJson(seasons));
@@ -322,5 +308,51 @@ public class ProgramService extends IntentService {
             receiver.send(Activity.RESULT_CANCELED, resultData);
         }
 
+    }
+
+    public static Video parseVideoFromJSON(JSONObject inputObject, String imageServer) throws JSONException{
+
+        // fields get with getString are mandatory and will throw a JSONException if not set
+        // fields get with optString are optional and have a default value of ""
+        String title = inputObject.getString(TAG_TITLE);
+        String description = inputObject.optString(TAG_DESCRIPTION);
+        String seasonName = inputObject.optString(TAG_SEASONNAME);
+        int episodeNumber = inputObject.optInt(TAG_EPISODENR);
+        int duration = inputObject.optInt(TAG_DURATION);
+        String videoId  = inputObject.getString(TAG_VIDEOID);
+        String pubId  = inputObject.getString(TAG_PUBID);
+        String formattedBroadcastDate = inputObject.optString(TAG_BROADCASTDATE);
+        String formattedBroadcastShortDate = inputObject.optString(TAG_BROADCASTSHORTDATEDATE);
+        JSONArray brands = inputObject.optJSONArray(TAG_BRANDS);
+        String program = inputObject.optString(TAG_PROGRAM);
+        String assetPath = inputObject.optString(TAG_ASSETPATH);
+
+        // we replace the image server with the one defined in urls.xml
+        // this prepends the (often) 'missing' 'https://' and allows us to query our own size ('orig' can go up to 18MB each(!))
+        String thumbnail = inputObject.optString(TAG_THUMBNAIL).replaceFirst("^(https:)?//images.vrt.be/orig/", "");
+        String streamType = StreamService.STREAMTYPE_ONDEMAND;
+
+        // we only use the 1st brand for now in the array
+        String brand = (String)brands.get(0);
+
+        Video video = new Video(
+                title,
+                description,
+                seasonName,
+                episodeNumber,
+                duration,
+                thumbnail,
+                videoId,
+                pubId,
+                formattedBroadcastDate,
+                formattedBroadcastShortDate,
+                brand,
+                program,
+                assetPath,
+                imageServer,
+                streamType
+        );
+
+        return video;
     }
 }

@@ -47,6 +47,10 @@ public class ChannelList {
                 "",
                 "",
                 "",
+                "",
+                "",
+                "",
+                "",
                 StreamService.STREAMTYPE_LIVETV
         );
 
@@ -61,6 +65,10 @@ public class ChannelList {
                 "",
                 "",
                 "",
+                "",
+                "",
+                "",
+                "",
                 StreamService.STREAMTYPE_LIVETV
         );
 
@@ -72,6 +80,10 @@ public class ChannelList {
                 0,
                 "https://vrtnu-api.vrt.be/screenshots/ketnet.jpg",
                 "vualto_ketnet_geo",
+                "",
+                "",
+                "",
+                "",
                 "",
                 "",
                 "",
