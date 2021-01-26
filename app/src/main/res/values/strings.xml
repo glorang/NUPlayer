@@ -15,7 +15,20 @@
     <string name="pref_title_empty_password">Please fill in your password</string>
 
     <!-- Favorites -->
+    <string name="favorites_title">Favorites</string>
     <string name="no_favorites_found">No favorites found</string>
+
+    <!-- Live TV  -->
+    <string name="livetv_title">Live TV</string>
+
+    <!-- Series  -->
+    <string name="series_title">Series</string>
+
+    <!-- Continue watching  -->
+    <string name="continuewatching_title">Continue watching</string>
+
+    <!-- Watch Later  -->
+    <string name="watchlater_title">Watch later</string>
 
     <!-- ProgramPresenter strings -->
     <string name="season">Season</string>

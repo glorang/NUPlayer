@@ -3,7 +3,6 @@
 <!-- Defines all VRT.NU REST endpoints -->
 
 <resources>
-
     <!-- PROD -->
     <string name="model_image_server">https://images.vrt.be</string>
     <string name="service_auth_initlogin_server">https://token.vrt.be/vrtnuinitlogin?provider=site&amp;destination=https://www.vrt.be/vrtnu/</string>
@@ -13,12 +12,13 @@
     <string name="service_access_token_refresh">https://token.vrt.be/refreshtoken?legacy=false</string>
     <string name="service_catalog_catalog_url">https://vrtnu-api.vrt.be/suggest?facets[transcodingStatus]=AVAILABLE&amp;facets[programType]=%s</string>
     <string name="service_catalog_favorites_url">https://video-user-data.vrt.be/favorites</string>
+    <string name="service_resumepoints_url">https://video-user-data.vrt.be/resume_points</string>
+    <string name="service_resumepoints_video_url">https://vrtnu-api.vrt.be/search?size=1&amp;facets[url]=%s</string>
     <string name="service_catalog_series_url">https://search.vrt.be/suggest?facets[programTags.parentTitle]=Tijdsgerelateerd&amp;facets[assetStatus]=AVAILABLE&amp;facets[categories]=series</string>
     <string name="service_playertoken_player_token_server">https://media-services-public.vrt.be/vualto-video-aggregator-web/rest/external/v1/tokens</string>
     <string name="service_program_seasons_url">https://www.vrt.be/vrtnu/a-z/%s.model.json</string>
     <string name="service_program_program_url">https://vrtnu-api.vrt.be/search?orderBy=episodeNumber&amp;order=%s&amp;size=%s&amp;from=%s&amp;facets[programUrl]=%s</string>
     <string name="service_stream_stream_info_server">https://media-services-public.vrt.be/vualto-video-aggregator-web/rest/external/v1/videos/</string>
-    <string name="service_video_resume_points">https://video-user-data.vrt.be/resume_points</string>
     <string name="vudrm_server">https://widevine-license.vudrm.tech/proxy?token=%s</string>
     <!-- FIXME: exclude voor-kinderen and nostalgie in service_series_series_url -->
 </resources>
