@@ -17,10 +17,11 @@
 
 package be.lorang.nuplayer.presenter;
 
-import android.content.res.Resources;
+import android.content.Context;
+import android.widget.ImageView;
+import android.widget.TextView;
 
-import androidx.leanback.widget.ImageCardView;
-import androidx.leanback.widget.Presenter;
+import androidx.leanback.widget.BaseCardView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -29,18 +30,17 @@ import be.lorang.nuplayer.R;
 import be.lorang.nuplayer.model.Program;
 
 /*
-    4:3 format presenter for Series on home fragment
+    Series Card presenter in 4:3 format for Series on home fragment
  */
 
-public class SeriesPresenter extends BasePresenter {
+public class SeriesPresenter<T extends BaseCardView> extends BaseCardPresenter {
 
-    @Override
-    public void onBindViewHolder(Presenter.ViewHolder viewHolder, Object item) {
+    public SeriesPresenter(Context context) {
+        super(context, R.layout.card_serie);
+    }
+
+    public void onBindViewHolder(Object item, BaseCardView cardView) {
         Program program = (Program)item;
-
-        ImageCardView cardView = (ImageCardView) viewHolder.view;
-        cardView.setTitleText(program.getTitle());
-        //cardView.setContentText(program.getBrand());
 
         String image = null;
         if(program.getAltImage() != null && program.getAltImage().length() > 0) {
@@ -49,19 +49,26 @@ public class SeriesPresenter extends BasePresenter {
             image = program.getThumbnail();
         }
 
+        // set background image
+        ImageView imageView = cardView.findViewById(R.id.main_image);
         if (image != null) {
+            int width = (int) getContext().getResources()
+                    .getDimension(R.dimen.series_width);
+            int height = (int) getContext().getResources()
+                    .getDimension(R.dimen.series_height);
 
-            // Set card size from dimension resources.
-            Resources res = cardView.getResources();
-            int width = res.getDimensionPixelSize(R.dimen.series_width);
-            int height = res.getDimensionPixelSize(R.dimen.series_height);
-            cardView.setMainImageDimensions(width, height);
-
-            Glide.with(cardView.getContext())
+            RequestOptions myOptions = new RequestOptions()
+                    .override(width, height);
+            Glide.with(getContext())
+                    .asBitmap()
                     .load(image)
-                    .apply(RequestOptions.errorOf(getDefaultCardImage()))
-                    .into(cardView.getMainImageView());
+                    .apply(myOptions)
+                    .into(imageView);
         }
+
+        // set title
+        TextView textViewTitle = cardView.findViewById(R.id.serieTitle);
+        textViewTitle.setText(program.getTitle());
 
     }
 

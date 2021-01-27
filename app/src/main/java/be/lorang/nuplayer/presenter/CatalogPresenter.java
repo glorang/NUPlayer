@@ -17,8 +17,12 @@
 
 package be.lorang.nuplayer.presenter;
 
+import android.content.Context;
 import android.content.res.Resources;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import androidx.leanback.widget.BaseCardView;
 import androidx.leanback.widget.ImageCardView;
 import androidx.leanback.widget.Presenter;
 
@@ -28,30 +32,53 @@ import com.bumptech.glide.request.RequestOptions;
 import be.lorang.nuplayer.R;
 import be.lorang.nuplayer.model.Program;
 
-public class CatalogPresenter extends BasePresenter {
+/*
+ * Card presenter for Programs in Catalog Fragment
+ */
 
-    @Override
-    public void onBindViewHolder(Presenter.ViewHolder viewHolder, Object item) {
+public class CatalogPresenter<T extends BaseCardView> extends BaseCardPresenter {
+
+    public CatalogPresenter(Context context) {
+        super(context, R.layout.card_program);
+    }
+
+
+    public void onBindViewHolder(Object item, BaseCardView cardView) {
         Program program = (Program)item;
 
-        ImageCardView cardView = (ImageCardView) viewHolder.view;
-        cardView.setTitleText(program.getTitle());
-        cardView.setContentText(program.getBrand());
-
+        // set background image
+        ImageView imageView = cardView.findViewById(R.id.main_image);
         if (program.getThumbnail() != null) {
+            int width = (int) getContext().getResources()
+                    .getDimension(R.dimen.catalog_width);
+            int height = (int) getContext().getResources()
+                    .getDimension(R.dimen.catalog_height);
 
-            // Set card size from dimension resources.
-            Resources res = cardView.getResources();
-            int width = res.getDimensionPixelSize(R.dimen.catalog_width);
-            int height = res.getDimensionPixelSize(R.dimen.catalog_height);
-            cardView.setMainImageDimensions(width, height);
-
-            Glide.with(cardView.getContext())
+            RequestOptions myOptions = new RequestOptions()
+                    .override(width, height);
+            Glide.with(getContext())
+                    .asBitmap()
                     .load(program.getThumbnail())
-                    .apply(RequestOptions.errorOf(getDefaultCardImage()))
-                    .into(cardView.getMainImageView());
+                    .apply(myOptions)
+                    .into(imageView);
         }
 
+        // set brand image
+        ImageView brandImageView = cardView.findViewById(R.id.brand_image);
+        if (brandImageView != null && program.getBrand() != null) {
+            int resourceID = getContext().getResources().getIdentifier("ic_" + program.getBrand(), "drawable", getContext().getPackageName());
+            if (resourceID > 0) {
+                brandImageView.setImageDrawable(getContext().getResources().getDrawable(resourceID, null));
+            }
+        }
+
+        // set title
+        TextView textViewTitle = cardView.findViewById(R.id.programTitle);
+        textViewTitle.setText(program.getTitle());
+
+        // set description
+        TextView textViewDescription = cardView.findViewById(R.id.programDescription);
+        textViewDescription.setText(program.getDescription());
     }
 
 }

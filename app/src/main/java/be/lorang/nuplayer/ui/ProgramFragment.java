@@ -20,7 +20,6 @@ package be.lorang.nuplayer.ui;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -57,7 +56,7 @@ import be.lorang.nuplayer.services.ProgramService;
 import be.lorang.nuplayer.model.Program;
 import be.lorang.nuplayer.model.VideoList;
 import be.lorang.nuplayer.presenter.CustomVerticalGridPresenter;
-import be.lorang.nuplayer.presenter.ProgramPresenter;
+import be.lorang.nuplayer.presenter.WideVideoPresenter;
 
 import com.google.gson.Gson;
 
@@ -143,7 +142,7 @@ public class ProgramFragment extends VerticalGridFragment implements OnItemViewS
         setOnItemViewSelectedListener(this);
         setGridPresenter(videoGridPresenter);
 
-        mAdapter = new ArrayObjectAdapter(new ProgramPresenter(getContext()));
+        mAdapter = new ArrayObjectAdapter(new WideVideoPresenter(getContext()));
         setAdapter(mAdapter);
         prepareEntranceTransition();
     }

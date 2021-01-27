@@ -26,27 +26,30 @@
         android:id="@+id/main_image"
         android:layout_width="180dp"
         android:layout_height="101dp"
+        android:layout_weight="1"
+        android:adjustViewBounds="true"
+        android:scaleType="fitXY"
         lb:layout_viewType="main" />
 
     <LinearLayout
         android:id="@+id/info"
         android:layout_width="450dp"
         android:layout_height="match_parent"
-        android:background="@color/vrtnu_black_tint_2"
+        android:background="@color/vrtnu_black_tint_1"
         android:orientation="vertical"
         android:paddingLeft="11dp"
         android:paddingTop="7dp"
         android:paddingRight="11dp">
 
         <TextView
-            android:id="@+id/primary_text"
+            android:id="@+id/videoWideTitle"
             style="@style/Widget.Leanback.ImageCardView.TitleStyle"
             android:fontFamily="sans-serif-condensed"
             android:maxLines="1"
             android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/secondary_text"
+            android:id="@+id/videoWidePrimaryText"
             style="@style/Widget.Leanback.ImageCardView.ContentStyle"
             android:layout_marginTop="4dp"
             android:fontFamily="sans-serif-condensed"
@@ -54,7 +57,7 @@
             android:textColor="#EEEEEE" />
 
         <TextView
-            android:id="@+id/extra_text"
+            android:id="@+id/videoWideSecondaryText"
             style="@style/Widget.Leanback.ImageCardView.ContentStyle"
             android:layout_marginTop="6dp"
             android:fontFamily="sans-serif-condensed"
