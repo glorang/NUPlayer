@@ -20,37 +20,25 @@ package be.lorang.nuplayer.ui;
 
 import android.app.Fragment;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
-import androidx.leanback.app.BaseFragment;
 import androidx.leanback.app.BrowseFragment;
-import androidx.leanback.app.ErrorFragment;
-import androidx.leanback.app.RowsFragment;
 
-import com.google.gson.Gson;
-
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.HttpCookie;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
 
 import be.lorang.nuplayer.R;
 import be.lorang.nuplayer.services.VrtPlayerTokenService;
@@ -82,7 +70,7 @@ public class AboutFragment extends Fragment implements BrowseFragment.MainFragme
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View aboutFragmentView = inflater.inflate(R.layout.about_fragment, container, false);
+        View aboutFragmentView = inflater.inflate(R.layout.fragment_about, container, false);
 
         // get shared preferences
         SharedPreferences prefs = getActivity().getSharedPreferences(MainActivity.PREFERENCES_NAME, MODE_PRIVATE);

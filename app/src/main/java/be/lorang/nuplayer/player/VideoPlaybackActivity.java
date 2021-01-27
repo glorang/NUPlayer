@@ -40,7 +40,7 @@ public class VideoPlaybackActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.videoplayback);
+        setContentView(R.layout.fragment_exoplayer);
 
         // get passed Video object and URL
         videoUrl = getIntent().getExtras().getString("MPEG_DASH_URL");
