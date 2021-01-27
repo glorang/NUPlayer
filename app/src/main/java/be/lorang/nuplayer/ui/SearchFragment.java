@@ -110,7 +110,7 @@ public class SearchFragment extends SearchSupportFragment
         if (query.length() > 0 && !query.equals("nil")) {
 
             ProgramList programList = ProgramList.getInstance();
-            CatalogPresenter presenter = new CatalogPresenter();
+            CatalogPresenter presenter = new CatalogPresenter(getContext());
             HeaderItem headerItem = new HeaderItem("Search results");
             ArrayObjectAdapter adapter = new ArrayObjectAdapter(presenter);
             for(Program program : programList.search(query)) {

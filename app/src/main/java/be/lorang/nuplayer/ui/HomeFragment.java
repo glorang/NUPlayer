@@ -111,14 +111,14 @@ public class HomeFragment extends RowsFragment {
         setAdapter(mRowsAdapter);
 
         // Live TV Adapter
-        LiveTVPresenter liveTVpresenter = new LiveTVPresenter();
+        LiveTVPresenter liveTVpresenter = new LiveTVPresenter(getContext());
         HeaderItem liveTVHeader = new HeaderItem(getString(R.string.livetv_title));
         liveTVAdapter = new ArrayObjectAdapter(liveTVpresenter);
         liveTVListRow = new ListRow(liveTVHeader, liveTVAdapter);
         mRowsAdapter.add(liveTVListRow);
 
         // Favorites Adapter
-        FavoritesPresenter favoritesPresenter = new FavoritesPresenter();
+        FavoritesPresenter favoritesPresenter = new FavoritesPresenter(getContext());
         HeaderItem favoritesHeader = new HeaderItem(getString(R.string.favorites_title));
         favoritesAdapter = new ArrayObjectAdapter(favoritesPresenter);
         favoritesListRow = new ListRow(favoritesHeader, favoritesAdapter);
@@ -139,7 +139,7 @@ public class HomeFragment extends RowsFragment {
         mRowsAdapter.add(watchLaterListRow);
 
         // Series Adapter
-        SeriesPresenter seriesPresenter = new SeriesPresenter();
+        SeriesPresenter seriesPresenter = new SeriesPresenter(getContext());
         HeaderItem seriesHeader = new HeaderItem(getString(R.string.series_title));
         seriesAdapter = new ArrayObjectAdapter(seriesPresenter);
         seriesListRow = new ListRow(seriesHeader, seriesAdapter);

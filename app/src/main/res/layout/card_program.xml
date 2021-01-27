@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:lb="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:orientation="vertical">
+
+    <LinearLayout
+
+        android:id="@+id/container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/main_image"
+                android:layout_width="160dp"
+                android:layout_height="90dp"
+                android:adjustViewBounds="true"
+                android:scaleType="fitXY"
+                lb:layout_viewType="main" />
+
+            <ImageView
+                android:id="@+id/brand_image"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginLeft="130dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="5dp"
+                lb:layout_viewType="main" />
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/info2"
+            android:layout_width="200dp"
+            android:layout_height="match_parent"
+            android:background="@color/vrtnu_black_tint_1"
+            android:orientation="vertical"
+            android:paddingLeft="11dp"
+            android:paddingTop="7dp"
+            android:paddingRight="11dp">
+
+            <TextView
+                android:id="@+id/programDescription"
+                style="@style/Widget.Leanback.ImageCardView.ContentStyle"
+                android:layout_marginTop="6dp"
+                android:fontFamily="sans-serif-condensed"
+                android:lines="6"
+                android:maxLines="6"
+                android:textSize="10sp" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/info"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/vrtnu_black_tint_1"
+        android:orientation="horizontal"
+        android:paddingLeft="11dp"
+        android:paddingTop="3dp"
+        android:paddingRight="11dp"
+        android:paddingBottom="3dp">
+
+        <TextView
+            android:id="@+id/programTitle"
+            style="@style/Widget.Leanback.ImageCardView.TitleStyle"
+            android:fontFamily="sans-serif-condensed"
+            android:maxLines="1"
+            android:textColor="#EEEEEE"
+            android:textSize="14sp" />
+    </LinearLayout>
+</LinearLayout>

@@ -44,7 +44,7 @@ import com.google.gson.Gson;
 
 public class CatalogFragment extends GridFragment {
     private final static String TAG = "GridFragment";
-    private static final int COLUMNS = 5;
+    private static final int COLUMNS = 2;
     private final int ZOOM_FACTOR = FocusHighlight.ZOOM_FACTOR_MEDIUM;
     private ArrayObjectAdapter mAdapter;
 
@@ -62,7 +62,7 @@ public class CatalogFragment extends GridFragment {
         presenter.setNumberOfColumns(COLUMNS);
         setGridPresenter(presenter);
 
-        mAdapter = new ArrayObjectAdapter(new CatalogPresenter());
+        mAdapter = new ArrayObjectAdapter(new CatalogPresenter(getContext()));
         setAdapter(mAdapter);
 
         setOnItemViewClickedListener(new OnItemViewClickedListener() {

@@ -17,9 +17,11 @@
 
 package be.lorang.nuplayer.presenter;
 
-import android.content.res.Resources;
-import androidx.leanback.widget.ImageCardView;
-import androidx.leanback.widget.Presenter;
+import android.content.Context;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.leanback.widget.BaseCardView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -28,34 +30,56 @@ import com.bumptech.glide.signature.ObjectKey;
 import be.lorang.nuplayer.R;
 import be.lorang.nuplayer.model.Video;
 
-public class LiveTVPresenter extends BasePresenter {
+/*
+ * Card presenter for Live TV on Home Fragment
+ *
+ */
+public class LiveTVPresenter<T extends BaseCardView> extends BaseCardPresenter {
 
-    @Override
-    public void onBindViewHolder(Presenter.ViewHolder viewHolder, Object item) {
+    public LiveTVPresenter(Context context) {
+        super(context, R.layout.card_livetv);
+    }
+
+    public void onBindViewHolder(Object item, BaseCardView cardView) {
         Video video = (Video) item;
 
-        ImageCardView cardView = (ImageCardView) viewHolder.view;
-        cardView.setTitleText(video.getTitle());
-        cardView.setContentText(video.getDescription());
-
+        // set background image
+        ImageView imageView = cardView.findViewById(R.id.main_image);
         if (video.getThumbnail() != null) {
-
-            // Set card size from dimension resources.
-            Resources res = cardView.getResources();
-            int width = res.getDimensionPixelSize(R.dimen.livetv_width);
-            int height = res.getDimensionPixelSize(R.dimen.livetv_height);
-            cardView.setMainImageDimensions(width, height);
+            int width = (int) getContext().getResources()
+                    .getDimension(R.dimen.livetv_width);
+            int height = (int) getContext().getResources()
+                    .getDimension(R.dimen.livetv_height);
 
             // Don't cache live tv screenshots
             RequestOptions options = new RequestOptions();
             options.signature(new ObjectKey(String.valueOf(System.currentTimeMillis())));
+            options.override(width, height);
 
-            Glide.with(cardView.getContext())
+            Glide.with(getContext())
+                    .asBitmap()
                     .load(video.getThumbnail())
                     .apply(options)
-                    .apply(RequestOptions.errorOf(getDefaultCardImage()))
-                    .into(cardView.getMainImageView());
+                    .into(imageView);
         }
+
+        // set brand image
+        ImageView brandImageView = cardView.findViewById(R.id.brand_image);
+        if (brandImageView != null && video.getBrand() != null) {
+            int resourceID = getContext().getResources().getIdentifier("ic_" + video.getBrand(), "drawable", getContext().getPackageName());
+            if (resourceID > 0) {
+                brandImageView.setImageDrawable(getContext().getResources().getDrawable(resourceID, null));
+            }
+        }
+
+        // set title
+        TextView textViewTitle = cardView.findViewById(R.id.liveTVChannel);
+        textViewTitle.setText(video.getTitle());
+
+        // set description
+        TextView textViewDescription = cardView.findViewById(R.id.liveTVDescription);
+        textViewDescription.setText(video.getDescription());
+
     }
 
 }

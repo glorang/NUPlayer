@@ -18,109 +18,33 @@
 package be.lorang.nuplayer.presenter;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import androidx.core.content.ContextCompat;
 import androidx.leanback.widget.BaseCardView;
-import androidx.leanback.widget.Presenter;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import be.lorang.nuplayer.R;
 import be.lorang.nuplayer.model.Video;
 
-/**
- * This will show list of episode as rows in a grid (max columns = 1) with a very wide length
- * so the description and other info fits in easily
+/*
+ * Card presenter for Videos - will set Program Name, episode, run time, description
+ * brand logo and progress bar (if set in Video object)
  *
- * Hacked together from SideInfoCardPresenter and AbstractCardPresenter from Leanback showcase app
  */
 
-public class VideoPresenter<T extends BaseCardView> extends Presenter {
+public class VideoPresenter<T extends BaseCardView> extends BaseCardPresenter {
 
     private static final String TAG = "VideoPresenter";
-    private Context mContext;
-    private int mSelectedBackgroundColor = -1;
-    private int mSelectedForegroundColor = -1;
-    private int mDefaultBackgroundColor = -1;
-    private int mDefaultForegroundColor = -1;
-    private Drawable mDefaultCardImage;
 
     public VideoPresenter(Context context) {
-        mContext = context;
-    }
-    public Context getContext() {
-        return mContext;
+        super(context, R.layout.card_video);
     }
 
-    @Override
-    public final ViewHolder onCreateViewHolder(ViewGroup parent) {
-
-        mDefaultBackgroundColor =
-                ContextCompat.getColor(parent.getContext(), R.color.vrtnu_black_tint_2);
-        mDefaultForegroundColor =
-                ContextCompat.getColor(parent.getContext(), R.color.vrtnu_white);
-        mSelectedBackgroundColor =
-                ContextCompat.getColor(parent.getContext(), R.color.vrtnu_blue);
-        mSelectedForegroundColor =
-                ContextCompat.getColor(parent.getContext(), R.color.vrtnu_white);
-        mDefaultCardImage = parent.getResources().getDrawable(R.drawable.default_background, null);
-
-        BaseCardView cardView = onCreateView();
-        return new ViewHolder(cardView);
-    }
-
-    protected BaseCardView onCreateView() {
-        final BaseCardView cardView = new BaseCardView(getContext(), null, R.style.VideoCardStyle) {
-            @Override
-            public void setSelected(boolean selected) {
-                updateCardBackgroundColor(this, selected);
-                super.setSelected(selected);
-            }
-        };
-        cardView.setFocusable(true);
-        cardView.addView(LayoutInflater.from(getContext()).inflate(R.layout.video_card, null));
-        return cardView;
-    }
-
-    private void updateCardBackgroundColor(BaseCardView view, boolean selected) {
-        int backgroundcolor = selected ? mSelectedBackgroundColor : mDefaultBackgroundColor;
-        int foregroundcolor = selected ? mSelectedForegroundColor : mDefaultForegroundColor;
-
-        // Both background colors should be set because the view's
-        // background is temporarily visible during animations.
-        view.setBackgroundColor(backgroundcolor);
-        view.findViewById(R.id.info).setBackgroundColor(backgroundcolor);
-
-        // change foreground color
-        ((TextView)view.findViewById(R.id.video_title)).setTextColor(foregroundcolor);
-        ((TextView)view.findViewById(R.id.primary_text)).setTextColor(foregroundcolor);
-        ((TextView)view.findViewById(R.id.secondary_text)).setTextColor(foregroundcolor);
-
-    }
-
-    @Override
-    public final void onBindViewHolder(ViewHolder viewHolder, Object item) {
+    public void onBindViewHolder(Object item, BaseCardView cardView) {
         Video video = (Video) item;
-        onBindViewHolder(video, (T) viewHolder.view);
-    }
-
-    @Override
-    public final void onUnbindViewHolder(ViewHolder viewHolder) {
-        onUnbindViewHolder((T) viewHolder.view);
-    }
-
-    public void onUnbindViewHolder(T cardView) {
-        // Nothing to clean up. Override if necessary.
-    }
-
-
-    public void onBindViewHolder(Video video, BaseCardView cardView) {
 
         // set background image
         ImageView imageView = cardView.findViewById(R.id.main_image);
@@ -149,7 +73,7 @@ public class VideoPresenter<T extends BaseCardView> extends Presenter {
         }
 
         // set title
-        TextView videoTitle = cardView.findViewById(R.id.video_title);
+        TextView videoTitle = cardView.findViewById(R.id.videoTitle);
         videoTitle.setText(video.getProgram());
 
         // set progress (if set)
@@ -167,11 +91,11 @@ public class VideoPresenter<T extends BaseCardView> extends Presenter {
                 " - " +
                 video.getDuration() + " min";
 
-        TextView primaryText = cardView.findViewById(R.id.primary_text);
+        TextView primaryText = cardView.findViewById(R.id.videoPrimaryText);
         primaryText.setText(primaryTextValue);
 
         // set video description
-        TextView secondaryText = cardView.findViewById(R.id.secondary_text);
+        TextView secondaryText = cardView.findViewById(R.id.videoSecondaryText);
         secondaryText.setText(video.getDescription());
 
     }
