@@ -157,15 +157,10 @@ public class ProgramFragment extends VerticalGridFragment implements OnItemViewS
         serviceIntent.putExtra("SEASON_INDEX", selectedSeasonIndex);
 
         //
-        // Between this ProgramFragment and ProgramService we pass our VideoObject
-        // and seasons Map back and forth all the time.
-        // This way we can update the adapter with just the new episodes and don't
-        // have to parse the seasons each time we switch seasons
+        // Between this ProgramFragment and ProgramService we pass seasons Map back and forth
+        // This way we can don't have to parse the seasons each time we load more episodes
+        // or switch seasons
         //
-
-        if(startIndex > 1) {
-            serviceIntent.putExtra("VIDEO_LIST", (new Gson()).toJson(videoList));
-        }
 
         if(seasons != null) {
             serviceIntent.putExtra("SEASON_LIST", (new Gson()).toJson(seasons));
@@ -182,7 +177,7 @@ public class ProgramFragment extends VerticalGridFragment implements OnItemViewS
                 }
 
                 if (resultCode == Activity.RESULT_OK) {
-                    videoList = new Gson().fromJson(resultData.getString("VIDEO_LIST"), VideoList.class);
+                    videoList = VideoList.getInstance();
                     seasons = new Gson().fromJson(resultData.getString("SEASON_LIST"), LinkedHashMap.class);
 
                     setEpisodeCount(videoList.getVideosAvailable(), videoList.getVideosLoaded());
@@ -273,6 +268,10 @@ public class ProgramFragment extends VerticalGridFragment implements OnItemViewS
     public void onResume() {
         // reset background as it was removed in onDestroy()
         setupUi();
+
+        // Update adapter with latest progress for all videos
+        mAdapter.notifyArrayItemRangeChanged(0, mAdapter.size());
+
         super.onResume();
     }
 
