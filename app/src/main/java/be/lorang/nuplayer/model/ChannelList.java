@@ -51,6 +51,7 @@ public class ChannelList {
                 "",
                 "",
                 "",
+                "",
                 StreamService.STREAMTYPE_LIVETV
         );
 
@@ -69,6 +70,7 @@ public class ChannelList {
                 "",
                 "",
                 "",
+                "",
                 StreamService.STREAMTYPE_LIVETV
         );
 
@@ -84,6 +86,7 @@ public class ChannelList {
                 "",
                 "",
                 "ketnet",
+                "",
                 "",
                 "",
                 "",

@@ -41,9 +41,11 @@ public class Video {
     @SerializedName("brand") private String mBrand = "";
     @SerializedName("program") private String mProgram = "";
     @SerializedName("assetPath") private String mAssetPath = "";
+    @SerializedName("url") private String mUrl = "";
     @SerializedName("imageServer") private String mImageServer = "";
     @SerializedName("streamType") private String mStreamType = "";
     @SerializedName("progressPct") private int mProgressPct = 0;
+    @SerializedName("currentPosition") private int mCurrentPosition = 0;
     @SerializedName("validImageSizes") private static String[] mValidImageSizes = {"w160hx", "w320hx", "w640hx", "w1280hx", "w1600hx", "w1920hx", "VV_4x3_120", "VV_4x3_240", "VV_4x3_480"};
 
     public Video(String title,
@@ -59,6 +61,7 @@ public class Video {
                  String brand,
                  String program,
                  String assetPath,
+                 String url,
                  String imageServer,
                  String streamType) {
         mTitle = title;
@@ -74,6 +77,7 @@ public class Video {
         mBrand = brand;
         mProgram = program;
         mAssetPath = assetPath;
+        mUrl = url;
         mImageServer = imageServer;
         mStreamType = streamType;
 
@@ -151,10 +155,15 @@ public class Video {
     public String getAssetPath() { return mAssetPath; }
     public void setAssetPath(String assetPath) { mAssetPath = assetPath; }
 
+    public String getURL() { return mUrl; }
+    public void setURL(String url) { mUrl = url; }
+
     public String getStreamType() { return mStreamType; }
     public void setStreamType(String streamType) { mStreamType = streamType; }
 
     public int getProgressPct() { return mProgressPct; }
     public void setProgressPct(int progress) { mProgressPct = progress; }
 
+    public int getCurrentPosition() { return mCurrentPosition; }
+    public void setCurrentPosition(int position) { mCurrentPosition = position; }
 }
