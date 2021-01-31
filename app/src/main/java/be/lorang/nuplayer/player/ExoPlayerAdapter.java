@@ -245,9 +245,6 @@ public class ExoPlayerAdapter extends PlayerAdapter implements ExoPlayer.EventLi
 
     @Override
     public void seekTo(long newPosition) {
-        if (!mInitialized) {
-            return;
-        }
         mPlayer.seekTo(newPosition);
     }
 
