@@ -19,12 +19,26 @@
 package be.lorang.nuplayer.player;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
+import android.util.Log;
+import android.widget.Toast;
+
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.ActivityOptionsCompat;
 import androidx.leanback.media.PlaybackTransportControlGlue;
 import androidx.leanback.media.PlayerAdapter;
 import androidx.leanback.widget.Action;
 import androidx.leanback.widget.ArrayObjectAdapter;
 import androidx.leanback.widget.PlaybackControlsRow;
 
+import com.google.gson.Gson;
+
+import be.lorang.nuplayer.model.Video;
+import be.lorang.nuplayer.services.AccessTokenService;
+import be.lorang.nuplayer.services.ResumePointsService;
 
 /**
  * PlayerGlue for video playback
@@ -112,6 +126,66 @@ public class VideoMediaPlayerGlue<T extends PlayerAdapter> extends PlaybackTrans
             return null;
         }
         return (ArrayObjectAdapter) getControlsRow().getSecondaryActionsAdapter();
+    }
+
+    private void updateVideoProgress() {
+
+        VideoPlaybackActivity vpa = (VideoPlaybackActivity) getContext();
+        Video video = vpa.getVideo();
+
+        Intent accessTokenIntent = new Intent(getContext(), AccessTokenService.class);
+        accessTokenIntent.putExtra(AccessTokenService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
+            @Override
+            protected void onReceiveResult(int resultCode, Bundle resultData) {
+                super.onReceiveResult(resultCode, resultData);
+                if (resultCode == Activity.RESULT_OK) {
+
+                    Intent resumePointsIntent = new Intent(getContext(), ResumePointsService.class);
+                    resumePointsIntent.putExtra("ACTION", ResumePointsService.ACTION_UPDATE_RESUME_POINT);
+                    resumePointsIntent.putExtra("PLAYER_CURRENT_POSITION", (int)(getPlayerAdapter().getCurrentPosition() / 1000));
+                    resumePointsIntent.putExtra("VIDEO_OBJECT", new Gson().toJson(video));
+
+                    resumePointsIntent.putExtra(ResumePointsService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
+                        @Override
+                        protected void onReceiveResult(int resultCode, Bundle resultData) {
+                            super.onReceiveResult(resultCode, resultData);
+
+                            // show messages, if any
+                            if (resultData.getString("MSG", "").length() > 0) {
+                                Toast.makeText(getContext(), resultData.getString("MSG"), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                    getContext().startService(resumePointsIntent);
+
+                }
+            }
+        });
+
+        getContext().startService(accessTokenIntent);
+
+    }
+
+    @Override
+    protected void onPlayStateChanged() {
+        Log.d(TAG, "In onPlayStateChanged");
+
+        // Stopped or paused, update progress
+        if(!getPlayerAdapter().isPlaying()) {
+                updateVideoProgress();
+        }
+
+        super.onPlayStateChanged();
+    }
+
+    @Override
+    protected void onDetachedFromHost() {
+        Log.d(TAG, "On detached from host");
+
+        // Return from ExoPLayer, update Video progress
+        updateVideoProgress();
+
+        super.onDetachedFromHost();
     }
 
     @Override

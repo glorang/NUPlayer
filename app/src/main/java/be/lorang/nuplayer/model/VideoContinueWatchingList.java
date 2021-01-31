@@ -61,4 +61,21 @@ public class VideoContinueWatchingList {
         return videoListInitialized;
     }
 
+    public boolean setProgress(Video video, int position) {
+        Log.d(TAG, "Setting progress, position = " + position + " total = " + video.getDuration());
+        int progress = (int)(((double)position / video.getDuration()) * 100);
+
+        for(Video mVideo : mVideos) {
+            if(mVideo.getVideoId().equals(video.getVideoId()) &&
+                    mVideo.getPubId().equals(video.getPubId())
+            ) {
+                Log.d(TAG, "Setting progress for video " + video.getVideoId() + " to: " + progress);
+                mVideo.setCurrentPosition(position);
+                mVideo.setProgressPct(progress);
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

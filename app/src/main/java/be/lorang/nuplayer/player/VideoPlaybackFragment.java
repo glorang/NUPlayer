@@ -20,6 +20,7 @@ package be.lorang.nuplayer.player;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.leanback.app.VideoFragment;
 import androidx.leanback.app.VideoFragmentGlueHost;
@@ -56,6 +57,11 @@ public class VideoPlaybackFragment extends VideoFragment {
         mMediaPlayerGlue.setSubtitle(video.getDescription());
         mMediaPlayerGlue.getPlayerAdapter().setDrmToken(drmToken);
         mMediaPlayerGlue.getPlayerAdapter().setDataSource(Uri.parse(videoUrl));
+
+        if(video.getCurrentPosition() > 0)  {
+            Log.d(TAG, "Setting start position = " + video.getCurrentPosition());
+            mMediaPlayerGlue.getPlayerAdapter().seekTo(video.getCurrentPosition() * 1000);
+        }
 
         playWhenReady(mMediaPlayerGlue);
 
