@@ -26,6 +26,7 @@ import android.util.Log;
 
 import be.lorang.nuplayer.R;
 import be.lorang.nuplayer.model.Program;
+import be.lorang.nuplayer.model.VideoContinueWatchingList;
 import be.lorang.nuplayer.utils.HTTPClient;
 import be.lorang.nuplayer.model.Video;
 import be.lorang.nuplayer.model.VideoList;
@@ -42,6 +43,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+/*
+ * This class will load the 10 first Videos for a Program and parse the season info.
+ *
+ * Results are stored in VideoList class, using the START_INDEX parameter we load more
+ * episodes dynamically
+ *
+ */
 
 public class ProgramService extends IntentService {
     private static final String TAG = "ProgramService";
@@ -67,6 +76,7 @@ public class ProgramService extends IntentService {
     public static final String TAG_BRANDS = "brands";
     public static final String TAG_PROGRAM = "program";
     public static final String TAG_ASSETPATH = "assetPath";
+    public static final String TAG_URL = "url";
     public static final String TAG_PROGRAMTYPE = "programType";
 
     public ProgramService() {
@@ -200,9 +210,6 @@ public class ProgramService extends IntentService {
 
         try {
 
-            // Setup VideoList object
-            VideoList videoList;
-
             // get passed Program object
             String programJson = workIntent.getExtras().getString("PROGRAM_OBJECT");
             program = new Gson().fromJson(programJson, Program.class);
@@ -217,24 +224,23 @@ public class ProgramService extends IntentService {
             // get passed start index from where we should start loading videos (offset)
             int startIndex = workIntent.getExtras().getInt("START_INDEX");
 
-            // Initiate videoList or get existing one if passed
+            // Initiate videoList
+            VideoList videoList = VideoList.getInstance();
             if(startIndex == 1) {
-                videoList = new VideoList();
-            } else {
-                String videoListJson = workIntent.getExtras().getString("VIDEO_LIST");
-                videoList = new Gson().fromJson(videoListJson, VideoList.class);
+                // Clear VideoList on first load
+                videoList.clear();
+            }
 
-                // Add an additional check to make sure we don't create a loading loop
-                // This should never happen: we already catch any non-200 HTTP response
-                // and any JSON parsing exception but better be sure we don't flood VRT.NU search API
-                // This could theoretically happen when the first request is successful but any
-                // next request returns an unwanted, but valid JSON, response
-                int va = videoList.getVideosAvailable();
-                if(va > 0 && startIndex > va) {
-                    resultData.putString("MSG", "Start index (" + startIndex + ") > videos available (" + va + "). This should never happen.");
-                    receiver.send(Activity.RESULT_CANCELED, resultData);
-                    return;
-                }
+            // Add an additional check to make sure we don't create a loading loop
+            // This should never happen: we already catch any non-200 HTTP response
+            // and any JSON parsing exception but better be sure we don't flood VRT.NU search API
+            // This could theoretically happen when the first request is successful but any
+            // next request returns an unwanted, but valid JSON, response
+            int va = videoList.getVideosAvailable();
+            if(va > 0 && startIndex > va) {
+                resultData.putString("MSG", "Start index (" + startIndex + ") > videos available (" + va + "). This should never happen.");
+                receiver.send(Activity.RESULT_CANCELED, resultData);
+                return;
             }
 
             // Get list of available seasons
@@ -292,12 +298,23 @@ public class ProgramService extends IntentService {
                 JSONObject program = items.getJSONObject(i);
                 String imageServer = getString(R.string.model_image_server); // FIXME: quick hack
                 Video video = parseVideoFromJSON(program, imageServer);
+
+                // Copy progress from VideoContinueWatchingList
+                for(Video videoContinueWatching : VideoContinueWatchingList.getInstance().getVideos()) {
+                    if(videoContinueWatching.getVideoId().equals(video.getVideoId()) &&
+                            videoContinueWatching.getPubId().equals(video.getPubId())) {
+                        if(videoContinueWatching.getProgressPct() > 0) {
+                            Log.d(TAG, "Copying videoProgress for " + video.getTitle());
+                            video.setProgressPct(videoContinueWatching.getProgressPct());
+                            video.setCurrentPosition(videoContinueWatching.getCurrentPosition());
+                        }
+                    }
+                }
                 videoList.addVideo(video);
                 Log.d(TAG, "Adding video : " + video.getTitle());
             }
 
             resultData.putString("SEASON_LIST", (new Gson()).toJson(seasons));
-            resultData.putString("VIDEO_LIST", (new Gson()).toJson(videoList));
             receiver.send(Activity.RESULT_OK, resultData);
 
         } catch (Exception e) {
@@ -318,7 +335,7 @@ public class ProgramService extends IntentService {
         String description = inputObject.optString(TAG_DESCRIPTION);
         String seasonName = inputObject.optString(TAG_SEASONNAME);
         int episodeNumber = inputObject.optInt(TAG_EPISODENR);
-        int duration = inputObject.optInt(TAG_DURATION);
+        int duration = inputObject.optInt(TAG_DURATION, 0) * 60;
         String videoId  = inputObject.getString(TAG_VIDEOID);
         String pubId  = inputObject.getString(TAG_PUBID);
         String formattedBroadcastDate = inputObject.optString(TAG_BROADCASTDATE);
@@ -326,6 +343,7 @@ public class ProgramService extends IntentService {
         JSONArray brands = inputObject.optJSONArray(TAG_BRANDS);
         String program = inputObject.optString(TAG_PROGRAM);
         String assetPath = inputObject.optString(TAG_ASSETPATH);
+        String url = inputObject.optString(TAG_URL);
 
         // we replace the image server with the one defined in urls.xml
         // this prepends the (often) 'missing' 'https://' and allows us to query our own size ('orig' can go up to 18MB each(!))
@@ -349,6 +367,7 @@ public class ProgramService extends IntentService {
                 brand,
                 program,
                 assetPath,
+                url,
                 imageServer,
                 streamType
         );
