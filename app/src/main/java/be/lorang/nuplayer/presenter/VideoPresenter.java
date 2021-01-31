@@ -89,7 +89,7 @@ public class VideoPresenter<T extends BaseCardView> extends BaseCardPresenter {
                 " - " +
                 "episode " + video.getEpisodeNumber() +
                 " - " +
-                video.getDuration() + " min";
+                (video.getDuration() / 60) + " min";
 
         TextView primaryText = cardView.findViewById(R.id.videoPrimaryText);
         primaryText.setText(primaryTextValue);

@@ -35,8 +35,8 @@
     <string name="episode">Episode</string>
     <string name="runtime">Runtime</string>
     <string name="airdate">Airdate</string>
-    <string name="runtime_one_minute">minute</string>
-    <string name="runtime_multiple_minutes">minutes</string>
+    <string name="runtime_one_minute">1 minute</string>
+    <string name="runtime_minutes">minutes</string>
 
     <!-- BrowseErrorFragment - unused for now -->
     <string name="error_fragment">Error Fragment</string>
