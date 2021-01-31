@@ -18,7 +18,10 @@
 package be.lorang.nuplayer.presenter;
 
 import android.content.Context;
+import android.util.Log;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.leanback.widget.BaseCardView;
@@ -27,6 +30,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import be.lorang.nuplayer.R;
 import be.lorang.nuplayer.model.Video;
+import be.lorang.nuplayer.utils.Utils;
 
 /*
  *
@@ -37,7 +41,7 @@ import be.lorang.nuplayer.model.Video;
 
 public class WideVideoPresenter<T extends BaseCardView> extends BaseCardPresenter {
 
-    private static final String TAG = "ProgramPresenter";
+    private static final String TAG = "WideVideoPresenter";
 
     public WideVideoPresenter(Context context) {
         super(context, R.layout.card_video_wide);
@@ -83,15 +87,14 @@ public class WideVideoPresenter<T extends BaseCardView> extends BaseCardPresente
                     video.getEpisodeNumber() + System.lineSeparator());
         }
 
-        if(video.getDuration() == 1) {
+        if(video.getDuration() <= 60) {
             stringBuilder.append(getContext().getString(R.string.runtime) + ": " +
-                    video.getDuration() + " " +
                     getContext().getString(R.string.runtime_one_minute) +
                     System.lineSeparator());
-        }else if(video.getDuration() > 1) {
+        }else if(video.getDuration() > 60) {
             stringBuilder.append(getContext().getString(R.string.runtime) + ": " +
-                    video.getDuration() + " " +
-                    getContext().getString(R.string.runtime_multiple_minutes) +
+                    (video.getDuration() / 60) + " " +
+                    getContext().getString(R.string.runtime_minutes) +
                     System.lineSeparator());
         }
 
@@ -101,6 +104,18 @@ public class WideVideoPresenter<T extends BaseCardView> extends BaseCardPresente
                     System.lineSeparator());
         }
 
+        // set progress
+        ProgressBar progressBar = cardView.findViewById(R.id.progressBarVideoWide);
+        ViewGroup.LayoutParams params = progressBar.getLayoutParams();
+        if(video.getProgressPct() > 0) {
+            Log.d(TAG, "Setting progress for video " + video.getTitle() + " to = " + video.getProgressPct());
+            progressBar.setProgress(video.getProgressPct());
+            params.height = 8;
+
+        } else {
+            params.height = 0;
+        }
+        progressBar.setLayoutParams(params);
         secondaryTextView.setText(stringBuilder.toString());
     }
 

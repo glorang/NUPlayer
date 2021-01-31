@@ -14,53 +14,70 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:lb="http://schemas.android.com/apk/res-auto"
     android:id="@+id/container"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
-
-    <ImageView
-        android:id="@+id/main_image"
-        android:layout_width="180dp"
-        android:layout_height="101dp"
-        android:layout_weight="1"
-        android:adjustViewBounds="true"
-        android:scaleType="fitXY"
-        lb:layout_viewType="main" />
+    android:orientation="vertical">
 
     <LinearLayout
-        android:id="@+id/info"
-        android:layout_width="450dp"
-        android:layout_height="match_parent"
-        android:background="@color/vrtnu_black_tint_1"
-        android:orientation="vertical"
-        android:paddingLeft="11dp"
-        android:paddingTop="7dp"
-        android:paddingRight="11dp">
+        android:id="@+id/LinearLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/videoWideTitle"
-            style="@style/Widget.Leanback.ImageCardView.TitleStyle"
-            android:fontFamily="sans-serif-condensed"
-            android:maxLines="1"
-            android:textSize="16sp" />
+        <ImageView
+            android:id="@+id/main_image"
+            android:layout_width="213dp"
+            android:layout_height="120dp"
+            android:layout_weight="1"
+            android:adjustViewBounds="true"
+            android:scaleType="fitXY"
+            lb:layout_viewType="main" />
 
-        <TextView
-            android:id="@+id/videoWidePrimaryText"
-            style="@style/Widget.Leanback.ImageCardView.ContentStyle"
-            android:layout_marginTop="4dp"
-            android:fontFamily="sans-serif-condensed"
-            android:maxLines="2"
-            android:textColor="#EEEEEE" />
+        <LinearLayout
+            android:id="@+id/info"
+            android:layout_width="450dp"
+            android:layout_height="115dp"
+            android:background="@color/vrtnu_black_tint_1"
+            android:orientation="vertical"
+            android:paddingLeft="11dp"
+            android:paddingTop="7dp"
+            android:paddingRight="11dp"
+            android:paddingBottom="5dp">
 
-        <TextView
-            android:id="@+id/videoWideSecondaryText"
-            style="@style/Widget.Leanback.ImageCardView.ContentStyle"
-            android:layout_marginTop="6dp"
-            android:fontFamily="sans-serif-condensed"
-            android:maxLines="5" />
+            <TextView
+                android:id="@+id/videoWideTitle"
+                style="@style/Widget.Leanback.ImageCardView.TitleStyle"
+                android:fontFamily="sans-serif-condensed"
+                android:maxLines="1"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/videoWidePrimaryText"
+                style="@style/Widget.Leanback.ImageCardView.ContentStyle"
+                android:layout_marginTop="4dp"
+                android:fontFamily="sans-serif-condensed"
+                android:maxLines="1"
+                android:textColor="#EEEEEE" />
+
+            <TextView
+                android:id="@+id/videoWideSecondaryText"
+                style="@style/Widget.Leanback.ImageCardView.ContentStyle"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:fontFamily="sans-serif-condensed"
+                android:lines="3"
+                android:maxLines="3" />
+
+        </LinearLayout>
     </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBarVideoWide"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:scaleY="1" />
 </LinearLayout>
