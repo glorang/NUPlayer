@@ -18,6 +18,7 @@
 package be.lorang.nuplayer.presenter;
 
 import android.content.Context;
+import android.text.Html;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -96,7 +97,7 @@ public class VideoPresenter<T extends BaseCardView> extends BaseCardPresenter {
 
         // set video description
         TextView secondaryText = cardView.findViewById(R.id.videoSecondaryText);
-        secondaryText.setText(video.getDescription());
+        secondaryText.setText(Html.fromHtml(video.getDescription(), Html.FROM_HTML_MODE_COMPACT));
 
     }
 
