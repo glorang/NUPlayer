@@ -18,6 +18,7 @@
 package be.lorang.nuplayer.presenter;
 
 import android.content.Context;
+import android.text.Html;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -72,7 +73,7 @@ public class WideVideoPresenter<T extends BaseCardView> extends BaseCardPresente
         titleTextView.setText(video.getTitle());
 
         TextView primaryTextView = cardView.findViewById(R.id.videoWidePrimaryText);
-        primaryTextView.setText(video.getDescription());
+        primaryTextView.setText(Html.fromHtml(video.getDescription(), Html.FROM_HTML_MODE_COMPACT));
 
         TextView secondaryTextView = cardView.findViewById(R.id.videoWideSecondaryText);
         StringBuilder stringBuilder = new StringBuilder();
