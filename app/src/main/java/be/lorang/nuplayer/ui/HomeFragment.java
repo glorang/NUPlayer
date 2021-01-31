@@ -88,13 +88,20 @@ public class HomeFragment extends RowsFragment {
         setupFavoritesIntent();
         setupAccessTokenIntent();
 
-        // populate the catalog
-        populateCatalog();
-
         // add live TV
         addLiveTV();
 
     }
+
+    @Override
+    public void onResume() {
+
+        // populate the catalog
+        populateCatalog();
+
+        super.onResume();
+    }
+
 
     public void notifyDataReady() {
         if(seriesLoaded && favoritesLoaded && resumePointsLoaded) {
@@ -266,8 +273,11 @@ public class HomeFragment extends RowsFragment {
 
                 if (resultCode == Activity.RESULT_OK) {
 
-                    // add favorites to the front page
+                    // Get favorites
                     ProgramList programList = ProgramList.getInstance();
+                    // Empty adapter
+                    favoritesAdapter.removeItems(0, favoritesAdapter.size());
+                    // Add results
                     for(Program program : programList.getFavorites()) {
                         favoritesAdapter.add(program);
                     }
@@ -287,10 +297,10 @@ public class HomeFragment extends RowsFragment {
     private void setupResumePointsIntent() {
 
         // start an Intent to get all "Continue Watching" and "Watch Later" from VRT NU API
-        // It does not depend on the Catalog to be populated but does require a valid token
+        // Require valid VRT token, started via AccessToken intent once Catalog is downloaded
 
         resumePointsIntent = new Intent(getActivity(), ResumePointsService.class);
-        resumePointsIntent.putExtra("ACTION", "GET_CONTINUE_WATCHING_WATCH_LATER");
+        resumePointsIntent.putExtra("ACTION", ResumePointsService.ACTION_GET);
         resumePointsIntent.putExtra(ResumePointsService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
             @Override
             protected void onReceiveResult(int resultCode, Bundle resultData) {
@@ -303,18 +313,30 @@ public class HomeFragment extends RowsFragment {
 
                 if (resultCode == Activity.RESULT_OK) {
 
-                    // add Continue Watching
+                    // Get Continue Watching
                     VideoContinueWatchingList videoContinueWatchingList = VideoContinueWatchingList.getInstance();
+
+                    // Empty adapter
+                    continueWatchingAdapter.removeItems(0, continueWatchingAdapter.size());
+
+                    // Add results
                     for(Video video : videoContinueWatchingList.getVideos()) {
-                        continueWatchingAdapter.add(video);
+                        if(video.getProgressPct() > 5 && video.getProgressPct() < 95) {
+                            continueWatchingAdapter.add(video);
+                        }
                     }
 
                     if(continueWatchingAdapter.size() == 0) {
                         mRowsAdapter.remove(continueWatchingListRow);
                     }
 
-                    // add Watch Later
+                    // Get Watch Later
                     VideoWatchLaterList videoWatchLaterList = VideoWatchLaterList.getInstance();
+
+                    // Empty adapter
+                    watchLaterAdapter.removeItems(0, watchLaterAdapter.size());
+
+                    // Add results
                     for(Video video : videoWatchLaterList.getVideos()) {
                         watchLaterAdapter.add(video);
                     }
