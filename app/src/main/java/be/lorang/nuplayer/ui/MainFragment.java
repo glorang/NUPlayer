@@ -63,7 +63,7 @@ public class MainFragment extends BrowseFragment {
 
         setBadgeDrawable(getActivity().getResources().getDrawable(R.drawable.ic_logo, null));
         setTitle(getString(R.string.browse_title)); // Badge, when set, takes precedent over title
-        setHeadersState(HEADERS_ENABLED);
+        setHeadersState(HEADERS_ENABLED); // Should be HEADERS_HIDDEN
         setHeadersTransitionOnBackEnabled(true);
 
         // set menu background (left)

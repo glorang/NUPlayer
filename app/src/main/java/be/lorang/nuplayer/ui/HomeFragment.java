@@ -20,9 +20,11 @@ package be.lorang.nuplayer.ui;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.leanback.app.RowsFragment;
@@ -47,6 +49,8 @@ import be.lorang.nuplayer.services.CatalogService;
 import be.lorang.nuplayer.services.FavoriteService;
 import be.lorang.nuplayer.services.ResumePointsService;
 import be.lorang.nuplayer.services.SeriesService;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class HomeFragment extends RowsFragment {
 
@@ -91,6 +95,27 @@ public class HomeFragment extends RowsFragment {
         // add live TV
         addLiveTV();
 
+    }
+
+    /*
+     * When we open the app we want to hide the menu and only exit when the menu is visible (press return twice)
+     * This is *exactly* what:
+     *   setHeadersState(HEADERS_HIDDEN);
+     *   setHeadersTransitionOnBackEnabled(true);
+     * in MainFragment is supposed to do but doesn't work for on first load, I think there is some
+     * initial state bug, hence we solve this with a quick-and-dirty SharedPreference ¯\_(ツ)_/¯
+     */
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        SharedPreferences viewer = getActivity().getSharedPreferences(MainActivity.PREFERENCES_NAME, MODE_PRIVATE);
+        if(viewer.getBoolean(MainActivity.PREFERENCE_IS_APP_STARTUP, true)) {
+            view.requestFocus();
+            SharedPreferences.Editor editor = getActivity().getSharedPreferences(MainActivity.PREFERENCES_NAME, MODE_PRIVATE).edit();
+            editor.putBoolean(MainActivity.PREFERENCE_IS_APP_STARTUP, false);
+            editor.apply();
+        }
     }
 
     @Override

@@ -31,12 +31,18 @@ import be.lorang.nuplayer.services.AuthService;
 public class MainActivity extends LeanbackActivity {
 
     public static String PREFERENCES_NAME = "VRTNUPreferences";
+    public static String PREFERENCE_IS_APP_STARTUP = "isAppStartup";
     private static String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+        setContentView(R.layout.fragment_main);
+
+        // Set app startup boolean (see HomeFragment onViewCreated)
+        SharedPreferences.Editor editor = getSharedPreferences(MainActivity.PREFERENCES_NAME, MODE_PRIVATE).edit();
+        editor.putBoolean(PREFERENCE_IS_APP_STARTUP, true);
+        editor.apply();
 
         // Check if user is authenticated
         SharedPreferences prefs = getSharedPreferences(MainActivity.PREFERENCES_NAME, MODE_PRIVATE);
