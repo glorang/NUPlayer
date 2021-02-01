@@ -58,6 +58,15 @@ public class VideoPlaybackFragment extends VideoFragment {
         mMediaPlayerGlue.getPlayerAdapter().setDrmToken(drmToken);
         mMediaPlayerGlue.getPlayerAdapter().setDataSource(Uri.parse(videoUrl));
 
+        // Exit player when playback is completed
+        mMediaPlayerGlue.addPlayerCallback(new PlaybackGlue.PlayerCallback() {
+            @Override
+            public void onPlayCompleted(PlaybackGlue glue) {
+                super.onPlayCompleted(glue);
+                getActivity().finishAfterTransition();
+            }
+        });
+
         if(video.getCurrentPosition() > 0)  {
             Log.d(TAG, "Setting start position = " + video.getCurrentPosition());
             mMediaPlayerGlue.getPlayerAdapter().seekTo(video.getCurrentPosition() * 1000);
