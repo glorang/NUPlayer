@@ -42,6 +42,7 @@ public class Video {
     @SerializedName("program") private String mProgram = "";
     @SerializedName("assetPath") private String mAssetPath = "";
     @SerializedName("url") private String mUrl = "";
+    @SerializedName("whatsonId") private String mWhatsonId = "";
     @SerializedName("imageServer") private String mImageServer = "";
     @SerializedName("streamType") private String mStreamType = "";
     @SerializedName("progressPct") private int mProgressPct = 0;
@@ -62,6 +63,7 @@ public class Video {
                  String program,
                  String assetPath,
                  String url,
+                 String whatsonId,
                  String imageServer,
                  String streamType) {
         mTitle = title;
@@ -78,9 +80,9 @@ public class Video {
         mProgram = program;
         mAssetPath = assetPath;
         mUrl = url;
+        mWhatsonId = whatsonId;
         mImageServer = imageServer;
         mStreamType = streamType;
-
     }
 
     public String getTitle() {
@@ -157,6 +159,9 @@ public class Video {
 
     public String getURL() { return mUrl; }
     public void setURL(String url) { mUrl = url; }
+
+    public String getWhatsonId() { return mWhatsonId; }
+    public void setWhatsonId(String whatsonId) { mWhatsonId = whatsonId; }
 
     public String getStreamType() { return mStreamType; }
     public void setStreamType(String streamType) { mStreamType = streamType; }
