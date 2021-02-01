@@ -225,10 +225,15 @@ public class ResumePointsService extends IntentService {
                 .replaceAll("[^a-zA-Z0-9]", "")
                 .toLowerCase();
 
+        // Remove base url if present
+        String videoUrl = video.getURL();
+        videoUrl = videoUrl.replaceFirst("^(https:)?//www.vrt.be", "");
+
         JSONObject postData = new JSONObject();
-        postData.put("url", video.getURL());
+        postData.put("url", videoUrl);
         postData.put("position", position);
         postData.put("total", video.getDuration());
+        postData.put("whatsonId", video.getWhatsonId());
 
         Log.d(TAG, "Updating resume point, post data = " + postData);
         String url = getString(R.string.service_resumepoints_url) + "/" + assetPath;
