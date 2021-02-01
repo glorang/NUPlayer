@@ -270,7 +270,13 @@ public class ProgramFragment extends VerticalGridFragment implements OnItemViewS
         setupUi();
 
         // Update adapter with latest progress for all videos
-        mAdapter.notifyArrayItemRangeChanged(0, mAdapter.size());
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mAdapter.notifyArrayItemRangeChanged(0, mAdapter.size());
+            }
+        }, 2000);
+
 
         super.onResume();
     }
