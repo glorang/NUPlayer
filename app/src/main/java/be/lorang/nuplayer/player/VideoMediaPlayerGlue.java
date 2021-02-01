@@ -188,9 +188,4 @@ public class VideoMediaPlayerGlue<T extends PlayerAdapter> extends PlaybackTrans
         super.onDetachedFromHost();
     }
 
-    @Override
-    protected void onPlayCompleted() {
-        super.onPlayCompleted();
-        // FIXME: should we quit the video player automatically?
-    }
 }
