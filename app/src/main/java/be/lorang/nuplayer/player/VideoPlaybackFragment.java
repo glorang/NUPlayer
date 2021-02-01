@@ -20,6 +20,7 @@ package be.lorang.nuplayer.player;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 
 import androidx.leanback.app.VideoFragment;
@@ -50,11 +51,11 @@ public class VideoPlaybackFragment extends VideoFragment {
         videoUrl = vpa.getVideoUrl();
         drmToken = vpa.getDrmToken();
 
-        playerAdapter = new ExoPlayerAdapter(getActivity(), video.getTitle(), video.getDescription());
+        playerAdapter = new ExoPlayerAdapter(getActivity(), video.getProgram(), video.getTitle());
         mMediaPlayerGlue = new VideoMediaPlayerGlue(getActivity(), playerAdapter);
         mMediaPlayerGlue.setHost(mHost);
         mMediaPlayerGlue.setTitle(video.getTitle());
-        mMediaPlayerGlue.setSubtitle(video.getDescription());
+        mMediaPlayerGlue.setSubtitle(Html.fromHtml(video.getDescription(), Html.FROM_HTML_MODE_COMPACT));
         mMediaPlayerGlue.getPlayerAdapter().setDrmToken(drmToken);
         mMediaPlayerGlue.getPlayerAdapter().setDataSource(Uri.parse(videoUrl));
 

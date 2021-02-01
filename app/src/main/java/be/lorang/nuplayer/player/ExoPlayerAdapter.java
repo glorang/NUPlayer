@@ -79,7 +79,7 @@ public class ExoPlayerAdapter extends PlayerAdapter implements ExoPlayer.EventLi
     /**
      * Constructor.
      */
-    public ExoPlayerAdapter(Context context, String title, String description) {
+    public ExoPlayerAdapter(Context context, String program, String title) {
         mContext = context;
 
         mPlayer = new SimpleExoPlayer.Builder(context).build();
@@ -94,8 +94,7 @@ public class ExoPlayerAdapter extends PlayerAdapter implements ExoPlayer.EventLi
             @Override
             public MediaDescriptionCompat getMediaDescription(Player player, int windowIndex) {
                 return new MediaDescriptionCompat.Builder()
-                        .setTitle(title)
-                        .setDescription(description + " " + windowIndex)
+                        .setTitle(program + " - " + title)
                         .build();
             }
         });

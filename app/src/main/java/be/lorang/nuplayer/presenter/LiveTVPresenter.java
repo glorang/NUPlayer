@@ -18,6 +18,7 @@
 package be.lorang.nuplayer.presenter;
 
 import android.content.Context;
+import android.text.Html;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -78,7 +79,7 @@ public class LiveTVPresenter<T extends BaseCardView> extends BaseCardPresenter {
 
         // set description
         TextView textViewDescription = cardView.findViewById(R.id.liveTVDescription);
-        textViewDescription.setText(video.getDescription());
+        textViewDescription.setText(Html.fromHtml(video.getDescription(), Html.FROM_HTML_MODE_COMPACT));
 
     }
 
