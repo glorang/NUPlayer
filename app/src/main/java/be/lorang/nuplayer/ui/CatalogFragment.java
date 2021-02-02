@@ -43,7 +43,7 @@ import com.google.gson.Gson;
 
 
 public class CatalogFragment extends GridFragment {
-    private final static String TAG = "GridFragment";
+    private final static String TAG = "CatalogFragment";
     private static final int COLUMNS = 2;
     private final int ZOOM_FACTOR = FocusHighlight.ZOOM_FACTOR_MEDIUM;
     private ArrayObjectAdapter mAdapter;
