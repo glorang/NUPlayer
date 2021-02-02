@@ -41,7 +41,7 @@ import be.lorang.nuplayer.R;
 
 public class MainFragment extends BrowseFragment {
     private static final String TAG = "MainFragment";
-    private static final String[] menuItems = {"Home", "Catalog", "Series" ,"About"};
+    private static final String[] menuItems = {"Home", "Latest", "Series", "Catalog" ,"About"};
     private BackgroundManager mBackgroundManager;
 
     private ArrayObjectAdapter mRowsAdapter;
@@ -120,6 +120,8 @@ public class MainFragment extends BrowseFragment {
                     return new SeriesFragment();
                 case "About":
                     return new AboutFragment();
+                case "Latest":
+                    return new LatestFragment();
             }
 
             throw new IllegalArgumentException(String.format("Invalid row %s", rowObj));
