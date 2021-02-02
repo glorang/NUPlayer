@@ -59,23 +59,19 @@ public class HomeFragment extends RowsFragment {
     private ArrayObjectAdapter mRowsAdapter;
 
     private ArrayObjectAdapter liveTVAdapter;
-    private ArrayObjectAdapter seriesAdapter;
     private ArrayObjectAdapter favoritesAdapter;
     private ArrayObjectAdapter watchLaterAdapter;
     private ArrayObjectAdapter continueWatchingAdapter;
 
     private ListRow liveTVListRow;
-    private ListRow seriesListRow;
     private ListRow favoritesListRow;
     private ListRow watchLaterListRow;
     private ListRow continueWatchingListRow;
 
-    private Intent seriesIntent;
     private Intent accessTokenIntent;
     private Intent favoritesIntent;
     private Intent resumePointsIntent;
 
-    private boolean seriesLoaded = false;
     private boolean favoritesLoaded = false;
     private boolean resumePointsLoaded = false;
 
@@ -87,7 +83,6 @@ public class HomeFragment extends RowsFragment {
         setupAdapters();
 
         // setup intents for all stuff we want to add to the front page
-        setupSeriesIntent();
         setupResumePointsIntent();
         setupFavoritesIntent();
         setupAccessTokenIntent();
@@ -129,7 +124,7 @@ public class HomeFragment extends RowsFragment {
 
 
     public void notifyDataReady() {
-        if(seriesLoaded && favoritesLoaded && resumePointsLoaded) {
+        if(favoritesLoaded && resumePointsLoaded) {
             getMainFragmentAdapter().getFragmentHost().notifyDataReady(getMainFragmentAdapter());
         }
     }
@@ -169,13 +164,6 @@ public class HomeFragment extends RowsFragment {
         watchLaterAdapter = new ArrayObjectAdapter(watchLaterPresenter);
         watchLaterListRow = new ListRow(watchLaterHeader, watchLaterAdapter);
         mRowsAdapter.add(watchLaterListRow);
-
-        // Series Adapter
-        SeriesPresenter seriesPresenter = new SeriesPresenter(getContext());
-        HeaderItem seriesHeader = new HeaderItem(getString(R.string.series_title));
-        seriesAdapter = new ArrayObjectAdapter(seriesPresenter);
-        seriesListRow = new ListRow(seriesHeader, seriesAdapter);
-        mRowsAdapter.add(seriesListRow);
     }
 
     private void addLiveTV() {
@@ -212,52 +200,11 @@ public class HomeFragment extends RowsFragment {
                     // Start AccessTokenIntent which will populate Favorites, Watch Later and Resume Points
                     getActivity().startService(accessTokenIntent);
 
-                    // Add Series
-                    getActivity().startService(seriesIntent);
-
                 }
             }
         });
 
         getActivity().startService(catalogIntent);
-    }
-
-    private void setupSeriesIntent() {
-
-        // start an Intent to get all complete series from the Catalog
-        // the intent will only start once the catalog has been downloaded, e.g. it is started
-        // from populateCatalog() above
-
-        seriesIntent = new Intent(getActivity(), SeriesService.class);
-        seriesIntent.putExtra(SeriesService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
-            @Override
-            protected void onReceiveResult(int resultCode, Bundle resultData) {
-                super.onReceiveResult(resultCode, resultData);
-
-                // show messages, if any
-                if (resultData.getString("MSG", "").length() > 0) {
-                    Toast.makeText(getActivity(), resultData.getString("MSG"), Toast.LENGTH_SHORT).show();
-                }
-
-                if (resultCode == Activity.RESULT_OK) {
-
-                    // add "complete series" to the front page
-                    ProgramList programList = ProgramList.getInstance();
-                    for(Program program : programList.getSeries()) {
-                        seriesAdapter.add(program);
-                    }
-
-                    if(seriesAdapter.size() == 0) {
-                        mRowsAdapter.remove(seriesListRow);
-                    }
-
-                }
-
-                seriesLoaded = true;
-                notifyDataReady();
-            }
-        });
-
     }
 
     private void setupAccessTokenIntent() {

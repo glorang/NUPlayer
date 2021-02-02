@@ -1,46 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:lb="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/container"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:layout_weight="1"
     android:orientation="vertical">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1">
-
-        <ImageView
-            android:id="@+id/main_image"
-            android:layout_width="160dp"
-            android:layout_height="228dp"
-            android:layout_weight="1"
-            android:adjustViewBounds="true"
-            android:scaleType="fitXY"
-            lb:layout_viewType="main" />
-
-    </FrameLayout>
-
     <LinearLayout
-        android:id="@+id/info"
-        android:layout_width="match_parent"
+
+        android:id="@+id/container"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@color/vrtnu_black_tint_1"
-        android:orientation="vertical"
-        android:paddingLeft="10dp"
-        android:paddingTop="3dp"
-        android:paddingRight="10dp">
+        android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/serieTitle"
-            style="@style/Widget.Leanback.ImageCardView.ContentStyle"
-            android:layout_width="140dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="7dp"
-            android:fontFamily="sans-serif-condensed"
-            android:maxLines="1"
-            android:textColor="#EEEEEE" />
 
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/main_image"
+                android:layout_width="130dp"
+                android:layout_height="232dp"
+                android:adjustViewBounds="true"
+                android:scaleType="fitXY"
+                lb:layout_viewType="main" />
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/info"
+            android:layout_width="130dp"
+            android:layout_height="match_parent"
+            android:background="@color/vrtnu_black_tint_1"
+            android:orientation="vertical"
+            android:paddingLeft="11dp"
+            android:paddingTop="7dp"
+            android:paddingRight="11dp">
+
+            <TextView
+                android:id="@+id/serieTitle"
+                style="@style/Widget.Leanback.ImageCardView.TitleStyle"
+                android:fontFamily="sans-serif-condensed"
+                android:lines="2"
+                android:maxLines="2"
+                android:textColor="#EEEEEE"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/serieDescription"
+                style="@style/Widget.Leanback.ImageCardView.ContentStyle"
+                android:layout_marginTop="6dp"
+                android:fontFamily="sans-serif-condensed"
+                android:lines="14"
+                android:maxLines="14"
+                android:textSize="10sp" />
+
+        </LinearLayout>
     </LinearLayout>
+
 </LinearLayout>
