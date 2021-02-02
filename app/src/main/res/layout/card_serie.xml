@@ -23,7 +23,7 @@
             <ImageView
                 android:id="@+id/main_image"
                 android:layout_width="130dp"
-                android:layout_height="232dp"
+                android:layout_height="186dp"
                 android:adjustViewBounds="true"
                 android:scaleType="fitXY"
                 lb:layout_viewType="main" />
@@ -54,8 +54,8 @@
                 style="@style/Widget.Leanback.ImageCardView.ContentStyle"
                 android:layout_marginTop="6dp"
                 android:fontFamily="sans-serif-condensed"
-                android:lines="14"
-                android:maxLines="14"
+                android:lines="10"
+                android:maxLines="10"
                 android:textSize="10sp" />
 
         </LinearLayout>
