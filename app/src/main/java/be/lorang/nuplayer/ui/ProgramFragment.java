@@ -65,8 +65,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ProgramFragment extends VerticalGridFragment implements OnItemViewSelectedListener,
-        AdapterView.OnItemSelectedListener {
+public class ProgramFragment extends VerticalGridFragment implements OnItemViewSelectedListener {
 
     private static final int COLUMNS = 1;
     private static final int ZOOM_FACTOR = FocusHighlight.ZOOM_FACTOR_SMALL;
@@ -123,7 +122,7 @@ public class ProgramFragment extends VerticalGridFragment implements OnItemViewS
         try {
             if(episodeCount > 0) {
                 TextView episodeCountText = (TextView) getActivity().findViewById(R.id.episodeCountText);
-                episodeCountText.setText("Episodes: " + episodeCount + "\nEpisodes loaded: " + episodesLoaded);
+                episodeCountText.setText("Available: " + episodeCount + "\nLoaded: " + episodesLoaded);
             }
         } catch(Exception e) {
             // don't crash if we can't find / load brand image
@@ -221,7 +220,23 @@ public class ProgramFragment extends VerticalGridFragment implements OnItemViewS
         spinner.setSelection(0, false);
 
         // add listener
-        spinner.setOnItemSelectedListener(this);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+              @Override
+              public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                  // clear existing videos
+                  mAdapter.clear();
+                  // set season index
+                  selectedSeasonIndex = position;
+                  // load new data
+                  loadData(1);
+              }
+
+              @Override
+              public void onNothingSelected(AdapterView<?> parent) {
+
+              }
+          }
+        );
 
     }
 
@@ -299,19 +314,5 @@ public class ProgramFragment extends VerticalGridFragment implements OnItemViewS
         }
     }
 
-    @Override
-    public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-        // clear existing videos
-        mAdapter.clear();
-        // set season index
-        selectedSeasonIndex = position;
-        // load new data
-        loadData(1);
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> adapterView) {
-        return;
-    }
 
 }
