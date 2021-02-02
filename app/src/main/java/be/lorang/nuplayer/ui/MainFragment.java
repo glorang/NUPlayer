@@ -31,21 +31,17 @@ import androidx.leanback.widget.ListRowPresenter;
 import androidx.leanback.widget.PageRow;
 import androidx.leanback.widget.Row;
 
+import android.util.Log;
 import android.view.View;
+
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import be.lorang.nuplayer.R;
 
 public class MainFragment extends BrowseFragment {
-
-    private static final long HEADER_ID_1 = 1;
-    private static final String HEADER_NAME_1 = "Home";
-    private static final long HEADER_ID_2 = 2;
-    private static final String HEADER_NAME_2 = "Catalog";
-    private static final long HEADER_ID_3 = 3;
-    private static final String HEADER_NAME_3 = "Series";
-    private static final long HEADER_ID_4 = 4;
-    private static final String HEADER_NAME_4 = "About";
-
+    private static final String TAG = "MainFragment";
+    private static final String[] menuItems = {"Home", "Catalog", "Series" ,"About"};
     private BackgroundManager mBackgroundManager;
 
     private ArrayObjectAdapter mRowsAdapter;
@@ -94,21 +90,12 @@ public class MainFragment extends BrowseFragment {
     }
 
     private void createRows() {
-        HeaderItem headerItem1 = new HeaderItem(HEADER_ID_1, HEADER_NAME_1);
-        PageRow pageRow1 = new PageRow(headerItem1);
-        mRowsAdapter.add(pageRow1);
 
-        HeaderItem headerItem2 = new HeaderItem(HEADER_ID_2, HEADER_NAME_2);
-        PageRow pageRow2 = new PageRow(headerItem2);
-        mRowsAdapter.add(pageRow2);
-
-        HeaderItem headerItem3 = new HeaderItem(HEADER_ID_3, HEADER_NAME_3);
-        PageRow pageRow3 = new PageRow(headerItem3);
-        mRowsAdapter.add(pageRow3);
-
-        HeaderItem headerItem4 = new HeaderItem(HEADER_ID_4, HEADER_NAME_4);
-        PageRow pageRow4 = new PageRow(headerItem4);
-        mRowsAdapter.add(pageRow4);
+        for(int i=0;i<menuItems.length;i++) {
+            HeaderItem headerItem = new HeaderItem(i, menuItems[i]);
+            PageRow pageRow = new PageRow(headerItem);
+            mRowsAdapter.add(pageRow);
+        }
 
         startEntranceTransition();
     }
@@ -124,14 +111,15 @@ public class MainFragment extends BrowseFragment {
         public Fragment createFragment(Object rowObj) {
             Row row = (Row)rowObj;
             mBackgroundManager.setDrawable(null);
-            if (row.getHeaderItem().getId() == HEADER_ID_1) {
-                return new HomeFragment();
-            } else if (row.getHeaderItem().getId() == HEADER_ID_2) {
-                return new CatalogFragment();
-            } else if (row.getHeaderItem().getId() == HEADER_ID_3) {
-                return new SeriesFragment();
-            } else if (row.getHeaderItem().getId() == HEADER_ID_4) {
-                return new AboutFragment();
+            switch(row.getHeaderItem().getName()) {
+                case "Home":
+                    return new HomeFragment();
+                case "Catalog":
+                    return new CatalogFragment();
+                case "Series":
+                    return new SeriesFragment();
+                case "About":
+                    return new AboutFragment();
             }
 
             throw new IllegalArgumentException(String.format("Invalid row %s", rowObj));
