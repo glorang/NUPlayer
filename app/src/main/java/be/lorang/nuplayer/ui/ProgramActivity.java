@@ -37,7 +37,7 @@ public class ProgramActivity extends Activity {
             program = new Gson().fromJson(programJson, Program.class);
         }
 
-        setContentView(R.layout.fragment_program_main);
+        setContentView(R.layout.fragment_program);
     }
 
     public Program getProgram() { return program;}

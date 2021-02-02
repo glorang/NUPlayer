@@ -2,6 +2,8 @@
 <resources>
 
     <color name="vrtnu_white">#ffffff</color>
+    <color name="vrtnu_white_alpha_20">#33ffffff</color>
+    <color name="vrtnu_white_alpha_100">#ffffffff</color>
     <color name="vrtnu_grey">#e5e5e5</color>
     <color name="vrtnu_black_tint_1">#0e0e0e</color>
     <color name="vrtnu_black_tint_1_alpha_80">#CC0e0e0e</color>
@@ -11,6 +13,8 @@
 
     <color name="vrtnu_black_tint_2">#191919</color>
     <color name="vrtnu_blue">#063e8a</color>
+    <color name="vrtnu_blue_alpha_80">#cc063e8a</color>
+    <color name="vrtnu_blue_alpha_20">#33063e8a</color>
     <color name="vrtnu_green">#00B600</color>
     <color name="vrtnu_red">#B60000</color>
 
