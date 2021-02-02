@@ -42,7 +42,9 @@ public class MainFragment extends BrowseFragment {
     private static final long HEADER_ID_2 = 2;
     private static final String HEADER_NAME_2 = "Catalog";
     private static final long HEADER_ID_3 = 3;
-    private static final String HEADER_NAME_3 = "About";
+    private static final String HEADER_NAME_3 = "Series";
+    private static final long HEADER_ID_4 = 4;
+    private static final String HEADER_NAME_4 = "About";
 
     private BackgroundManager mBackgroundManager;
 
@@ -104,6 +106,10 @@ public class MainFragment extends BrowseFragment {
         PageRow pageRow3 = new PageRow(headerItem3);
         mRowsAdapter.add(pageRow3);
 
+        HeaderItem headerItem4 = new HeaderItem(HEADER_ID_4, HEADER_NAME_4);
+        PageRow pageRow4 = new PageRow(headerItem4);
+        mRowsAdapter.add(pageRow4);
+
         startEntranceTransition();
     }
 
@@ -123,6 +129,8 @@ public class MainFragment extends BrowseFragment {
             } else if (row.getHeaderItem().getId() == HEADER_ID_2) {
                 return new CatalogFragment();
             } else if (row.getHeaderItem().getId() == HEADER_ID_3) {
+                return new SeriesFragment();
+            } else if (row.getHeaderItem().getId() == HEADER_ID_4) {
                 return new AboutFragment();
             }
 
