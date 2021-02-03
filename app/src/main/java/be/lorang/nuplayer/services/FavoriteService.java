@@ -89,7 +89,11 @@ public class FavoriteService extends IntentService {
         }
     }
 
-
+    // Get all favorites
+    //
+    // Note that we need to have a valid vrtlogin-{at,rt,expiry} cookies for this call
+    // to succeed. As they are passed automatically by the application wide CookieHandler
+    // there is no explicit reference to them here
     private void populateFavorites() throws IOException, JSONException {
 
         // Only run once as we track Favorites ourselves once initialized
@@ -97,18 +101,15 @@ public class FavoriteService extends IntentService {
             return;
         }
 
-        // Get all favorites
-        //
-        // Note that we need to have a valid vrtlogin-{at,rt,expiry} cookies for this call
-        // to succeed. As they are passed automatically by the application wide CookieHandler
-        // there is no explicit reference to them here
+
         JSONObject returnObject = httpClient.getRequest(getString(R.string.service_catalog_favorites_url));
         if(httpClient.getResponseCode() != 200) {
             throw new HttpException(httpClient.getResponseCode() + ": " + httpClient.getResponseMessage());
         }
 
-        // FIXME: matching on Title might not be the best (worksforme[tm] though)
-        //  Might be better to match on "whatsonId"
+        // Match on Title, it's the best option available
+        // whatsonId is missing in Program
+        // programUrl is used inconsistently by VRT API (starting with (https://)?<base url>, ending in .html or /)
         for (int i = 0; i < returnObject.names().length(); i++) {
             String key = returnObject.names().getString(i);
             JSONObject favorite = returnObject.getJSONObject(key).getJSONObject("value");
