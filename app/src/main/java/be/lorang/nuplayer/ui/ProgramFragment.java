@@ -25,6 +25,8 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 
+import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.leanback.app.BackgroundManager;
 import androidx.leanback.app.VerticalGridFragment;
 import androidx.leanback.widget.ArrayObjectAdapter;
@@ -40,6 +42,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -51,12 +54,16 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 
 import be.lorang.nuplayer.R;
+import be.lorang.nuplayer.model.ProgramList;
 import be.lorang.nuplayer.model.Video;
+import be.lorang.nuplayer.services.AccessTokenService;
+import be.lorang.nuplayer.services.FavoriteService;
 import be.lorang.nuplayer.services.ProgramService;
 import be.lorang.nuplayer.model.Program;
 import be.lorang.nuplayer.model.VideoList;
 import be.lorang.nuplayer.presenter.CustomVerticalGridPresenter;
 import be.lorang.nuplayer.presenter.WideVideoPresenter;
+import be.lorang.nuplayer.services.ResumePointsService;
 
 import com.google.gson.Gson;
 
@@ -99,6 +106,7 @@ public class ProgramFragment extends VerticalGridFragment implements OnItemViewS
         setTitle(program.getTitle());
         updateBackground(program.getThumbnail("w1920hx"));
         setBrandImage(program.getBrand().replaceAll("-", ""));
+        setFavoritesButton();
     }
 
     private void setBrandImage(String brand) {
@@ -187,6 +195,9 @@ public class ProgramFragment extends VerticalGridFragment implements OnItemViewS
                         mAdapter.add(videoList.getVideo(i));
                     }
 
+                    // Set focus on Video list (iso on Favorites button or Season selector)
+                    getView().requestFocus();
+
                 }
 
                 startEntranceTransition();
@@ -237,6 +248,93 @@ public class ProgramFragment extends VerticalGridFragment implements OnItemViewS
               }
           }
         );
+
+    }
+
+    private void setFavoritesButtonState(Button button, String state) {
+        Drawable img;
+        String text;
+
+        switch(state) {
+            case "Remove":
+                img = ResourcesCompat.getDrawable(getResources(),
+                        android.R.drawable.ic_menu_delete, getContext().getTheme());
+                text = "Remove";
+                break;
+            default:
+            case "Add":
+                img = ResourcesCompat.getDrawable(getResources(),
+                        android.R.drawable.ic_menu_add, getContext().getTheme());
+                text = "Add";
+                break;
+        }
+
+        button.setCompoundDrawablesWithIntrinsicBounds(img, null, null, null);
+        button.setText(text);
+    }
+
+
+    private void setFavoritesButton() {
+
+        Button favoriteButton = (Button)getActivity().findViewById(R.id.buttonFavorite);
+
+        if(favoriteButton == null) {
+            return;
+        }
+
+        if(program.isFavorite()) {
+            setFavoritesButtonState(favoriteButton,"Remove");
+        } else {
+            setFavoritesButtonState(favoriteButton,"Add");
+        }
+
+        // add listener
+        favoriteButton.setOnClickListener(v -> {
+            boolean newState = !program.isFavorite();
+
+            // switch state
+            if(program.isFavorite()) {
+                setFavoritesButtonState(favoriteButton,"Add");
+            } else {
+                setFavoritesButtonState(favoriteButton,"Remove");
+            }
+
+            // update our own instance
+            program.setIsFavorite(newState);
+
+            // update at VRT
+            Intent accessTokenIntent = new Intent(getContext(), AccessTokenService.class);
+            accessTokenIntent.putExtra(AccessTokenService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
+                @Override
+                protected void onReceiveResult(int resultCode, Bundle resultData) {
+                    super.onReceiveResult(resultCode, resultData);
+                    if (resultCode == Activity.RESULT_OK) {
+
+                        Intent favoritesIntent = new Intent(getContext(), FavoriteService.class);
+                        favoritesIntent.putExtra("ACTION", FavoriteService.ACTION_UPDATE_FAVORITE);
+                        favoritesIntent.putExtra("PROGRAM_OBJECT", new Gson().toJson(program));
+                        favoritesIntent.putExtra("IS_FAVORITE", newState);
+
+                        favoritesIntent.putExtra(ResumePointsService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
+                            @Override
+                            protected void onReceiveResult(int resultCode, Bundle resultData) {
+                                super.onReceiveResult(resultCode, resultData);
+
+                                // show messages, if any
+                                if (resultData.getString("MSG", "").length() > 0) {
+                                    Toast.makeText(getContext(), resultData.getString("MSG"), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+                        getContext().startService(favoritesIntent);
+
+                    }
+                }
+            });
+
+            getContext().startService(accessTokenIntent);
+
+        });
 
     }
 

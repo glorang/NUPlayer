@@ -62,10 +62,10 @@ public class ProgramList {
         return result;
     }
 
-    public void setIsFavorite(String programTitle) {
+    public void setIsFavorite(String programTitle, boolean isFavorite) {
         for(Program program : mPrograms) {
             if(program.getTitle().equals(programTitle)) {
-                program.setIsFavorite(true);
+                program.setIsFavorite(isFavorite);
                 favoritesCount++;
             }
         }
