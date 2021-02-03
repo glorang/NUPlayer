@@ -30,16 +30,21 @@ import org.json.JSONTokener;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.HttpCookie;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -75,10 +80,11 @@ public class HTTPClient {
      *                    (application/json, application/x-www-form-urlencoded)
      * @param postData - JSONObject: data for POST request
      * @param headers - HashMap: additional headers to set
+     * @param cacheDir - File: File object pointing to cache dir (getContext().getCacheDir())
      *
      * @return JSONObject with result
      */
-    private JSONObject doRequest(String urlString, String requestMethod, String contentType, JSONObject postData, Map<String, String> headers) throws IOException  {
+    private JSONObject doRequest(String urlString, String requestMethod, String contentType, JSONObject postData, Map<String, String> headers, File cacheDir) throws IOException  {
 
         try {
 
@@ -176,6 +182,25 @@ public class HTTPClient {
                 returnObject.put("data", jsonArr);
             }
 
+            // Write result to cache for later use
+            if(cacheDir != null && requestMethod.equals("GET") && responseCode == 200) {
+
+                // Setup cache object as JSON with current timestamp
+                JSONObject cacheObject = new JSONObject();
+                Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                cacheObject.put("timestamp", timestamp.getTime());
+                cacheObject.put("object", returnObject.toString());
+
+                Log.d(TAG, "Writing to cache: " + cacheObject.toString().substring(0,100));
+
+                String fileName = getCacheFileName(urlString);
+                File file = new File(cacheDir, fileName);
+                Writer output = new BufferedWriter(new OutputStreamWriter(
+                        new FileOutputStream(file), StandardCharsets.UTF_8));
+                output.write(cacheObject.toString());
+                output.close();
+            }
+
         } catch (Exception e) {
             Log.d(TAG, "Exception caught: " + e.getMessage());
             e.printStackTrace();
@@ -193,19 +218,62 @@ public class HTTPClient {
     }
 
     public JSONObject getRequest(String url) throws IOException{
-        return doRequest(url, "GET", null, null, null);
+        return doRequest(url, "GET", null, null, null, null);
+    }
+
+    public JSONObject getRequest(File cacheDir, String url) throws IOException{
+        return doRequest(url, "GET", null, null, null, cacheDir);
     }
 
     public JSONObject getRequest(String url, Map<String, String> headers) throws IOException{
-        return doRequest(url, "GET", null, null, headers);
+        return doRequest(url, "GET", null, null, headers, null);
     }
 
     public JSONObject postRequest(String url, String contentType, JSONObject postData) throws IOException {
-        return doRequest(url, "POST", contentType, postData, null);
+        return doRequest(url, "POST", contentType, postData, null, null);
     }
 
     public JSONObject postRequest(String url, String contentType, JSONObject postData, Map<String, String> headers) throws IOException {
-        return doRequest(url, "POST", contentType, postData, headers);
+        return doRequest(url, "POST", contentType, postData, headers, null);
+    }
+
+    // Return cached responses, ttl in minutes
+    public JSONObject getCachedRequest(File cacheDir, String url, int ttl) throws IOException {
+        String fileName = getCacheFileName(url);
+
+        File file = new File(cacheDir, fileName);
+        if(file.exists()) {
+
+            FileInputStream fis = new FileInputStream(file);
+            byte[] data = new byte[(int) file.length()];
+            fis.read(data);
+            fis.close();
+
+            String input = new String(data, StandardCharsets.UTF_8);
+            try {
+                JSONObject cacheObject = new JSONObject(input);
+                Timestamp timestampCacheExpires = new Timestamp(cacheObject.getLong("timestamp") + (ttl * 60 * 1000));
+                Instant cacheExpires = timestampCacheExpires.toInstant();
+                JSONObject object = new JSONObject(cacheObject.getString("object"));
+                Log.d(TAG, "object = " + object);
+
+                // check if cache entry still valid
+                if(Instant.now().isBefore(cacheExpires)) {
+                    Log.d(TAG, "Returning cached object - Cache still valid until " + cacheExpires.toString() + " result for " + url);
+                    responseCode = 200;
+                    return object;
+                }
+
+            } catch(Exception e) {
+                return getRequest(cacheDir, url);
+            }
+        }
+
+        return getRequest(cacheDir, url);
+    }
+
+    public JSONObject getCachedRequest(File cacheDir, String url) throws IOException {
+        return getCachedRequest(cacheDir, url, 30);
     }
 
     public int getResponseCode() {
@@ -220,4 +288,7 @@ public class HTTPClient {
         return (CookieManager)CookieHandler.getDefault();
     }
 
+    private String getCacheFileName(String url) {
+        return "url-cache-" + Utils.sha256(url) + ".json";
+    }
 }

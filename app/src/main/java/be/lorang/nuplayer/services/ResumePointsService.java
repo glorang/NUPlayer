@@ -112,7 +112,7 @@ public class ResumePointsService extends IntentService {
             return;
         }
 
-        JSONObject returnObject = httpClient.getRequest(getString(R.string.service_resumepoints_url));
+        JSONObject returnObject = httpClient.getCachedRequest(getCacheDir(), getString(R.string.service_resumepoints_url));
         if(httpClient.getResponseCode() != 200) {
             throw new HttpException(httpClient.getResponseCode() + ": " + httpClient.getResponseMessage());
         }
@@ -165,7 +165,7 @@ public class ResumePointsService extends IntentService {
             String queryURL = String.format(getString(R.string.service_resumepoints_video_url), url);
             Log.d(TAG, "Getting video info at: " + queryURL);
             HTTPClient videoHTTPClient = new HTTPClient();
-            JSONObject videoReturnObject = videoHTTPClient.getRequest(queryURL);
+            JSONObject videoReturnObject = videoHTTPClient.getCachedRequest(getCacheDir(), queryURL, 1440);
             if(videoHTTPClient.getResponseCode() != 200) {
                 continue;
             }

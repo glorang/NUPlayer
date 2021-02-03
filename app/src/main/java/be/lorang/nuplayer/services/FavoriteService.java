@@ -102,7 +102,7 @@ public class FavoriteService extends IntentService {
         }
 
 
-        JSONObject returnObject = httpClient.getRequest(getString(R.string.service_catalog_favorites_url));
+        JSONObject returnObject = httpClient.getCachedRequest(getCacheDir(), getString(R.string.service_catalog_favorites_url));
         if(httpClient.getResponseCode() != 200) {
             throw new HttpException(httpClient.getResponseCode() + ": " + httpClient.getResponseMessage());
         }

@@ -70,7 +70,7 @@ public class SeriesService extends IntentService {
         try {
 
             // Get all "time limited" series
-            JSONObject returnObject = httpClient.getRequest(getString(R.string.service_catalog_series_url));
+            JSONObject returnObject = httpClient.getCachedRequest(getCacheDir(), getString(R.string.service_catalog_series_url), 1440);
             if(httpClient.getResponseCode() != 200) {
                 throw new HttpException(httpClient.getResponseCode() + ": " + httpClient.getResponseMessage());
             }

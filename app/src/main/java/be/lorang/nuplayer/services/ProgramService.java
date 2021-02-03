@@ -249,7 +249,7 @@ public class ProgramService extends IntentService {
             if(seasons == null) {
                 url = String.format(getString(R.string.service_program_seasons_url), program.getProgramName());
                 Log.d(TAG, "Getting season info at " + url);
-                returnObject = httpClient.getRequest(url);
+                returnObject = httpClient.getCachedRequest(getCacheDir(), url, 1440);
                 if (httpClient.getResponseCode() == 200) {
                     seasons = parseSeason(returnObject);
                 }
@@ -277,7 +277,7 @@ public class ProgramService extends IntentService {
             Log.d(TAG, "Getting program details at: " + url);
 
             // Get program details
-            returnObject = httpClient.getRequest(url);
+            returnObject = httpClient.getCachedRequest(getCacheDir(), url);
 
             if (httpClient.getResponseCode() != 200) {
                 throw new HttpException(httpClient.getResponseCode() + ": " + httpClient.getResponseMessage());
