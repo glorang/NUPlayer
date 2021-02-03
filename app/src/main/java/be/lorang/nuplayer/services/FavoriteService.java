@@ -73,7 +73,8 @@ public class FavoriteService extends IntentService {
                 case FavoriteService.ACTION_UPDATE_FAVORITE:
                     Program program = new Gson().fromJson(workIntent.getExtras().getString("PROGRAM_OBJECT"), Program.class);
                     boolean isFavorite = workIntent.getExtras().getBoolean("IS_FAVORITE", false);
-                    updateFavorite(program, isFavorite);
+                    String whatsonId = workIntent.getExtras().getString("WHATSONID", "");
+                    updateFavorite(program, isFavorite, whatsonId);
                     break;
             }
 
@@ -121,7 +122,7 @@ public class FavoriteService extends IntentService {
     // Note that we need to have a valid vrtlogin-{at,rt,expiry} cookies for this call
     // to succeed. As they are passed automatically by the application wide CookieHandler
     // there is no explicit reference to them here
-    private void updateFavorite(Program program, Boolean isFavorite) throws JSONException, IOException {
+    private void updateFavorite(Program program, Boolean isFavorite, String whatsonId) throws JSONException, IOException {
 
         if(program == null) { return; }
 
@@ -134,11 +135,13 @@ public class FavoriteService extends IntentService {
         String programUrl = program.getProgramUrl();
         programUrl = programUrl.replaceFirst("^(https:)?//www.vrt.be", "");
 
-        // FIXME: we should add whatsonId here as well but we don't have it in the Catalog
         JSONObject postData = new JSONObject();
         postData.put("isFavorite", isFavorite);
         postData.put("programUrl", programUrl);
         postData.put("title", program.getTitle());
+        if(whatsonId.length() > 0) {
+            postData.put("whatsonId", whatsonId);
+        }
 
         String assetPath = programUrl.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
         String url = getString(R.string.service_catalog_favorites_url) + "/" + assetPath;
