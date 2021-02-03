@@ -104,7 +104,7 @@ public class LatestService extends IntentService {
             Log.d(TAG, "Getting program details at: " + url);
 
             // Get program details
-            returnObject = httpClient.getRequest(url);
+            returnObject = httpClient.getCachedRequest(getCacheDir(), url);
 
             if (httpClient.getResponseCode() != 200) {
                 throw new HttpException(httpClient.getResponseCode() + ": " + httpClient.getResponseMessage());

@@ -78,7 +78,7 @@ public class CatalogService extends IntentService {
 
                     url = String.format(getString(R.string.service_catalog_catalog_url), programType);
                     Log.d(TAG, "Getting catalog part " + programType + " at " + url);
-                    jsonObject = httpClient.getRequest(url);
+                    jsonObject = httpClient.getCachedRequest(getCacheDir(), url);
 
                     if (httpClient.getResponseCode() != 200) {
                         continue;
