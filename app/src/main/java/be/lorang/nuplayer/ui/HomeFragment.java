@@ -233,6 +233,7 @@ public class HomeFragment extends RowsFragment {
         // from populateCatalog() above
 
         favoritesIntent = new Intent(getActivity(), FavoriteService.class);
+        favoritesIntent.putExtra("ACTION", FavoriteService.ACTION_GET);
         favoritesIntent.putExtra(FavoriteService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
             @Override
             protected void onReceiveResult(int resultCode, Bundle resultData) {
