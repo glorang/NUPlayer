@@ -130,12 +130,13 @@ public class HTTPClient {
                    data = postData.toString();
                 }
 
-                urlConnection.setRequestProperty("Content-Length", String.valueOf(data.length()));
+                byte[] input = data.getBytes(StandardCharsets.UTF_8);
+
+                urlConnection.setRequestProperty("Content-Length", String.valueOf(input.length));
                 urlConnection.setDoOutput(true);
 
                 // write POST body
                 writer = urlConnection.getOutputStream();
-                byte[] input = data.getBytes(StandardCharsets.UTF_8);
                 writer.write(input, 0, input.length);
                 writer.flush();
                 writer.close();
