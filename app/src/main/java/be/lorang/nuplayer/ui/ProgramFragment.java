@@ -315,6 +315,17 @@ public class ProgramFragment extends VerticalGridFragment implements OnItemViewS
                         favoritesIntent.putExtra("PROGRAM_OBJECT", new Gson().toJson(program));
                         favoritesIntent.putExtra("IS_FAVORITE", newState);
 
+                        // Our Program object doesn't hold the whatsonId as it's not returned by
+                        // the suggest API so we pass it on from the first Video object
+                        // This is maybe a little hacky but should do the job
+                        videoList = VideoList.getInstance();
+                        if(videoList.getVideosLoaded() > 0) {
+                            String whatsonId = videoList.getVideo(0).getProgramWhatsonId();
+                            if(whatsonId.length() > 0) {
+                                favoritesIntent.putExtra("WHATSONID", whatsonId);
+                            }
+                        }
+
                         favoritesIntent.putExtra(ResumePointsService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
                             @Override
                             protected void onReceiveResult(int resultCode, Bundle resultData) {
