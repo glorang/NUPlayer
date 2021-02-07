@@ -312,6 +312,7 @@ public class ProgramFragment extends VerticalGridFragment implements OnItemViewS
 
                         Intent favoritesIntent = new Intent(getContext(), FavoriteService.class);
                         favoritesIntent.putExtra("ACTION", FavoriteService.ACTION_UPDATE_FAVORITE);
+                        favoritesIntent.putExtra("X-VRT-Token", resultData.getString("X-VRT-Token"));
                         favoritesIntent.putExtra("PROGRAM_OBJECT", new Gson().toJson(program));
                         favoritesIntent.putExtra("IS_FAVORITE", newState);
 

@@ -57,6 +57,8 @@ public class SettingsFragment extends Fragment implements BrowseFragment.MainFra
 
     private ProgressBar catalogProgressBar;
 
+    private String xvrttoken;
+
     @Override
     public BrowseFragment.MainFragmentAdapter getMainFragmentAdapter() {
         return mMainFragmentAdapter;
@@ -274,6 +276,7 @@ public class SettingsFragment extends Fragment implements BrowseFragment.MainFra
             protected void onReceiveResult(int resultCode, Bundle resultData) {
                 super.onReceiveResult(resultCode, resultData);
                 if (resultCode == Activity.RESULT_OK) {
+                    xvrttoken = resultData.getString("X-VRT-Token", "");
                     getActivity().startService(favoritesIntent);
                 } else {
                     // user not logged in
@@ -285,6 +288,7 @@ public class SettingsFragment extends Fragment implements BrowseFragment.MainFra
 
         favoritesIntent = new Intent(getActivity(), FavoriteService.class);
         favoritesIntent.putExtra("ACTION", FavoriteService.ACTION_GET);
+        favoritesIntent.putExtra("X-VRT-Token", xvrttoken);
         favoritesIntent.putExtra(FavoriteService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
             @Override
             protected void onReceiveResult(int resultCode, Bundle resultData) {

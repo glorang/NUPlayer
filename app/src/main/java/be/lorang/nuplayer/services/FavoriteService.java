@@ -36,6 +36,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /*
  * This class will manage Favorites in the Catalog and send Favorite updates to VRT
@@ -52,6 +54,7 @@ public class FavoriteService extends IntentService {
 
     private HTTPClient httpClient = new HTTPClient();
     private Bundle resultData = new Bundle();
+    private String xvrttoken = "";
 
     public FavoriteService() {
         super(TAG);
@@ -65,6 +68,7 @@ public class FavoriteService extends IntentService {
         try {
 
             String action = workIntent.getExtras().getString("ACTION");
+            xvrttoken = workIntent.getExtras().getString("X-VRT-Token", "");
 
             switch (action) {
                 case FavoriteService.ACTION_GET:
@@ -90,10 +94,6 @@ public class FavoriteService extends IntentService {
     }
 
     // Get all favorites
-    //
-    // Note that we need to have a valid vrtlogin-{at,rt,expiry} cookies for this call
-    // to succeed. As they are passed automatically by the application wide CookieHandler
-    // there is no explicit reference to them here
     private void populateFavorites() throws IOException, JSONException {
 
         // Only run once as we track Favorites ourselves once initialized
@@ -101,8 +101,12 @@ public class FavoriteService extends IntentService {
             return;
         }
 
+        Map<String, String> headers = new HashMap<>();
+        if(xvrttoken.length() > 0) {
+            headers.put("authorization", "Bearer " + xvrttoken);
+        }
 
-        JSONObject returnObject = httpClient.getCachedRequest(getCacheDir(), getString(R.string.service_catalog_favorites_url));
+        JSONObject returnObject = httpClient.getRequest(getString(R.string.service_catalog_favorites_url), headers);
         if(httpClient.getResponseCode() != 200) {
             throw new HttpException(httpClient.getResponseCode() + ": " + httpClient.getResponseMessage());
         }
@@ -119,10 +123,6 @@ public class FavoriteService extends IntentService {
     }
 
     // Update favorites (add / remove)
-    //
-    // Note that we need to have a valid vrtlogin-{at,rt,expiry} cookies for this call
-    // to succeed. As they are passed automatically by the application wide CookieHandler
-    // there is no explicit reference to them here
     private void updateFavorite(Program program, Boolean isFavorite, String whatsonId) throws JSONException, IOException {
 
         if(program == null) { return; }
@@ -149,7 +149,12 @@ public class FavoriteService extends IntentService {
 
         Log.d(TAG, "Updating Favorite, url = " + url + " post data = " + postData);
 
-        httpClient.postRequest(url, "application/json", postData);
+        Map<String, String> headers = new HashMap<>();
+        if(xvrttoken.length() > 0) {
+            headers.put("authorization", "Bearer " + xvrttoken);
+        }
+
+        httpClient.postRequest(url, "application/json", postData, headers);
         if(httpClient.getResponseCode() != 200) {
             throw new HttpException(httpClient.getResponseCode() + ": " + httpClient.getResponseMessage());
         }
