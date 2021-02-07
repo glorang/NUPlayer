@@ -47,6 +47,12 @@ public class ProgramList {
         mPrograms.add(p);
     }
 
+    public void clear() {
+        mPrograms.clear();
+        seriesCount = 0;
+        favoritesCount = 0;
+    }
+
     public void sort() {
         mPrograms.sort(Comparator.comparing(Program::getTitle));
     }

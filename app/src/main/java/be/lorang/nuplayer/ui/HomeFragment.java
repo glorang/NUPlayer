@@ -24,6 +24,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -221,6 +222,16 @@ public class HomeFragment extends RowsFragment {
                     // Get Watch Later + Continue Watching
                     getActivity().startService(resumePointsIntent);
 
+                } else {
+                    // User not authenticated
+
+                    mRowsAdapter.remove(favoritesListRow);
+                    mRowsAdapter.remove(continueWatchingListRow);
+                    mRowsAdapter.remove(watchLaterListRow);
+
+                    favoritesLoaded = true;
+                    resumePointsLoaded = true;
+                    notifyDataReady();
                 }
             }
         });

@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frameLayoutTokenStatus"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="50dp"
+    android:paddingTop="25dp"
+    android:paddingRight="50dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/headerSettings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="20dp"
+            android:text="Settings"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/labelSettingsCatalog"
+                android:layout_width="200dp"
+                android:layout_height="30dp"
+                android:text="Catalog:"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/valueSettingsCatalog"
+                android:layout_width="400dp"
+                android:layout_height="30dp" />
+
+            <FrameLayout
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:visibility="visible">
+
+                <Button
+                    android:id="@+id/buttonSettingsCatalogRefresh"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/button_default"
+                    android:nextFocusDown="@+id/buttonSettingsJSONCache"
+                    android:text="Refresh"
+                    android:visibility="visible" />
+
+                <ProgressBar
+                    android:id="@+id/progressBarSettingsCatalogRefresh"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginLeft="85dp"
+                    android:layout_marginTop="10dp"
+                    android:indeterminate="true"
+                    android:visibility="invisible" />
+
+            </FrameLayout>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/labelCatalogInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:text="Info: the catalog is only built at startup so if you cannot find a new, just released, program hit the refresh button"
+            android:textSize="10sp"
+            android:textStyle="italic" />
+
+        <TextView
+            android:id="@+id/whiteLine1"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:layout_marginTop="15dp"
+            android:background="@color/vrtnu_white_alpha_20" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingTop="10dp">
+
+            <TextView
+                android:id="@+id/labelSettingsJSONCache"
+                android:layout_width="200dp"
+                android:layout_height="30dp"
+                android:drawableTop="@android:color/white"
+                android:text="JSON cache:"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/valueSettingsJSONCache"
+                android:layout_width="400dp"
+                android:layout_height="30dp" />
+
+            <Button
+                android:id="@id/buttonSettingsJSONCache"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/button_default"
+                android:nextFocusUp="@+id/buttonSettingsCatalogRefresh"
+                android:nextFocusDown="@+id/buttonSettingsLoggedIn"
+                android:text="Purge" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/labelJSONCacheInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:text="Info: in the rare event you get unexpected results (e.g. wrong program shown) press purge and try again"
+            android:textSize="10sp"
+            android:textStyle="italic" />
+
+        <TextView
+            android:id="@+id/whiteLine2"
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:layout_marginTop="15dp"
+            android:background="@color/vrtnu_white_alpha_20" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingTop="10dp">
+
+            <TextView
+                android:id="@+id/labelSettingsLoggedIn"
+                android:layout_width="200dp"
+                android:layout_height="30dp"
+                android:gravity="top"
+                android:text="Logged in as:"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/valueSettingsLoggedIn"
+                android:layout_width="400dp"
+                android:layout_height="30dp" />
+
+            <Button
+                android:id="@id/buttonSettingsLoggedIn"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/button_default"
+                android:nextFocusUp="@id/buttonSettingsJSONCache"
+                android:nextFocusDown="@id/buttonSettingsCatalogRefresh"
+                android:text="Logout" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

@@ -1,6 +1,5 @@
 /*
  * Copyright 2021 Geert Lorang
- * Copyright 2016 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +18,9 @@
 package be.lorang.nuplayer.ui;
 
 import android.app.Fragment;
-import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
-import androidx.core.content.ContextCompat;
 import androidx.leanback.app.BackgroundManager;
 import androidx.leanback.app.BrowseFragment;
 import androidx.leanback.widget.ArrayObjectAdapter;
@@ -31,14 +29,15 @@ import androidx.leanback.widget.ListRowPresenter;
 import androidx.leanback.widget.PageRow;
 import androidx.leanback.widget.Row;
 
-import android.util.Log;
-import android.view.View;
-
 import be.lorang.nuplayer.R;
 
-public class MainFragment extends BrowseFragment {
-    private static final String TAG = "MainFragment";
-    private static final String[] menuItems = {"Home", "Latest", "Series", "Catalog" ,"Settings"};
+/*
+ * BrowseFragemnt to set and navigate through all Settings/About etc
+ */
+
+public class SettingsBrowseFragment extends BrowseFragment {
+    private static final String TAG = "SettingsBrowseFragment";
+    private static final String[] menuItems = {"Settings", "Token status", "About"};
     private BackgroundManager mBackgroundManager;
 
     private ArrayObjectAdapter mRowsAdapter;
@@ -56,9 +55,7 @@ public class MainFragment extends BrowseFragment {
 
     private void setupUi() {
 
-        setBadgeDrawable(getActivity().getResources().getDrawable(R.drawable.ic_logo, null));
-        setTitle(getString(R.string.browse_title)); // Badge, when set, takes precedent over title
-        setHeadersState(HEADERS_ENABLED); // Should be HEADERS_HIDDEN
+        setHeadersState(HEADERS_ENABLED);
         setHeadersTransitionOnBackEnabled(true);
 
         // set menu background (left)
@@ -67,17 +64,6 @@ public class MainFragment extends BrowseFragment {
         // set content background (right)
         BackgroundManager.getInstance(getActivity()).setColor(getResources().getColor(R.color.vrtnu_black_tint_2));
 
-        setSearchAffordanceColor(ContextCompat.getColor(getActivity(), R.color.vrtnu_blue));
-
-        setOnSearchClickedListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), SearchActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        prepareEntranceTransition();
     }
 
     private void loadData() {
@@ -93,8 +79,6 @@ public class MainFragment extends BrowseFragment {
             PageRow pageRow = new PageRow(headerItem);
             mRowsAdapter.add(pageRow);
         }
-
-        startEntranceTransition();
     }
 
     private class PageRowFragmentFactory extends BrowseFragment.FragmentFactory {
@@ -109,19 +93,15 @@ public class MainFragment extends BrowseFragment {
             Row row = (Row)rowObj;
             mBackgroundManager.setDrawable(null);
             switch(row.getHeaderItem().getName()) {
-                case "Home":
-                    return new HomeFragment();
-                case "Catalog":
-                    return new CatalogFragment();
-                case "Series":
-                    return new SeriesFragment();
-                case "Latest":
-                    return new LatestFragment();
                 case "Settings":
-                    return new SettingsDummyFragment();
+                    return new SettingsFragment();
+                case "Token status":
+                    return new TokenStatusFragment();
+                case "About":
+                    return new AboutFragment();
                 default:
                     Log.d(TAG, "Unknown row: " + row.getHeaderItem().getName());
-                    return new HomeFragment();
+                    return new SettingsFragment();
             }
 
         }

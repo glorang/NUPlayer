@@ -4,8 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/frameLayoutAbout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingLeft="50dp">
+    android:layout_height="wrap_content"
+    android:paddingLeft="50dp"
+    android:paddingTop="25dp"
+    android:paddingRight="50dp">
 
 
     <LinearLayout
@@ -16,7 +18,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="visible">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -32,12 +35,12 @@
                         android:layout_height="match_parent"
                         android:orientation="vertical">
 
-                        <ImageView
-                            android:id="@+id/logo"
-                            android:layout_width="224dp"
-                            android:layout_height="169dp"
-                            android:contentDescription="NUPlayer Logo"
-                            android:src="@drawable/ic_logo" />
+                        <Button
+                            android:id="@+id/buttonLogo"
+                            android:layout_width="300dp"
+                            android:layout_height="200dp"
+                            android:background="@drawable/ic_logo"
+                            android:visibility="visible" />
 
                         <TextView
                             android:id="@+id/name"
@@ -93,182 +96,11 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
-                            android:text="Thanks for using NUPlayer!\n\nThis remains beta software so you will most likely encouter\na lot of bugs.\n\nPlease do report them on the project's GitHub page at\nhttps://github.com/glorang/NUPlayer/\n\nNote that this program is not developed nor supported by VRT.\nPlease do not contact them with issues or questions you might have.\n\nHappy streaming!" />
+                            android:text="Thanks for using NUPlayer!\n\nThis is free and open source software, licensed under the Apache 2.0 license.\nIt comes 'as-is' without any warranty of any kind.\n\nThe source code is available on the project's GitHub page at: \nhttps://github.com/glorang/NUPlayer/\n\nPlease do open a new issue if you hit a bug or any other feedback you might have.\n\nThis program is not developed, nor supported, nor endorsed by VRT and I'm not affiliated with them in any way. Please do not contact them with issues or questions you might have, instead use the project's GitHub page.\n\nHappy streaming!" />
 
                     </LinearLayout>
 
                 </LinearLayout>
-
-            </LinearLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/textView7"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:paddingTop="40dp"
-                android:paddingBottom="20dp"
-                android:text="User data"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/label_FirstName"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:paddingRight="50dp"
-                        android:text="First name" />
-
-                    <TextView
-                        android:id="@+id/label_LastName"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:paddingRight="50dp"
-                        android:text="Last name" />
-
-                    <TextView
-                        android:id="@+id/label_vrtPlayerTokenAnon"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:paddingRight="50dp"
-                        android:text="Anon vrtPlayerToken " />
-
-                    <TextView
-                        android:id="@+id/label_vrtPlayerTokenAnonDate"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:paddingRight="50dp"
-                        android:text="Anon vrtPlayerToken expiry (UTC)" />
-
-                    <TextView
-                        android:id="@+id/label_vrtPlayerTokenAuth"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:paddingRight="50dp"
-                        android:text="Auth vrtPlayerToken " />
-
-                    <TextView
-                        android:id="@+id/label_vrtPlayerTokenAuthDate"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:paddingRight="50dp"
-                        android:text="Auth vrtPlayerToken expiry (UTC)" />
-
-                    <TextView
-                        android:id="@+id/label_xvrtplayer"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:paddingRight="50dp"
-                        android:text="X-VRT-Token" />
-
-                    <TextView
-                        android:id="@+id/label_vrtlogin_at"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:paddingRight="50dp"
-                        android:text="vrtlogin-at" />
-
-                    <TextView
-                        android:id="@+id/label_vrtlogin_rf"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:paddingRight="50dp"
-                        android:text="vrtlogin-rf" />
-
-                    <TextView
-                        android:id="@+id/label_vrtlogin_expiry"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:paddingRight="50dp"
-                        android:text="vrtlogin-expiry" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/text_firstName"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-
-                    <TextView
-                        android:id="@+id/text_lastName"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-
-                    <TextView
-                        android:id="@+id/text_vrtPlayerTokenAnon"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-
-                    <TextView
-                        android:id="@+id/text_vrtPlayerTokenAnonDate"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-
-                    <TextView
-                        android:id="@+id/text_vrtPlayerTokenAuth"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-
-                    <TextView
-                        android:id="@+id/text_vrtPlayerTokenAuthDate"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-
-                    <TextView
-                        android:id="@+id/text_xvrttoken"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-
-                    <TextView
-                        android:id="@+id/text_vrtlogin_at"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-
-                    <TextView
-                        android:id="@+id/text_vrtlogin_rt"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-
-                    <TextView
-                        android:id="@+id/text_vrtlogin_expiry"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-
-                </LinearLayout>
-
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
