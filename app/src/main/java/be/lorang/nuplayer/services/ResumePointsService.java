@@ -63,6 +63,7 @@ public class ResumePointsService extends IntentService {
 
     private HTTPClient httpClient = new HTTPClient();
     private Bundle resultData = new Bundle();
+    private String xvrttoken = "";
 
     public ResumePointsService() {
         super(TAG);
@@ -76,6 +77,7 @@ public class ResumePointsService extends IntentService {
         try {
 
             String action = workIntent.getExtras().getString("ACTION");
+            xvrttoken = workIntent.getExtras().getString("X-VRT-Token", "");
 
             switch(action) {
                 case ResumePointsService.ACTION_GET:
@@ -100,10 +102,6 @@ public class ResumePointsService extends IntentService {
     }
 
     // Get all resume points and store them in classes VideoContinueWatchingList and VideoWatchLaterList
-    //
-    // Note that we need to have a valid vrtlogin-{at,rt,expiry} cookies for this call
-    // to succeed. As they are passed automatically by the application wide CookieHandler
-    // there is no explicit reference to them here
     private void populateVideoLists() throws IOException, JSONException {
 
         // Only run once as we track resume points / watch later ourselves once initialized
@@ -112,7 +110,12 @@ public class ResumePointsService extends IntentService {
             return;
         }
 
-        JSONObject returnObject = httpClient.getCachedRequest(getCacheDir(), getString(R.string.service_resumepoints_url));
+        Map<String, String> headers = new HashMap<>();
+        if(xvrttoken.length() > 0){
+            headers.put("authorization", "Bearer " + xvrttoken);
+        }
+
+        JSONObject returnObject = httpClient.getRequest(getString(R.string.service_resumepoints_url), headers);
         if(httpClient.getResponseCode() != 200) {
             throw new HttpException(httpClient.getResponseCode() + ": " + httpClient.getResponseMessage());
         }
@@ -196,10 +199,6 @@ public class ResumePointsService extends IntentService {
     }
 
     // Update resume point with new position
-    //
-    // Note that we need to have a valid vrtlogin-{at,rt,expiry} cookies for this call
-    // to succeed. As they are passed automatically by the application wide CookieHandler
-    // there is no explicit reference to them here
     private void updateResumePoint(Video video, int position) throws JSONException, IOException {
 
         if(video == null || position == 0) { return; }
@@ -238,7 +237,12 @@ public class ResumePointsService extends IntentService {
         Log.d(TAG, "Updating resume point, post data = " + postData);
         String url = getString(R.string.service_resumepoints_url) + "/" + assetPath;
 
-        httpClient.postRequest(url, "application/json", postData);
+        Map<String, String> headers = new HashMap<>();
+        if(xvrttoken.length() > 0) {
+            headers.put("authorization", "Bearer " + xvrttoken);
+        }
+
+        httpClient.postRequest(url, "application/json", postData, headers);
         if(httpClient.getResponseCode() != 200) {
             throw new HttpException(httpClient.getResponseCode() + ": " + httpClient.getResponseMessage());
         }

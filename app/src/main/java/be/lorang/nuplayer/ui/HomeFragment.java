@@ -76,6 +76,8 @@ public class HomeFragment extends RowsFragment {
     private boolean favoritesLoaded = false;
     private boolean resumePointsLoaded = false;
 
+    private String xvrttoken;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -216,6 +218,9 @@ public class HomeFragment extends RowsFragment {
                 super.onReceiveResult(resultCode, resultData);
                 if (resultCode == Activity.RESULT_OK) {
 
+                    // Store X-VRT-Token
+                    xvrttoken = resultData.getString("X-VRT-Token", "");
+
                     // Get Favorites
                     getActivity().startService(favoritesIntent);
 
@@ -245,6 +250,7 @@ public class HomeFragment extends RowsFragment {
 
         favoritesIntent = new Intent(getActivity(), FavoriteService.class);
         favoritesIntent.putExtra("ACTION", FavoriteService.ACTION_GET);
+        favoritesIntent.putExtra("X-VRT-Token", xvrttoken);
         favoritesIntent.putExtra(FavoriteService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
             @Override
             protected void onReceiveResult(int resultCode, Bundle resultData) {
@@ -285,6 +291,7 @@ public class HomeFragment extends RowsFragment {
 
         resumePointsIntent = new Intent(getActivity(), ResumePointsService.class);
         resumePointsIntent.putExtra("ACTION", ResumePointsService.ACTION_GET);
+        resumePointsIntent.putExtra("X-VRT-Token", xvrttoken);
         resumePointsIntent.putExtra(ResumePointsService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
             @Override
             protected void onReceiveResult(int resultCode, Bundle resultData) {

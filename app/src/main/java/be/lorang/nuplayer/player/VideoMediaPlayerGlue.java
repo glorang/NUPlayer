@@ -142,6 +142,7 @@ public class VideoMediaPlayerGlue<T extends PlayerAdapter> extends PlaybackTrans
 
                     Intent resumePointsIntent = new Intent(getContext(), ResumePointsService.class);
                     resumePointsIntent.putExtra("ACTION", ResumePointsService.ACTION_UPDATE_RESUME_POINT);
+                    resumePointsIntent.putExtra("X-VRT-Token", resultData.getString("X-VRT-Token"));
                     resumePointsIntent.putExtra("PLAYER_CURRENT_POSITION", (int)(getPlayerAdapter().getCurrentPosition() / 1000));
                     resumePointsIntent.putExtra("VIDEO_OBJECT", new Gson().toJson(video));
 
