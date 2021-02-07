@@ -43,7 +43,7 @@ public class CatalogService extends IntentService {
     // Unfortunately programType is not available in the data returned by the Suggest API
     // So we define it here as a static list (shouldn't update too often) as we need it to query
     // the VideoList in the correct order (asc|desc sorting) in ProgramService
-    private final static String[] programTypes = {"daily","oneoff","reeksaflopend", "reeksoplopend"};
+    public final static String[] programTypes = {"daily","oneoff","reeksaflopend", "reeksoplopend"};
 
     private HTTPClient httpClient = new HTTPClient();
     private String url;
@@ -138,7 +138,6 @@ public class CatalogService extends IntentService {
             }
         } else {
             // we already have data in the catalog, receiving side can query the result via the Singleton ProgramList class
-            // FIXME: handle catalog updates / ProgramList / Favorites refresh
             receiver.send(Activity.RESULT_OK, resultData);
         }
 

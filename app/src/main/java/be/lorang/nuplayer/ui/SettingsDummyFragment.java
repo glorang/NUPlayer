@@ -18,22 +18,21 @@
 package be.lorang.nuplayer.ui;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+
+import androidx.core.app.ActivityOptionsCompat;
 import androidx.leanback.app.BrowseFragment;
-import be.lorang.nuplayer.R;
 
 
 /*
- * Simple fragment to show some general info and debug output, should be cleaned up for final release
+ * Dummy fragment to start SettingsBrowseActivity from main app
  */
 
-public class AboutFragment extends Fragment implements BrowseFragment.MainFragmentAdapterProvider {
+public class SettingsDummyFragment extends Fragment implements BrowseFragment.MainFragmentAdapterProvider {
 
     private BrowseFragment.MainFragmentAdapter mMainFragmentAdapter = new BrowseFragment.MainFragmentAdapter(this);
-    private static final String TAG = "AboutFragment";
+    private static final String TAG = "SettingsDummyFragment";
 
     @Override
     public BrowseFragment.MainFragmentAdapter getMainFragmentAdapter() {
@@ -43,12 +42,9 @@ public class AboutFragment extends Fragment implements BrowseFragment.MainFragme
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getMainFragmentAdapter().getFragmentHost().showTitleView(false);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_about, container, false);
+        Intent settingsIntent = new Intent(getActivity().getBaseContext(), SettingsBrowseActivity.class);
+        Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity()).toBundle();
+        startActivity(settingsIntent, bundle);
     }
 
 }

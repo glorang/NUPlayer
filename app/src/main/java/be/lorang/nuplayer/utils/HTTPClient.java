@@ -33,6 +33,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -50,6 +51,9 @@ import java.util.Map;
 import javax.net.ssl.HttpsURLConnection;
 
 import be.lorang.nuplayer.BuildConfig;
+import be.lorang.nuplayer.R;
+
+import static be.lorang.nuplayer.services.CatalogService.programTypes;
 
 public class HTTPClient {
 
@@ -187,8 +191,7 @@ public class HTTPClient {
 
                 // Setup cache object as JSON with current timestamp
                 JSONObject cacheObject = new JSONObject();
-                Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                cacheObject.put("timestamp", timestamp.getTime());
+                cacheObject.put("timestamp", System.currentTimeMillis());
                 cacheObject.put("object", returnObject.toString());
 
                 Log.d(TAG, "Writing to cache: " + cacheObject.toString().substring(0,100));
@@ -204,12 +207,6 @@ public class HTTPClient {
         } catch (Exception e) {
             Log.d(TAG, "Exception caught: " + e.getMessage());
             e.printStackTrace();
-
-            // In case of an exception we set error code to 500 (Internal Server Error)
-            // and the message to the one from the exception
-            //responseCode = 500;
-            //responseMessage = e.getMessage();
-
         } finally {
             urlConnection.disconnect();
         }
@@ -255,7 +252,6 @@ public class HTTPClient {
                 Timestamp timestampCacheExpires = new Timestamp(cacheObject.getLong("timestamp") + (ttl * 60 * 1000));
                 Instant cacheExpires = timestampCacheExpires.toInstant();
                 JSONObject object = new JSONObject(cacheObject.getString("object"));
-                Log.d(TAG, "object = " + object);
 
                 // check if cache entry still valid
                 if(Instant.now().isBefore(cacheExpires)) {
@@ -288,7 +284,63 @@ public class HTTPClient {
         return (CookieManager)CookieHandler.getDefault();
     }
 
-    private String getCacheFileName(String url) {
+    private static String getCacheFileName(String url) {
         return "url-cache-" + Utils.sha256(url) + ".json";
+    }
+
+    private static File[] getCacheFiles(File cacheDir) {
+        File[] cacheFiles = cacheDir.listFiles(new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return name.startsWith("url-cache-") && name.endsWith(".json");
+            }
+        });
+
+        return cacheFiles;
+    }
+
+    // Clear all caches
+    public static void clearCache(File cacheDir) {
+
+        for(File file : getCacheFiles(cacheDir)) {
+            file.delete();
+        }
+
+    }
+
+    // Clear Catalog + Favorites cache
+    public static void clearCatalogCache(File cacheDir, String catalogURL, String favoritesURL) {
+
+        // Catalog cache
+        for(String programType : programTypes) {
+            String url = String.format(catalogURL, programType);
+            String fileName = getCacheFileName(url);
+            File file = new File(cacheDir, fileName);
+
+            if(file.exists()) {
+                file.delete();
+            }
+        }
+
+        // Favorites cache
+        String fileName = getCacheFileName(favoritesURL);
+        File file = new File(cacheDir, fileName);
+        if(file.exists()) {
+            file.delete();
+        }
+
+    }
+
+    public static String getCacheStatistics(File cacheDir) {
+
+        File[] cacheFiles = getCacheFiles(cacheDir);
+
+        int cacheCount = cacheFiles.length;
+        long totalSize = 0;
+
+        for(File file : cacheFiles) {
+            totalSize += (file.length() / 1024);
+        }
+
+        return cacheCount + " items, total size: " + totalSize + "KiB";
     }
 }
