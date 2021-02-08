@@ -64,9 +64,11 @@ public class FavoritesPresenter<T extends BaseCardView> extends BaseCardPresente
         // set brand image
         ImageView brandImageView = cardView.findViewById(R.id.brand_image);
         if (brandImageView != null && program.getBrand() != null) {
-            int resourceID = getContext().getResources().getIdentifier("ic_" + program.getBrand(), "drawable", getContext().getPackageName());
+            int resourceID = getContext().getResources().getIdentifier(
+                    "ic_" + program.getBrand().replaceAll("-",""),
+                    "drawable", getContext().getPackageName());
             if (resourceID > 0) {
-                brandImageView.setImageDrawable(getContext().getResources().getDrawable(resourceID, null));
+                brandImageView.setImageResource(resourceID);
             }
         }
 

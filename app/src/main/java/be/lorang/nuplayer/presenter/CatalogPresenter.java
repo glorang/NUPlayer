@@ -18,14 +18,10 @@
 package be.lorang.nuplayer.presenter;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.text.Html;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.leanback.widget.BaseCardView;
-import androidx.leanback.widget.ImageCardView;
-import androidx.leanback.widget.Presenter;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -67,19 +63,17 @@ public class CatalogPresenter<T extends BaseCardView> extends BaseCardPresenter 
         // set brand image
         ImageView brandImageView = cardView.findViewById(R.id.brand_image);
         if (brandImageView != null && program.getBrand() != null) {
-            int resourceID = getContext().getResources().getIdentifier("ic_" + program.getBrand(), "drawable", getContext().getPackageName());
+            int resourceID = getContext().getResources().getIdentifier(
+                    "ic_" + program.getBrand().replaceAll("-",""),
+                    "drawable", getContext().getPackageName());
             if (resourceID > 0) {
-                brandImageView.setImageDrawable(getContext().getResources().getDrawable(resourceID, null));
+                brandImageView.setImageResource(resourceID);
             }
         }
 
         // set title
         TextView textViewTitle = cardView.findViewById(R.id.programTitle);
         textViewTitle.setText(program.getTitle());
-
-        // set description
-        TextView textViewDescription = cardView.findViewById(R.id.programDescription);
-        textViewDescription.setText(Html.fromHtml(program.getDescription(), Html.FROM_HTML_MODE_COMPACT));
     }
 
 }
