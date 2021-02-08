@@ -67,9 +67,11 @@ public class VideoPresenter<T extends BaseCardView> extends BaseCardPresenter {
         // set brand image
         ImageView brandImageView = cardView.findViewById(R.id.brand_image);
         if (brandImageView != null) {
-            int resourceID = getContext().getResources().getIdentifier("ic_" + video.getBrand(), "drawable", getContext().getPackageName());
+            int resourceID = getContext().getResources().getIdentifier(
+                    "ic_" + video.getBrand().replaceAll("-",""),
+                    "drawable", getContext().getPackageName());
             if (resourceID > 0) {
-                brandImageView.setImageDrawable(getContext().getResources().getDrawable(resourceID, null));
+                brandImageView.setImageResource(resourceID);
             }
         }
 
