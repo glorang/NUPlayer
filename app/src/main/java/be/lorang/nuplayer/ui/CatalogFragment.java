@@ -33,19 +33,31 @@ import androidx.leanback.widget.VerticalGridPresenter;
 
 import android.os.Handler;
 import android.os.ResultReceiver;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import be.lorang.nuplayer.R;
 import be.lorang.nuplayer.services.CatalogService;
 import be.lorang.nuplayer.model.Program;
 import be.lorang.nuplayer.model.ProgramList;
 import be.lorang.nuplayer.presenter.CatalogPresenter;
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
+import java.util.List;
 
-public class CatalogFragment extends GridFragment {
+public class CatalogFragment extends GridFragment implements View.OnClickListener {
     private final static String TAG = "CatalogFragment";
-    private static final int COLUMNS = 2;
+    private static final int COLUMNS = 4;
     private final int ZOOM_FACTOR = FocusHighlight.ZOOM_FACTOR_MEDIUM;
+    private List<String> selectedBrands = new ArrayList<>();
     private ArrayObjectAdapter mAdapter;
 
     @Override
@@ -54,6 +66,93 @@ public class CatalogFragment extends GridFragment {
         setupAdapter();
         loadData();
         getMainFragmentAdapter().getFragmentHost().notifyDataReady(getMainFragmentAdapter());
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_catalog, container, false);
+
+        ProgramList programList = ProgramList.getInstance();
+        LinearLayout checkBoxView = view.findViewById(R.id.brandCheckBoxes);
+
+
+        if(checkBoxView != null) {
+            // Add list of all brands (channels)
+            for (String brand : programList.getBrands()) {
+                FrameLayout brandCheckbox = createBrandCheckbox(brand);
+                if (brandCheckbox == null) {
+                    continue;
+                }
+                checkBoxView.addView(brandCheckbox);
+            }
+        }
+
+        return view;
+    }
+
+    private FrameLayout createBrandCheckbox(String brand) {
+
+        // Create FrameLayout
+        FrameLayout frameLayout = new FrameLayout(getContext());
+        frameLayout.setLayoutParams(new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        frameLayout.setPadding(5, 5, 5, 5);
+
+        // Add checkbox + listener
+        CheckBox checkBox = new CheckBox(getContext());
+
+        // slight abuse but whatever. How hard is it again to pass a simple String? DONOTWANT
+        checkBox.setContentDescription(brand);
+
+        checkBox.setLayoutParams(new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        checkBox.setBackground(getResources().getDrawable(R.drawable.button_default, null));
+
+        checkBox.setOnClickListener(this);
+
+        // Add image view with brand logo
+        ImageView imageView = new ImageView(getContext());
+        LinearLayout.LayoutParams imageViewLayoutParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, 30);
+        imageViewLayoutParams.setMargins(0, 15, 0, 15);
+        imageView.setLayoutParams(imageViewLayoutParams);
+
+        int resourceID = getContext().getResources().getIdentifier(
+                "ic_" + brand.replaceAll("-", ""),
+                "drawable", getContext().getPackageName());
+
+        // Only add Brands for which we have a logo
+        if(resourceID <= 0) {
+            return null;
+        }
+
+        imageView.setImageResource(resourceID);
+
+        // Add checkbox + brand logo to framelayout
+        frameLayout.addView(checkBox);
+        frameLayout.addView(imageView);
+
+        return frameLayout;
+    }
+
+    @Override
+    public void onClick(View view) {
+
+        if(view instanceof CompoundButton) {
+            CheckBox checkBox = (CheckBox)view;
+            String selectedBrand = checkBox.getContentDescription().toString();
+
+            if(((CompoundButton) view).isChecked()){
+                if(!selectedBrands.contains(selectedBrand)) {
+                    selectedBrands.add(selectedBrand);
+                }
+            } else {
+                if(selectedBrands.contains(selectedBrand)) {
+                    selectedBrands.remove(selectedBrand);
+                }
+            }
+            loadData();
+        }
     }
 
     private void setupAdapter() {
@@ -103,7 +202,15 @@ public class CatalogFragment extends GridFragment {
                 if (resultCode == Activity.RESULT_OK) {
                     ProgramList pl = ProgramList.getInstance();
                     mAdapter.clear();
-                    mAdapter.addAll(0, pl.getPrograms());
+                    if(selectedBrands.size() == 0) {
+                        mAdapter.addAll(0, pl.getPrograms());
+                    } else {
+                        for(Program program : pl.getPrograms()) {
+                            if(selectedBrands.contains(program.getBrand())) {
+                                mAdapter.add(program);
+                            }
+                        }
+                    }
                 }
             }
         });

@@ -18,6 +18,7 @@
 package be.lorang.nuplayer.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -114,6 +115,20 @@ public class ProgramList {
             }
         }
         result.sort(Comparator.comparing(Program::getTitle));
+        return result;
+    }
+
+    public List<String> getBrands() {
+        List<String> result = new ArrayList<>();
+        for(Program program : mPrograms) {
+            String brand = program.getBrand();
+            if(!result.contains(brand) && brand.length() > 0) {
+                result.add(brand);
+            }
+        }
+
+        Collections.sort(result);
+
         return result;
     }
 
