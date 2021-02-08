@@ -19,6 +19,7 @@ package be.lorang.nuplayer.presenter;
 
 import android.content.Context;
 import android.text.Html;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -72,6 +73,9 @@ public class LiveTVPresenter<T extends BaseCardView> extends BaseCardPresenter {
                     "drawable", getContext().getPackageName());
             if (resourceID > 0) {
                 brandImageView.setImageResource(resourceID);
+                brandImageView.setVisibility(View.VISIBLE);
+            } else {
+                brandImageView.setVisibility(View.GONE);
             }
         }
 
