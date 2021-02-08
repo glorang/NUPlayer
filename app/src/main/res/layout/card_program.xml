@@ -39,26 +39,6 @@
 
         </FrameLayout>
 
-        <LinearLayout
-            android:id="@+id/info2"
-            android:layout_width="200dp"
-            android:layout_height="match_parent"
-            android:background="@color/vrtnu_black_tint_1"
-            android:orientation="vertical"
-            android:paddingLeft="11dp"
-            android:paddingTop="7dp"
-            android:paddingRight="11dp">
-
-            <TextView
-                android:id="@+id/programDescription"
-                style="@style/Widget.Leanback.ImageCardView.ContentStyle"
-                android:layout_marginTop="6dp"
-                android:fontFamily="sans-serif-condensed"
-                android:lines="6"
-                android:maxLines="6"
-                android:textSize="10sp" />
-
-        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
