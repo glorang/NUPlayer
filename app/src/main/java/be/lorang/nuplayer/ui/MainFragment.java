@@ -26,6 +26,7 @@ import androidx.core.content.ContextCompat;
 import androidx.leanback.app.BackgroundManager;
 import androidx.leanback.app.BrowseFragment;
 import androidx.leanback.widget.ArrayObjectAdapter;
+import androidx.leanback.widget.BrowseFrameLayout;
 import androidx.leanback.widget.HeaderItem;
 import androidx.leanback.widget.ListRowPresenter;
 import androidx.leanback.widget.PageRow;
@@ -78,6 +79,20 @@ public class MainFragment extends BrowseFragment {
         });
 
         prepareEntranceTransition();
+    }
+
+    /*
+     * The search orb will always try to steal focus so we cannot navigate our own form controls anymore
+     * Disable setOnFocusSearchListener
+     */
+
+    @Override
+    public void onViewCreated(View b, Bundle savedInstanceState) {
+        super.onViewCreated(b, savedInstanceState);
+        BrowseFrameLayout mBrowseFrame = b.findViewById(R.id.browse_frame);
+        if(mBrowseFrame != null) {
+            mBrowseFrame.setOnFocusSearchListener(null);
+        }
     }
 
     private void loadData() {
