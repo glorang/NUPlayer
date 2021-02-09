@@ -20,6 +20,7 @@ package be.lorang.nuplayer.presenter;
 import android.content.Context;
 import android.text.Html;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -43,9 +44,12 @@ import be.lorang.nuplayer.utils.Utils;
 public class WideVideoPresenter<T extends BaseCardView> extends BaseCardPresenter {
 
     private static final String TAG = "WideVideoPresenter";
+    public enum CardType { LATEST, PROGRAM };
+    private CardType cardType;
 
-    public WideVideoPresenter(Context context) {
+    public WideVideoPresenter(Context context, CardType cardType) {
         super(context, R.layout.card_video_wide);
+        this.cardType = cardType;
     }
 
     public void onBindViewHolder(Object item, BaseCardView cardView) {
@@ -67,10 +71,15 @@ public class WideVideoPresenter<T extends BaseCardView> extends BaseCardPresente
                     .into(imageView);
         }
 
+        String title = video.getTitle();
 
+        // Overwrite title in Latest Fragment with Program name instead of Video name
+        if(cardType.equals(CardType.LATEST)) {
+            title = video.getProgram();
+        }
 
         TextView titleTextView = cardView.findViewById(R.id.videoWideTitle);
-        titleTextView.setText(video.getTitle());
+        titleTextView.setText(title);
 
         TextView primaryTextView = cardView.findViewById(R.id.videoWidePrimaryText);
         primaryTextView.setText(Html.fromHtml(video.getDescription(), Html.FROM_HTML_MODE_COMPACT));
@@ -103,6 +112,20 @@ public class WideVideoPresenter<T extends BaseCardView> extends BaseCardPresente
             stringBuilder.append(getContext().getString(R.string.airdate) + " : " +
                     video.getFormattedBroadcastDate() +
                     System.lineSeparator());
+        }
+
+        // set brand image in "Latest" fragment
+        ImageView brandImageView = cardView.findViewById(R.id.brand_image);
+        if (brandImageView != null) {
+            int resourceID = getContext().getResources().getIdentifier(
+                    "ic_" + video.getBrand().replaceAll("-",""),
+                    "drawable", getContext().getPackageName());
+            if (resourceID > 0 && cardType.equals(CardType.LATEST)) {
+                brandImageView.setImageResource(resourceID);
+                brandImageView.setVisibility(View.VISIBLE);
+            } else {
+                brandImageView.setVisibility(View.GONE);
+            }
         }
 
         // set progress

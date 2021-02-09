@@ -67,7 +67,7 @@ public class LatestFragment extends GridFragment implements OnItemViewSelectedLi
         setOnItemViewSelectedListener(this);
         setGridPresenter(presenter);
 
-        mAdapter = new ArrayObjectAdapter(new WideVideoPresenter(getContext()));
+        mAdapter = new ArrayObjectAdapter(new WideVideoPresenter(getContext(), WideVideoPresenter.CardType.LATEST));
         setAdapter(mAdapter);
     }
 
