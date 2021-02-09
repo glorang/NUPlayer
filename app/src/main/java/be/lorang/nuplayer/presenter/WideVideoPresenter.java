@@ -78,9 +78,9 @@ public class WideVideoPresenter<T extends BaseCardView> extends BaseCardPresente
         TextView secondaryTextView = cardView.findViewById(R.id.videoWideSecondaryText);
         StringBuilder stringBuilder = new StringBuilder();
 
-        if(video.getSeasonName().length() > 0) {
+        if(video.getSeasonTitle().length() > 0) {
             stringBuilder.append(getContext().getString(R.string.season) + " " +
-                    video.getSeasonName() + " - ");
+                    video.getSeasonTitle() + " - ");
         }
 
         if(video.getEpisodeNumber() >= 0) {

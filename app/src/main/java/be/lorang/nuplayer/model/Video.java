@@ -31,6 +31,7 @@ public class Video {
     @SerializedName("title") private String mTitle = "";
     @SerializedName("description") private String mDescription = "";
     @SerializedName("seasonName") private String mSeasonName = "";
+    @SerializedName("seasonTitle") private String mSeasonTitle = "";
     @SerializedName("episodeNumber") private int mEpisodeNumber = 0;
     @SerializedName("duration") private int mDuration = 0;
     @SerializedName("thumbnail") private String mThumbnail = "";
@@ -53,6 +54,7 @@ public class Video {
     public Video(String title,
                  String description,
                  String seasonName,
+                 String seasonTitle,
                  int episodeNumber,
                  int duration,
                  String thumbnail,
@@ -71,6 +73,7 @@ public class Video {
         mTitle = title;
         mDescription = description;
         mSeasonName = seasonName;
+        mSeasonTitle = seasonTitle;
         mEpisodeNumber = episodeNumber;
         mDuration = duration;
         mThumbnail = thumbnail;
@@ -104,6 +107,9 @@ public class Video {
 
     public String getSeasonName() { return mSeasonName; }
     public void setSeasonName(String seasonName) { mSeasonName = seasonName; }
+
+    public String getSeasonTitle() { return mSeasonTitle; }
+    public void setSeasonTitle(String seasonTitle) { mSeasonTitle = seasonTitle; }
 
     public int getEpisodeNumber() { return mEpisodeNumber; }
     public void setEpisodeNumber(int episodeNumber) { mEpisodeNumber = episodeNumber; }
