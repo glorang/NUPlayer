@@ -42,6 +42,7 @@ public class ChannelList {
                 "één",
                 "",
                 "",
+                "",
                 1,
                 0,
                 "https://vrtnu-api.vrt.be/screenshots/een.jpg",
@@ -63,6 +64,7 @@ public class ChannelList {
                 "Canvas",
                 "",
                 "",
+                "",
                 1,
                 0,
                 "https://vrtnu-api.vrt.be/screenshots/canvas.jpg",
@@ -82,6 +84,7 @@ public class ChannelList {
 
         Video ketnet = new Video(
                 "Ketnet",
+                "",
                 "",
                 "",
                 1,

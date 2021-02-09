@@ -66,6 +66,7 @@ public class ProgramService extends IntentService {
     public static final String TAG_TITLE = "title";
     public static final String TAG_DESCRIPTION = "shortDescription";
     public static final String TAG_SEASONNAME = "seasonName";
+    public static final String TAG_SEASONTITLE = "seasonTitle";
     public static final String TAG_EPISODENR = "episodeNumber";
     public static final String TAG_DURATION = "duration";
     public static final String TAG_THUMBNAIL = "videoThumbnailUrl";
@@ -336,6 +337,7 @@ public class ProgramService extends IntentService {
         String title = inputObject.getString(TAG_TITLE);
         String description = inputObject.optString(TAG_DESCRIPTION);
         String seasonName = inputObject.optString(TAG_SEASONNAME);
+        String seasonTitle = inputObject.optString(TAG_SEASONTITLE);
         int episodeNumber = inputObject.optInt(TAG_EPISODENR);
         int duration = inputObject.optInt(TAG_DURATION, 0) * 60;
         String videoId  = inputObject.getString(TAG_VIDEOID);
@@ -361,6 +363,7 @@ public class ProgramService extends IntentService {
                 title,
                 description,
                 seasonName,
+                seasonTitle,
                 episodeNumber,
                 duration,
                 thumbnail,
