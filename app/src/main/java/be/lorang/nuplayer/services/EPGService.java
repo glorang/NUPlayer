@@ -83,7 +83,7 @@ public class EPGService extends IntentService {
                                     .withZone(ZoneId.of("Europe/Brussels"));
 
                             String title = epgEntry.getString("title");
-                            String description = epgEntry.getString("subtitle");
+                            String description = epgEntry.optString("subtitle", "");
                             String timeslot = hourFormatter.format(startTime) + " - " + hourFormatter.format(endTime);
 
                             long duration = endTime.toInstant().toEpochMilli() - startTime.toInstant().toEpochMilli();
