@@ -12,6 +12,7 @@
     <string name="service_access_token_refresh">https://token.vrt.be/refreshtoken?legacy=false</string>
     <string name="service_catalog_catalog_url">https://vrtnu-api.vrt.be/suggest?facets[transcodingStatus]=AVAILABLE&amp;facets[programType]=%s</string>
     <string name="service_catalog_favorites_url">https://video-user-data.vrt.be/favorites</string>
+    <string name="service_epg_url">https://www.vrt.be/bin/epg/schedule.%s.json</string>
     <string name="service_resumepoints_url">https://video-user-data.vrt.be/resume_points</string>
     <string name="service_resumepoints_video_url">https://vrtnu-api.vrt.be/search?size=1&amp;facets[url]=%s</string>
     <string name="service_catalog_series_url">https://search.vrt.be/suggest?facets[programTags.parentTitle]=Tijdsgerelateerd&amp;facets[assetStatus]=AVAILABLE&amp;facets[categories]=series</string>

@@ -18,9 +18,10 @@
 package be.lorang.nuplayer.presenter;
 
 import android.content.Context;
-import android.text.Html;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.leanback.widget.BaseCardView;
@@ -37,7 +38,7 @@ import be.lorang.nuplayer.model.Video;
  *
  */
 public class LiveTVPresenter<T extends BaseCardView> extends BaseCardPresenter {
-
+    private static final String TAG = "LiveTVPresenter";
     public LiveTVPresenter(Context context) {
         super(context, R.layout.card_livetv);
     }
@@ -83,9 +84,18 @@ public class LiveTVPresenter<T extends BaseCardView> extends BaseCardPresenter {
         TextView textViewTitle = cardView.findViewById(R.id.liveTVChannel);
         textViewTitle.setText(video.getTitle());
 
-        // set description
-        TextView textViewDescription = cardView.findViewById(R.id.liveTVDescription);
-        textViewDescription.setText(Html.fromHtml(video.getDescription(), Html.FROM_HTML_MODE_COMPACT));
+        // set time slot
+        TextView textViewDescription = cardView.findViewById(R.id.liveTVTimeslot);
+        textViewDescription.setText(video.getFormattedBroadcastShortDate());
+
+        // set progress (if set)
+        ProgressBar progressBar = cardView.findViewById(R.id.progressBar);
+        if(video.getProgressPct() > 0) {
+            progressBar.setProgress(video.getProgressPct());
+            progressBar.setAlpha(1);
+        } else {
+            progressBar.setAlpha(0);
+        }
 
     }
 

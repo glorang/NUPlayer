@@ -20,6 +20,15 @@
             android:scaleType="fitXY"
             lb:layout_viewType="main" />
 
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:layout_marginTop="155dp"
+            android:layout_weight="1"
+            android:scaleY="1" />
+
     </FrameLayout>
 
 
@@ -41,7 +50,7 @@
             android:layout_marginLeft="5dp"
             android:layout_marginTop="5dp"
             android:layout_marginRight="5dp"
-            android:scaleType="fitStart"
+            android:scaleType="centerInside"
             lb:layout_viewType="main" />
 
         <LinearLayout
@@ -64,7 +73,7 @@
                 android:textColor="#EEEEEE" />
 
             <TextView
-                android:id="@+id/liveTVDescription"
+                android:id="@+id/liveTVTimeslot"
                 style="@style/Widget.Leanback.ImageCardView.ContentStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -47,6 +47,7 @@ import be.lorang.nuplayer.presenter.SeriesPresenter;
 import be.lorang.nuplayer.presenter.VideoPresenter;
 import be.lorang.nuplayer.services.AccessTokenService;
 import be.lorang.nuplayer.services.CatalogService;
+import be.lorang.nuplayer.services.EPGService;
 import be.lorang.nuplayer.services.FavoriteService;
 import be.lorang.nuplayer.services.ResumePointsService;
 import be.lorang.nuplayer.services.SeriesService;
@@ -181,6 +182,27 @@ public class HomeFragment extends RowsFragment {
         if(liveTVAdapter.size() == 0) {
             mRowsAdapter.remove(liveTVListRow);
         }
+
+        // start an Intent to fetch EPG data
+        Intent epgIntent = new Intent(getActivity(), EPGService.class);
+        epgIntent.putExtra(EPGService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
+            @Override
+            protected void onReceiveResult(int resultCode, Bundle resultData) {
+                super.onReceiveResult(resultCode, resultData);
+
+                // show messages, if any
+                if (resultData.getString("MSG", "").length() > 0) {
+                    Toast.makeText(getActivity(), resultData.getString("MSG"), Toast.LENGTH_SHORT).show();
+                }
+
+                // Update adapter
+                if (resultCode == Activity.RESULT_OK) {
+                    liveTVAdapter.notifyArrayItemRangeChanged(0, liveTVAdapter.size());
+                }
+            }
+        });
+
+        getActivity().startService(epgIntent);
 
     }
 
