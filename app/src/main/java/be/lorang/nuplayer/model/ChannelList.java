@@ -34,6 +34,8 @@ public class ChannelList {
     private List<Video> mChannels = new ArrayList<Video>();
 
     // Define each Live TV channel as a statically defined video
+    // Title, description, formattedBroadcastShortDate will be overwritten from EPGService
+    // There is a slight attribute abuse in formattedBroadcastShortDate and pubId
     private ChannelList() {
 
         Video een = new Video(
@@ -44,7 +46,7 @@ public class ChannelList {
                 0,
                 "https://vrtnu-api.vrt.be/screenshots/een.jpg",
                 "vualto_een_geo",
-                "",
+                "O8",
                 "",
                 "",
                 "een",
@@ -65,7 +67,7 @@ public class ChannelList {
                 0,
                 "https://vrtnu-api.vrt.be/screenshots/canvas.jpg",
                 "vualto_canvas_geo",
-                "",
+                "1H",
                 "",
                 "",
                 "canvas",
@@ -86,7 +88,7 @@ public class ChannelList {
                 0,
                 "https://vrtnu-api.vrt.be/screenshots/ketnet.jpg",
                 "vualto_ketnet_geo",
-                "",
+                "O9",
                 "",
                 "",
                 "ketnet",
@@ -114,11 +116,13 @@ public class ChannelList {
 
     public List<Video> getChannels() { return mChannels; }
 
-    // FIXME: feed EPG into description
-    public void setDescription(Video video, String description) {
-        for(Video channel : mChannels) {
-            if(channel == video) {
-                channel.setDescription(description);
+    public void setEPGInfo(String channel, String title, String description, String timeslot, int progress) {
+        for(Video video : mChannels) {
+            if(video.getPubId().equals(channel)) {
+                video.setTitle(title);
+                video.setDescription(description);
+                video.setFormattedBroadcastShortDate(timeslot);
+                video.setProgressPct(progress);
             }
         }
     }
