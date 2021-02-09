@@ -149,7 +149,7 @@ public class ProgramFragment extends VerticalGridFragment implements OnItemViewS
         setOnItemViewSelectedListener(this);
         setGridPresenter(videoGridPresenter);
 
-        mAdapter = new ArrayObjectAdapter(new WideVideoPresenter(getContext()));
+        mAdapter = new ArrayObjectAdapter(new WideVideoPresenter(getContext(), WideVideoPresenter.CardType.PROGRAM));
         setAdapter(mAdapter);
         prepareEntranceTransition();
     }
