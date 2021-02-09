@@ -37,7 +37,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -138,11 +137,11 @@ public class CatalogFragment extends GridFragment implements View.OnClickListene
     @Override
     public void onClick(View view) {
 
-        if(view instanceof CompoundButton) {
+        if(view instanceof CheckBox) {
             CheckBox checkBox = (CheckBox)view;
             String selectedBrand = checkBox.getContentDescription().toString();
 
-            if(((CompoundButton) view).isChecked()){
+            if(((CheckBox) view).isChecked()){
                 if(!selectedBrands.contains(selectedBrand)) {
                     selectedBrands.add(selectedBrand);
                 }
