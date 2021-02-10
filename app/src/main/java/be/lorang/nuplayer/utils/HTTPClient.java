@@ -308,6 +308,35 @@ public class HTTPClient {
 
     }
 
+    // Clear all expired cache files
+    public static void clearExpiredCache(File cacheDir) {
+
+        for (File file : getCacheFiles(cacheDir)) {
+            if (file.exists()) {
+                try {
+                    FileInputStream fis = new FileInputStream(file);
+                    byte[] data = new byte[(int) file.length()];
+                    fis.read(data);
+                    fis.close();
+
+                    String input = new String(data, StandardCharsets.UTF_8);
+
+                    JSONObject cacheObject = new JSONObject(input);
+                    Timestamp timestampCacheExpires = new Timestamp(cacheObject.getLong("timestampCacheExpires"));
+                    Instant cacheExpires = timestampCacheExpires.toInstant();
+
+                    // check if cache entry still valid
+                    if (Instant.now().isBefore(cacheExpires)) {
+                        Log.d(TAG, "Removing expired cache file: " + file.getName() + " which expired on " + cacheExpires);
+                        file.delete();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     // Clear Catalog + Favorites cache
     public static void clearCatalogCache(File cacheDir, String catalogURL, String favoritesURL) {
 

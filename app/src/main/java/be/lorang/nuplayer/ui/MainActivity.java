@@ -27,6 +27,7 @@ import java.net.CookieManager;
 
 import be.lorang.nuplayer.R;
 import be.lorang.nuplayer.services.AuthService;
+import be.lorang.nuplayer.utils.HTTPClient;
 
 public class MainActivity extends LeanbackActivity {
 
@@ -55,6 +56,9 @@ public class MainActivity extends LeanbackActivity {
 
         // setup application wide CookieManager
         CookieHandler.setDefault(new CookieManager());
+
+        // Remove expired caches
+        HTTPClient.clearExpiredCache(getCacheDir());
     }
 
 }
