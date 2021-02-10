@@ -15,7 +15,9 @@ import org.json.JSONObject;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import be.lorang.nuplayer.R;
 import be.lorang.nuplayer.model.ChannelList;
@@ -23,6 +25,9 @@ import be.lorang.nuplayer.utils.HTTPClient;
 
 /*
  * Very basic Service to fetch EPG data and feed it into ChannelList object
+ *
+ * The EPG data after midnight is stored in the file of the day before so we always query
+ * EPG data for two days and merge their results
  *
  */
 
@@ -47,50 +52,74 @@ public class EPGService extends IntentService {
             // Current time
             ZonedDateTime currentDateTime = ZonedDateTime.now();
 
-            // Get ChannelList
-            ChannelList channelList = ChannelList.getInstance();
-
-            // Get EPG data (once a day)
+            // Date formatter
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                     .withZone(ZoneId.of("Europe/Brussels"));
 
-            String url = String.format(getString(R.string.service_epg_url),
-                    formatter.format(currentDateTime));
+            // Get ChannelList
+            ChannelList channelList = ChannelList.getInstance();
 
-            JSONObject returnObject = httpClient.getCachedRequest(getCacheDir(), url, 1440);
-            if(httpClient.getResponseCode() != 200) {
-                throw new HttpException(httpClient.getResponseCode() + ": " + httpClient.getResponseMessage());
+            // Result object
+            JSONObject result = new JSONObject();
+
+            // Get EPG data (once every 4 hours) for current day and yesterday
+            List<ZonedDateTime> zonedDateTimeList = new ArrayList<>();
+            zonedDateTimeList.add(currentDateTime);
+            zonedDateTimeList.add(currentDateTime.minusDays(1));
+            for(ZonedDateTime zonedDateTime : zonedDateTimeList) {
+
+                String url = String.format(getString(R.string.service_epg_url),
+                        formatter.format(zonedDateTime));
+
+                JSONObject returnObject = httpClient.getCachedRequest(getCacheDir(), url, 240);
+                if (httpClient.getResponseCode() != 200) {
+                    throw new HttpException(httpClient.getResponseCode() + ": " + httpClient.getResponseMessage());
+                }
+
+                Iterator<String> keys = returnObject.keys();
+                while(keys.hasNext()) {
+                    String channel = keys.next();
+
+                    if (returnObject.get(channel) instanceof JSONArray) {
+                        JSONArray channelItems = returnObject.getJSONArray(channel);
+                        for (int i = 0; i < channelItems.length(); i++) {
+                            result.accumulate(channel, channelItems.getJSONObject(i));
+                        }
+                    }
+                }
             }
 
-            Iterator<String> keys = returnObject.keys();
+            Iterator<String> keys = result.keys();
             while(keys.hasNext()) {
                 String channel = keys.next();
-                if (returnObject.get(channel) instanceof JSONArray) {
-                    JSONArray channelItems = returnObject.getJSONArray(channel);
+                JSONArray channelItems = result.getJSONArray(channel);
 
-                    for(int i=0; i<channelItems.length(); i++) {
-                        JSONObject epgEntry = channelItems.getJSONObject(i);
+                for(int i=0; i<channelItems.length(); i++) {
+                    JSONObject epgEntry = channelItems.getJSONObject(i);
 
-                        String startTimeString = epgEntry.getString("startTime");
-                        String endTimeString = epgEntry.getString("endTime");
+                    String startTimeString = epgEntry.getString("startTime");
+                    String endTimeString = epgEntry.getString("endTime");
 
-                        ZonedDateTime startTime = ZonedDateTime.parse(startTimeString);
-                        ZonedDateTime endTime = ZonedDateTime.parse(endTimeString);
+                    ZonedDateTime startTime = ZonedDateTime.parse(startTimeString);
+                    ZonedDateTime endTime = ZonedDateTime.parse(endTimeString);
 
-                        if(currentDateTime.isAfter(startTime) && currentDateTime.isBefore(endTime)) {
+                    //Log.d(TAG, "EPGEntry : " + channel + " - " + startTime + " - "
+                    // + endTimeString + " - " + epgEntry.getString("title"));
 
-                            DateTimeFormatter hourFormatter = DateTimeFormatter.ofPattern("HH:mm")
-                                    .withZone(ZoneId.of("Europe/Brussels"));
+                    if(currentDateTime.isAfter(startTime) && currentDateTime.isBefore(endTime)) {
 
-                            String title = epgEntry.getString("title");
-                            String description = epgEntry.optString("subtitle", "");
-                            String timeslot = hourFormatter.format(startTime) + " - " + hourFormatter.format(endTime);
+                        DateTimeFormatter hourFormatter = DateTimeFormatter.ofPattern("HH:mm")
+                                .withZone(ZoneId.of("Europe/Brussels"));
 
-                            long duration = endTime.toInstant().toEpochMilli() - startTime.toInstant().toEpochMilli();
-                            int progress = (int)(((double)(currentDateTime.toInstant().toEpochMilli() - startTime.toInstant().toEpochMilli()) / duration) * 100);
-                            Log.d(TAG, "Setting EPG for channel " + channel + " to " + title + " " + timeslot);
-                            channelList.setEPGInfo(channel, title, description, timeslot, progress);
-                        }
+                        String title = epgEntry.getString("title");
+                        String description = epgEntry.optString("subtitle", "");
+                        String timeslot = hourFormatter.format(startTime) + " - " + hourFormatter.format(endTime);
+
+                        long duration = endTime.toInstant().toEpochMilli() - startTime.toInstant().toEpochMilli();
+                        int progress = (int) (((double) (currentDateTime.toInstant().toEpochMilli() - startTime.toInstant().toEpochMilli()) / duration) * 100);
+                        Log.d(TAG, "Setting EPG for channel " + channel + " to " + title + " " + timeslot);
+                        channelList.setEPGInfo(channel, title, description, timeslot, progress);
+                        break;
                     }
                 }
             }
