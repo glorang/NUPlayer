@@ -85,10 +85,11 @@ public class HTTPClient {
      * @param postData - JSONObject: data for POST request
      * @param headers - HashMap: additional headers to set
      * @param cacheDir - File: File object pointing to cache dir (getContext().getCacheDir())
+     * @param ttl - Integer: Time To Live (ttl) for cached request in minutes
      *
      * @return JSONObject with result
      */
-    private JSONObject doRequest(String urlString, String requestMethod, String contentType, JSONObject postData, Map<String, String> headers, File cacheDir) throws IOException  {
+    private JSONObject doRequest(String urlString, String requestMethod, String contentType, JSONObject postData, Map<String, String> headers, File cacheDir, int ttl) throws IOException  {
 
         try {
 
@@ -191,7 +192,7 @@ public class HTTPClient {
 
                 // Setup cache object as JSON with current timestamp
                 JSONObject cacheObject = new JSONObject();
-                cacheObject.put("timestamp", System.currentTimeMillis());
+                cacheObject.put("timestampCacheExpires", (System.currentTimeMillis() + (ttl * 60 * 1000)));
                 cacheObject.put("object", returnObject.toString());
 
                 Log.d(TAG, "Writing to cache: " + cacheObject.toString().substring(0,100));
@@ -215,23 +216,23 @@ public class HTTPClient {
     }
 
     public JSONObject getRequest(String url) throws IOException{
-        return doRequest(url, "GET", null, null, null, null);
+        return doRequest(url, "GET", null, null, null, null, 0);
     }
 
-    public JSONObject getRequest(File cacheDir, String url) throws IOException{
-        return doRequest(url, "GET", null, null, null, cacheDir);
+    public JSONObject getRequest(File cacheDir, String url, int ttl) throws IOException{
+        return doRequest(url, "GET", null, null, null, cacheDir, ttl);
     }
 
     public JSONObject getRequest(String url, Map<String, String> headers) throws IOException{
-        return doRequest(url, "GET", null, null, headers, null);
+        return doRequest(url, "GET", null, null, headers, null, 0);
     }
 
     public JSONObject postRequest(String url, String contentType, JSONObject postData) throws IOException {
-        return doRequest(url, "POST", contentType, postData, null, null);
+        return doRequest(url, "POST", contentType, postData, null, null, 0);
     }
 
     public JSONObject postRequest(String url, String contentType, JSONObject postData, Map<String, String> headers) throws IOException {
-        return doRequest(url, "POST", contentType, postData, headers, null);
+        return doRequest(url, "POST", contentType, postData, headers, null, 0);
     }
 
     // Return cached responses, ttl in minutes
@@ -249,7 +250,7 @@ public class HTTPClient {
             String input = new String(data, StandardCharsets.UTF_8);
             try {
                 JSONObject cacheObject = new JSONObject(input);
-                Timestamp timestampCacheExpires = new Timestamp(cacheObject.getLong("timestamp") + (ttl * 60 * 1000));
+                Timestamp timestampCacheExpires = new Timestamp(cacheObject.getLong("timestampCacheExpires"));
                 Instant cacheExpires = timestampCacheExpires.toInstant();
                 JSONObject object = new JSONObject(cacheObject.getString("object"));
 
@@ -261,11 +262,11 @@ public class HTTPClient {
                 }
 
             } catch(Exception e) {
-                return getRequest(cacheDir, url);
+                return getRequest(cacheDir, url, ttl);
             }
         }
 
-        return getRequest(cacheDir, url);
+        return getRequest(cacheDir, url, ttl);
     }
 
     public JSONObject getCachedRequest(File cacheDir, String url) throws IOException {
