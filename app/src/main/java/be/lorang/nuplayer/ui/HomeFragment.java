@@ -24,7 +24,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -34,23 +33,23 @@ import androidx.leanback.widget.HeaderItem;
 import androidx.leanback.widget.ListRow;
 import androidx.leanback.widget.ListRowPresenter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import be.lorang.nuplayer.R;
 import be.lorang.nuplayer.model.ChannelList;
-import be.lorang.nuplayer.model.Program;
 import be.lorang.nuplayer.model.ProgramList;
 import be.lorang.nuplayer.model.Video;
 import be.lorang.nuplayer.model.VideoContinueWatchingList;
 import be.lorang.nuplayer.model.VideoWatchLaterList;
 import be.lorang.nuplayer.presenter.FavoritesPresenter;
 import be.lorang.nuplayer.presenter.LiveTVPresenter;
-import be.lorang.nuplayer.presenter.SeriesPresenter;
 import be.lorang.nuplayer.presenter.VideoPresenter;
 import be.lorang.nuplayer.services.AccessTokenService;
 import be.lorang.nuplayer.services.CatalogService;
 import be.lorang.nuplayer.services.EPGService;
 import be.lorang.nuplayer.services.FavoriteService;
 import be.lorang.nuplayer.services.ResumePointsService;
-import be.lorang.nuplayer.services.SeriesService;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -94,6 +93,9 @@ public class HomeFragment extends RowsFragment {
         // add live TV
         addLiveTV();
 
+        // Populate catalog
+        populateCatalog();
+
     }
 
     /*
@@ -120,8 +122,25 @@ public class HomeFragment extends RowsFragment {
     @Override
     public void onResume() {
 
-        // populate the catalog
-        populateCatalog();
+        // Refresh all adapters with latest status:
+        // - Update progress bar(s)
+        // - Add/remove Favorites
+        // - Add/remove Continue Watching
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                favoritesAdapter.setItems(ProgramList.getInstance().getFavorites(), null);
+                continueWatchingAdapter.setItems(getContinueWatchingList(), null);
+                watchLaterAdapter.setItems(VideoWatchLaterList.getInstance().getVideos(), null);
+
+                liveTVAdapter.notifyArrayItemRangeChanged(0, liveTVAdapter.size());
+                favoritesAdapter.notifyArrayItemRangeChanged(0, favoritesAdapter.size());
+                continueWatchingAdapter.notifyArrayItemRangeChanged(0, continueWatchingAdapter.size());
+                watchLaterAdapter.notifyArrayItemRangeChanged(0, watchLaterAdapter.size());
+            }
+        }, 1000);
 
         super.onResume();
     }
@@ -285,14 +304,8 @@ public class HomeFragment extends RowsFragment {
 
                 if (resultCode == Activity.RESULT_OK) {
 
-                    // Get favorites
-                    ProgramList programList = ProgramList.getInstance();
-                    // Empty adapter
-                    favoritesAdapter.removeItems(0, favoritesAdapter.size());
-                    // Add results
-                    for(Program program : programList.getFavorites()) {
-                        favoritesAdapter.add(program);
-                    }
+                    // Set favorites
+                    favoritesAdapter.setItems(ProgramList.getInstance().getFavorites(), null);
 
                     if(favoritesAdapter.size() == 0) {
                         mRowsAdapter.remove(favoritesListRow);
@@ -326,33 +339,15 @@ public class HomeFragment extends RowsFragment {
 
                 if (resultCode == Activity.RESULT_OK) {
 
-                    // Get Continue Watching
-                    VideoContinueWatchingList videoContinueWatchingList = VideoContinueWatchingList.getInstance();
-
-                    // Empty adapter
-                    continueWatchingAdapter.removeItems(0, continueWatchingAdapter.size());
-
-                    // Add results
-                    for(Video video : videoContinueWatchingList.getVideos()) {
-                        if(video.getProgressPct() > 5 && video.getProgressPct() < 95) {
-                            continueWatchingAdapter.add(video);
-                        }
-                    }
+                    // Set Continue watching Later
+                    continueWatchingAdapter.setItems(getContinueWatchingList(), null);
 
                     if(continueWatchingAdapter.size() == 0) {
                         mRowsAdapter.remove(continueWatchingListRow);
                     }
 
-                    // Get Watch Later
-                    VideoWatchLaterList videoWatchLaterList = VideoWatchLaterList.getInstance();
-
-                    // Empty adapter
-                    watchLaterAdapter.removeItems(0, watchLaterAdapter.size());
-
-                    // Add results
-                    for(Video video : videoWatchLaterList.getVideos()) {
-                        watchLaterAdapter.add(video);
-                    }
+                    // Set Watch Later
+                    watchLaterAdapter.setItems(VideoWatchLaterList.getInstance().getVideos(), null);
 
                     if(watchLaterAdapter.size() == 0) {
                         mRowsAdapter.remove(watchLaterListRow);
@@ -366,6 +361,22 @@ public class HomeFragment extends RowsFragment {
             }
         });
 
+    }
+
+    private List<Video> getContinueWatchingList() {
+        List<Video> result = new ArrayList<>();
+
+        // Get Continue Watching
+        VideoContinueWatchingList videoContinueWatchingList = VideoContinueWatchingList.getInstance();
+
+        // Add results
+        for(Video video : videoContinueWatchingList.getVideos()) {
+            if(video.getProgressPct() > 5 && video.getProgressPct() < 95) {
+                result.add(video);
+            }
+        }
+
+        return result;
     }
 
     // Always show row titles
