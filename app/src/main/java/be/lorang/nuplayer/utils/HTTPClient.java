@@ -326,7 +326,7 @@ public class HTTPClient {
                     Instant cacheExpires = timestampCacheExpires.toInstant();
 
                     // check if cache entry still valid
-                    if (Instant.now().isBefore(cacheExpires)) {
+                    if (Instant.now().isAfter(cacheExpires)) {
                         Log.d(TAG, "Removing expired cache file: " + file.getName() + " which expired on " + cacheExpires);
                         file.delete();
                     }
