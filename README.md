@@ -35,7 +35,7 @@ For now only tested on Google 2020 Chromecast (the one with remote). Any recent 
 
 # Release history
 
-## v1.1.0 (2021-02-11)
+## v1.1.1 (2021-02-11)
 
 First non-beta release
 
@@ -53,10 +53,6 @@ You'll also be prompted to login again.
 - Added Latest page listing latest videos (max 100 results)
 - EPG info in Live TV
 - Basic settings window
-
-*Known issues:*
-
-- It's possible Favorites/Resume points still errors out (401 Unauthorized) in certain cases
 
 ## v1.0.1-beta (2020-01-13)
 - All seasons, episodes and trailers can now be discovered and browsed through
