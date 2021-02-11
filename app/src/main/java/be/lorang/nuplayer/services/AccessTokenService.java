@@ -34,7 +34,11 @@ import be.lorang.nuplayer.ui.MainActivity;
 
 import org.json.JSONObject;
 
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.CookieStore;
 import java.net.HttpCookie;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -109,6 +113,15 @@ public class AccessTokenService extends IntentService {
             HttpCookie vrtlogin_rt = new Gson().fromJson(vrtloginRtJSON, HttpCookie.class);
             HttpCookie vrtlogin_expiry = new Gson().fromJson(vrtloginExpiryJSON, HttpCookie.class);
 
+            // Add cookies to running CookieStore, this will make sure all Cookies are sent
+            // on every HTTP request we make. CookieManager is non-persistent/in-memory only.
+            CookieManager cookieManager = (CookieManager) CookieHandler.getDefault();
+            CookieStore cookieStore = cookieManager.getCookieStore();
+            cookieStore.add(URI.create(xvrttoken.getDomain()), xvrttoken);
+            cookieStore.add(URI.create(vrtlogin_at.getDomain()), vrtlogin_at);
+            cookieStore.add(URI.create(vrtlogin_rt.getDomain()), vrtlogin_rt);
+            cookieStore.add(URI.create(vrtlogin_expiry.getDomain()), vrtlogin_expiry);
+
             // If our refresh token has expired we need to re-authenticate
             if(vrtlogin_rt.hasExpired()) {
                 Log.d(TAG, "vrtlogin-rt expired, user must re-authenticate");
@@ -125,12 +138,8 @@ public class AccessTokenService extends IntentService {
                 Log.d(TAG, "xvrttoken = " + xvrttokenJSON);
                 Log.d(TAG, "vrtlogin_at = " + vrtloginAtJSON);
 
-                Map<String, String> headers = new HashMap<>();
-                headers.put("Cookie", "vrtlogin-rt=" + vrtlogin_rt.getValue() + ";" +
-                        "vrtlogin-expiry=" + vrtlogin_expiry.getValue());
-
                 returnObject = httpClient.getRequest(
-                        getString(R.string.service_access_token_refresh), headers);
+                        getString(R.string.service_access_token_refresh));
 
                 Log.d(TAG, "Refresh token result = " + returnObject.toString());
 
