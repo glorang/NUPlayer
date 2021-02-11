@@ -43,7 +43,6 @@ public class AboutFragment extends Fragment implements BrowseFragment.MainFragme
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getMainFragmentAdapter().getFragmentHost().showTitleView(false);
     }
 
     @Override

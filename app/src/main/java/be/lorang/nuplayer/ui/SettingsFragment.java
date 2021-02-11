@@ -68,7 +68,6 @@ public class SettingsFragment extends Fragment implements BrowseFragment.MainFra
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         prepareIntents();
-        getMainFragmentAdapter().getFragmentHost().showTitleView(false);
     }
 
     @Override
@@ -135,11 +134,8 @@ public class SettingsFragment extends Fragment implements BrowseFragment.MainFra
                 // Clear catalog
                 ProgramList.getInstance().clear();
 
-                // Remove catalog caches when logging out (removes user's Favorites)
-                HTTPClient.clearCatalogCache(getActivity().getCacheDir(),
-                        getString(R.string.service_catalog_catalog_url),
-                        getString(R.string.service_catalog_favorites_url)
-                );
+                // Clear all caches
+                HTTPClient.clearCache(getActivity().getCacheDir());
 
                 // Unset all shared pref keys
                 editor.putBoolean(AuthService.COMPLETED_AUTHENTICATION, false);
@@ -160,9 +156,6 @@ public class SettingsFragment extends Fragment implements BrowseFragment.MainFra
                 // Start loginActivity
                 startActivity(new Intent(getActivity(), LoginActivity.class));
 
-                // We don't know when the login activity finishes nor its result
-                // so we finish our current settings activity and return to the main screen
-                getActivity().finish();
             }
 
             // Update text fields with new status
@@ -186,14 +179,14 @@ public class SettingsFragment extends Fragment implements BrowseFragment.MainFra
     }
 
     private void setCatalogButtonState() {
-
+        // Do not use setVisibility on the button as it makes it lose focus
         if(catalogLoaded && seriesLoaded && favoritesLoaded) {
-            //catalogButton.setText("Refresh");
-            catalogButton.setVisibility(View.VISIBLE);
+            catalogButton.setText("Refresh");
+            catalogButton.setBackground(getResources().getDrawable(R.drawable.button_default, null));
             catalogProgressBar.setVisibility(View.INVISIBLE);
         } else {
-            //catalogButton.setText("...");
-            catalogButton.setVisibility(View.INVISIBLE);
+            catalogButton.setText("");
+            catalogButton.setBackground(null);
             catalogProgressBar.setVisibility(View.VISIBLE);
         }
     }

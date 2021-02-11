@@ -69,16 +69,16 @@ public class MainFragment extends BrowseFragment {
         BackgroundManager.getInstance(getActivity()).setColor(getResources().getColor(R.color.vrtnu_black_tint_2));
 
         setSearchAffordanceColor(ContextCompat.getColor(getActivity(), R.color.vrtnu_blue));
-
-        setOnSearchClickedListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), SearchActivity.class);
-                startActivity(intent);
-            }
-        });
+        setDefaultSearchListener();
 
         prepareEntranceTransition();
+    }
+
+    private void setDefaultSearchListener() {
+        setOnSearchClickedListener(view -> {
+            Intent intent = new Intent(getActivity(), SearchActivity.class);
+            startActivity(intent);
+        });
     }
 
     /*
@@ -123,6 +123,7 @@ public class MainFragment extends BrowseFragment {
         public Fragment createFragment(Object rowObj) {
             Row row = (Row)rowObj;
             mBackgroundManager.setDrawable(null);
+            setDefaultSearchListener();
             switch(row.getHeaderItem().getName()) {
                 case "Home":
                     return new HomeFragment();
@@ -133,7 +134,8 @@ public class MainFragment extends BrowseFragment {
                 case "Latest":
                     return new LatestFragment();
                 case "Settings":
-                    return new SettingsDummyFragment();
+                    setOnSearchClickedListener(null);
+                    return new SettingsMainFragment();
                 default:
                     Log.d(TAG, "Unknown row: " + row.getHeaderItem().getName());
                     return new HomeFragment();

@@ -63,7 +63,6 @@ public class TokenStatusFragment extends Fragment implements BrowseFragment.Main
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getMainFragmentAdapter().getFragmentHost().showTitleView(false);
     }
 
     @Override
