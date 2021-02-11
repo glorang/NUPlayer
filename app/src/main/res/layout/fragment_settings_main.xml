@@ -1,6 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/settings_fragment_main"
-    android:name="be.lorang.nuplayer.ui.SettingsBrowseFragment"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:background="@color/vrtnu_black_tint_1"
+            android:orientation="horizontal"
+            android:paddingLeft="50dp"
+            android:paddingTop="25dp"
+            android:paddingRight="20dp">
+
+            <Button
+                android:id="@+id/buttonSettingsMainSettings"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/button_border_bottom"
+                android:fontFamily="sans-serif-condensed"
+                android:nextFocusDown="@+id/buttonSettingsCatalogRefresh"
+                android:text="Settings" />
+
+            <Button
+                android:id="@+id/buttonSettingsMainTokenStatus"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/button_border_bottom"
+                android:fontFamily="sans-serif-condensed"
+                android:nextFocusDown="@id/buttonSettingsMainTokenStatus"
+                android:text="Token Status" />
+
+            <Button
+                android:id="@+id/buttonSettingsMainAbout"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/button_border_bottom"
+                android:fontFamily="sans-serif-condensed"
+                android:nextFocusDown="@id/buttonSettingsMainAbout"
+                android:text="About" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/settingsContainerLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"/>
+
+    </LinearLayout>
+
+</FrameLayout>

@@ -35,7 +35,7 @@
                         android:layout_height="match_parent"
                         android:orientation="vertical">
 
-                        <Button
+                        <ImageView
                             android:id="@+id/buttonLogo"
                             android:layout_width="300dp"
                             android:layout_height="200dp"

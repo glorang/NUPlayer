@@ -22,15 +22,6 @@
             android:visibility="visible">
 
             <TextView
-                android:id="@+id/labelTokenStatusHeader"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="20dp"
-                android:text="Token status"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-
-            <TextView
                 android:id="@+id/labelTokenStatusInfo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -164,10 +155,6 @@
 
             </LinearLayout>
 
-            <Button
-                android:id="@+id/hackButtonToHaveSomethingFocusableOnView"
-                android:layout_width="match_parent"
-                android:layout_height="1dp" />
         </LinearLayout>
     </LinearLayout>
 
