@@ -35,7 +35,7 @@ For now only tested on Google 2020 Chromecast (the one with remote). Any recent 
 
 # Release history
 
-## v1.1.0 (2020-02-11)
+## v1.1.0 (2021-02-11)
 
 First non-beta release
 
