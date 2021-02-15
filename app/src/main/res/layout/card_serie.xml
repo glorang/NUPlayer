@@ -30,35 +30,26 @@
 
         </FrameLayout>
 
-        <LinearLayout
-            android:id="@+id/info"
-            android:layout_width="130dp"
-            android:layout_height="match_parent"
-            android:background="@color/vrtnu_black_tint_1"
-            android:orientation="vertical"
-            android:paddingLeft="11dp"
-            android:paddingTop="7dp"
-            android:paddingRight="11dp">
-
-            <TextView
-                android:id="@+id/serieTitle"
-                style="@style/Widget.Leanback.ImageCardView.TitleStyle"
-                android:fontFamily="sans-serif-condensed"
-                android:lines="2"
-                android:maxLines="2"
-                android:textColor="#EEEEEE"
-                android:textSize="14sp" />
-
-            <TextView
-                android:id="@+id/serieDescription"
-                style="@style/Widget.Leanback.ImageCardView.ContentStyle"
-                android:layout_marginTop="6dp"
-                android:fontFamily="sans-serif-condensed"
-                android:lines="10"
-                android:maxLines="10"
-                android:textSize="10sp" />
-
-        </LinearLayout>
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/info"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/vrtnu_black_tint_1"
+        android:orientation="horizontal"
+        android:paddingLeft="11dp"
+        android:paddingTop="3dp"
+        android:paddingRight="11dp"
+        android:paddingBottom="3dp">
+
+        <TextView
+            android:id="@+id/serieTitle"
+            style="@style/Widget.Leanback.ImageCardView.TitleStyle"
+            android:fontFamily="sans-serif-condensed"
+            android:lines="2"
+            android:maxLines="2"
+            android:textColor="#EEEEEE"
+            android:textSize="14sp" />
+    </LinearLayout>
 </LinearLayout>

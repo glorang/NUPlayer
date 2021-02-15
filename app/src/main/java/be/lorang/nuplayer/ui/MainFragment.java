@@ -130,6 +130,7 @@ public class MainFragment extends BrowseFragment {
                 case "Catalog":
                     return new CatalogFragment();
                 case "Series":
+                    setOnSearchClickedListener(null);
                     return new SeriesFragment();
                 case "Latest":
                     return new LatestFragment();

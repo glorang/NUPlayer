@@ -71,10 +71,6 @@ public class SeriesPresenter<T extends BaseCardView> extends BaseCardPresenter {
         TextView textViewTitle = cardView.findViewById(R.id.serieTitle);
         textViewTitle.setText(program.getTitle());
 
-        // set description
-        TextView textViewDescription = cardView.findViewById(R.id.serieDescription);
-        textViewDescription.setText(Html.fromHtml(program.getDescription(), Html.FROM_HTML_MODE_COMPACT));
-
     }
 
 }
