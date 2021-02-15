@@ -19,20 +19,28 @@
 package be.lorang.nuplayer.ui;
 
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
-import androidx.core.app.ActivityOptionsCompat;
+import androidx.leanback.app.BackgroundManager;
+import androidx.leanback.app.BrowseFragment;
+import androidx.leanback.app.RowsFragment;
 import androidx.leanback.widget.ArrayObjectAdapter;
-import androidx.leanback.widget.FocusHighlight;
-import androidx.leanback.widget.OnItemViewClickedListener;
-import androidx.leanback.widget.Presenter;
-import androidx.leanback.widget.Row;
-import androidx.leanback.widget.RowPresenter;
-import androidx.leanback.widget.VerticalGridPresenter;
+import androidx.leanback.widget.ListRow;
+import androidx.leanback.widget.ListRowPresenter;
 
 import android.os.Handler;
 import android.os.ResultReceiver;
+import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import be.lorang.nuplayer.R;
@@ -41,49 +49,68 @@ import be.lorang.nuplayer.model.Program;
 import be.lorang.nuplayer.model.ProgramList;
 import be.lorang.nuplayer.services.SeriesService;
 
-import com.google.gson.Gson;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 
-public class SeriesFragment extends GridFragment {
-    private final static String TAG = "SeriesFragment";
-    private static final int COLUMNS = 3;
-    private final int ZOOM_FACTOR = FocusHighlight.ZOOM_FACTOR_MEDIUM;
+public class SeriesFragment extends Fragment implements BrowseFragment.MainFragmentAdapterProvider {
+
+    private BrowseFragment.MainFragmentAdapter mMainFragmentAdapter = new BrowseFragment.MainFragmentAdapter(this);
+    private static final String TAG = "SeriesFragment";
+
     private ArrayObjectAdapter mAdapter;
+    private BackgroundManager mBackgroundManager;
+    private Drawable mDefaulBackgroundImage;
+
+    @Override
+    public BrowseFragment.MainFragmentAdapter getMainFragmentAdapter() {
+        return mMainFragmentAdapter;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setupAdapter();
         loadData();
+
+        // set default background
+        mDefaulBackgroundImage = getResources().getDrawable(R.drawable.default_background, null);
         getMainFragmentAdapter().getFragmentHost().notifyDataReady(getMainFragmentAdapter());
     }
 
-    private void setupAdapter() {
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
+        View view = inflater.inflate(R.layout.fragment_series, container, false);
 
-        VerticalGridPresenter presenter = new VerticalGridPresenter(ZOOM_FACTOR, false);
-        presenter.setNumberOfColumns(COLUMNS);
-        setGridPresenter(presenter);
+        RowsFragment rowsFragment = new RowsFragment();
 
-        mAdapter = new ArrayObjectAdapter(new SeriesPresenter(getContext()));
-        setAdapter(mAdapter);
+        // setup listeners
+        rowsFragment.setOnItemViewClickedListener(new VideoProgramListener(this));
 
-        setOnItemViewClickedListener(new OnItemViewClickedListener() {
-            @Override
-            public void onItemClicked(
-                    Presenter.ViewHolder itemViewHolder,
-                    Object item,
-                    RowPresenter.ViewHolder rowViewHolder,
-                    Row row) {
-
-                if (item instanceof Program) {
-                    Program program = (Program) item;
-
-                    Intent programIntent = new Intent(getActivity().getBaseContext(), ProgramActivity.class);
-                    programIntent.putExtra("PROGRAM_OBJECT", (new Gson()).toJson(program));
-                    Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity()).toBundle();
-                    startActivity(programIntent, bundle);
-                }
+        rowsFragment.setOnItemViewSelectedListener((itemViewHolder, item, rowViewHolder, row) -> {
+            if(item instanceof Program) {
+                Program program = (Program) item;
+                setBrandLogo(program.getBrand());
+                updateBackground(program.getThumbnail("w1920hx"));
             }
         });
+
+        // setup adapter
+        ArrayObjectAdapter mRowsAdapter = new ArrayObjectAdapter(new ListRowPresenter());
+        rowsFragment.setAdapter(mRowsAdapter);
+
+        SeriesPresenter seriesPresenter = new SeriesPresenter(getContext());
+        mAdapter = new ArrayObjectAdapter(seriesPresenter);
+        ListRow seriesListrow = new ListRow(null, mAdapter);
+        mRowsAdapter.add(seriesListrow);
+
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.add(R.id.seriesContainer, rowsFragment);
+        fragmentTransaction.commit();
+
+        return view;
     }
 
     private void loadData() {
@@ -113,5 +140,50 @@ public class SeriesFragment extends GridFragment {
 
         getActivity().startService(seriesIntent);
 
+    }
+
+    private void setBrandLogo(String brand) {
+        ImageView brandImageView = getView().findViewById(R.id.brand_image);
+        if (brandImageView != null && brand != null) {
+            int resourceID = getContext().getResources().getIdentifier(
+                    "ic_" + brand.replaceAll("-",""),
+                    "drawable", getContext().getPackageName());
+            if (resourceID > 0) {
+                brandImageView.setImageResource(resourceID);
+                brandImageView.setVisibility(View.VISIBLE);
+            } else {
+                brandImageView.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    private void updateBackground(String uri) {
+
+        mBackgroundManager = BackgroundManager.getInstance(getActivity());
+        if(!mBackgroundManager.isAttached()) {
+            mBackgroundManager.attach(getActivity().getWindow());
+        }
+        DisplayMetrics mMetrics = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(mMetrics);
+
+        int width = mMetrics.widthPixels;
+        int height = mMetrics.heightPixels;
+
+        RequestOptions options = new RequestOptions()
+                .errorOf(mDefaulBackgroundImage)
+                .centerCrop();
+
+        Glide.with(this)
+                .asBitmap()
+                .load(uri)
+                .apply(options)
+                .into(new SimpleTarget<Bitmap>(width, height) {
+                    @Override
+                    public void onResourceReady(
+                            Bitmap resource,
+                            Transition<? super Bitmap> transition) {
+                        mBackgroundManager.setBitmap(resource);
+                    }
+                });
     }
 }
