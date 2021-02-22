@@ -18,11 +18,13 @@
 
 package be.lorang.nuplayer.ui;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.leanback.app.BackgroundManager;
@@ -36,6 +38,7 @@ import androidx.leanback.widget.OnItemViewClickedListener;
 import androidx.leanback.widget.Presenter;
 import androidx.leanback.widget.Row;
 import androidx.leanback.widget.RowPresenter;
+import androidx.leanback.widget.SpeechRecognitionCallback;
 
 import com.google.gson.Gson;
 
@@ -52,6 +55,7 @@ public class SearchFragment extends SearchSupportFragment
     private final Handler mHandler = new Handler();
     private ArrayObjectAdapter mRowsAdapter;
     private boolean mResultsFound = false;
+    private static final int REQUEST_SPEECH = 0x00000010;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -66,6 +70,19 @@ public class SearchFragment extends SearchSupportFragment
         BackgroundManager mBackgroundManager = BackgroundManager.getInstance(getActivity());
         mBackgroundManager.attach(getActivity().getWindow());
         mBackgroundManager.setColor(getResources().getColor(R.color.vrtnu_black_tint_2));
+
+        // FIXME: this call is actually deprecated but depending on android.permission.RECORD_AUDIO
+        // permission makes the app uninstallable on any device via Google Play
+        setSpeechRecognitionCallback(new SpeechRecognitionCallback() {
+            @Override
+            public void recognizeSpeech() {
+                try {
+                    startActivityForResult(getRecognizerIntent(), REQUEST_SPEECH);
+                } catch (ActivityNotFoundException e) {
+                    Log.e(TAG, "Cannot find activity for speech recognizer", e);
+                }
+            }
+        });
     }
 
     @Override
@@ -95,12 +112,6 @@ public class SearchFragment extends SearchSupportFragment
 
     public boolean hasResults() {
         return mRowsAdapter.size() > 0 && mResultsFound;
-    }
-
-    private boolean hasPermission(final String permission) {
-        final Context context = getActivity();
-        return PackageManager.PERMISSION_GRANTED == context.getPackageManager().checkPermission(
-                permission, context.getPackageName());
     }
 
     private void loadQuery(String query) {
