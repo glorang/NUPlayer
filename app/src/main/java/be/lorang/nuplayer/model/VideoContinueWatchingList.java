@@ -57,6 +57,11 @@ public class VideoContinueWatchingList {
         videoListInitialized = true;
     }
 
+    public void clear() {
+        mVideos.clear();
+        videoListInitialized = false;
+    }
+
     public boolean isVideoListInitialized() {
         return videoListInitialized;
     }
