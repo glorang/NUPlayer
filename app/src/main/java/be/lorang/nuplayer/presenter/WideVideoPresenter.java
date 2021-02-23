@@ -32,6 +32,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import be.lorang.nuplayer.R;
 import be.lorang.nuplayer.model.Video;
+import be.lorang.nuplayer.ui.VideoLongPressListener;
 import be.lorang.nuplayer.utils.Utils;
 
 /*
@@ -54,6 +55,9 @@ public class WideVideoPresenter<T extends BaseCardView> extends BaseCardPresente
 
     public void onBindViewHolder(Object item, BaseCardView cardView) {
         Video video = (Video) item;
+
+        // Set long press listener on card
+        cardView.setOnLongClickListener(new VideoLongPressListener(getContext(), video));
 
         ImageView imageView = cardView.findViewById(R.id.main_image);
         if (video.getThumbnail() != null) {

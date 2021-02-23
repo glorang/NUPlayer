@@ -43,4 +43,11 @@
     <string name="error_fragment_message">An error occurred</string>
     <string name="dismiss_error">Dismiss</string>
 
+    <!-- Context Menu -->
+    <string name="context_title">Context menu</string>
+    <string name="context_remove_continue_watching">Remove from continue watching</string>
+    <string name="context_add_watch_later">Add to watch later</string>
+    <string name="context_remove_watch_later">Remove from watch later</string>
+    <string name="context_cancel">Cancel</string>
+
 </resources>

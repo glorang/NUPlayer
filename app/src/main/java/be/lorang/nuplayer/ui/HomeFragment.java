@@ -24,6 +24,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -55,7 +56,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class HomeFragment extends RowsFragment {
 
-    private static String TAG = "HomeFragment";
+    public static String TAG = "HomeFragment";
 
     private ArrayObjectAdapter mRowsAdapter;
 
@@ -64,10 +65,19 @@ public class HomeFragment extends RowsFragment {
     private ArrayObjectAdapter watchLaterAdapter;
     private ArrayObjectAdapter continueWatchingAdapter;
 
+    private HeaderItem liveTVHeader;
+    private HeaderItem favoritesHeader;
+    private HeaderItem continueWatchingHeader;
+    private HeaderItem watchLaterHeader;
+
     private ListRow liveTVListRow;
     private ListRow favoritesListRow;
     private ListRow watchLaterListRow;
     private ListRow continueWatchingListRow;
+
+    private boolean favoritesListRowAdded = false;
+    private boolean watchLaterListRowAdded = false;
+    private boolean continueWatchingListRowAdded = false;
 
     private Intent accessTokenIntent;
     private Intent favoritesIntent;
@@ -121,16 +131,19 @@ public class HomeFragment extends RowsFragment {
 
     @Override
     public void onResume() {
+        refreshAdapters();
+        super.onResume();
+    }
 
-        // Refresh all adapters with latest status:
-        // - Update progress bar(s)
-        // - Add/remove Favorites
-        // - Add/remove Continue Watching
-
+    // Refresh all adapters with latest status:
+    // - Update progress bar(s)
+    // - Add/remove Favorites
+    // - Add/remove Continue Watching
+    // - Add/remove Watch later
+    public void refreshAdapters() {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-
                 favoritesAdapter.setItems(ProgramList.getInstance().getFavorites(), null);
                 continueWatchingAdapter.setItems(getContinueWatchingList(), null);
                 watchLaterAdapter.setItems(VideoWatchLaterList.getInstance().getVideos(), null);
@@ -139,12 +152,14 @@ public class HomeFragment extends RowsFragment {
                 favoritesAdapter.notifyArrayItemRangeChanged(0, favoritesAdapter.size());
                 continueWatchingAdapter.notifyArrayItemRangeChanged(0, continueWatchingAdapter.size());
                 watchLaterAdapter.notifyArrayItemRangeChanged(0, watchLaterAdapter.size());
+
+                showHideFavorites();
+                showHideContinueWatching();
+                showHideWatchLater();
+
             }
         }, 1000);
-
-        super.onResume();
     }
-
 
     public void notifyDataReady() {
         if(favoritesLoaded && resumePointsLoaded) {
@@ -162,31 +177,34 @@ public class HomeFragment extends RowsFragment {
 
         // Live TV Adapter
         LiveTVPresenter liveTVpresenter = new LiveTVPresenter(getContext());
-        HeaderItem liveTVHeader = new HeaderItem(getString(R.string.livetv_title));
+        liveTVHeader = new HeaderItem(getString(R.string.livetv_title));
         liveTVAdapter = new ArrayObjectAdapter(liveTVpresenter);
         liveTVListRow = new ListRow(liveTVHeader, liveTVAdapter);
-        mRowsAdapter.add(liveTVListRow);
+        mRowsAdapter.add(0, liveTVListRow);
 
         // Favorites Adapter
         FavoritesPresenter favoritesPresenter = new FavoritesPresenter(getContext());
-        HeaderItem favoritesHeader = new HeaderItem(getString(R.string.favorites_title));
+        favoritesHeader = new HeaderItem(getString(R.string.favorites_title));
         favoritesAdapter = new ArrayObjectAdapter(favoritesPresenter);
         favoritesListRow = new ListRow(favoritesHeader, favoritesAdapter);
-        mRowsAdapter.add(favoritesListRow);
+        mRowsAdapter.add(1, favoritesListRow);
+        favoritesListRowAdded = true;
 
         // Continue watching Adapter
         VideoPresenter continueWatchingPresenter = new VideoPresenter(getContext());
-        HeaderItem continueWatchingHeader = new HeaderItem(getString(R.string.continuewatching_title));
+        continueWatchingHeader = new HeaderItem(getString(R.string.continuewatching_title));
         continueWatchingAdapter = new ArrayObjectAdapter(continueWatchingPresenter);
         continueWatchingListRow = new ListRow(continueWatchingHeader, continueWatchingAdapter);
-        mRowsAdapter.add(continueWatchingListRow);
+        mRowsAdapter.add(2, continueWatchingListRow);
+        continueWatchingListRowAdded = true;
 
         // Watch Later Adapter
         VideoPresenter watchLaterPresenter = new VideoPresenter(getContext());
-        HeaderItem watchLaterHeader = new HeaderItem(getString(R.string.watchlater_title));
+        watchLaterHeader = new HeaderItem(getString(R.string.watchlater_title));
         watchLaterAdapter = new ArrayObjectAdapter(watchLaterPresenter);
         watchLaterListRow = new ListRow(watchLaterHeader, watchLaterAdapter);
-        mRowsAdapter.add(watchLaterListRow);
+        mRowsAdapter.add(3, watchLaterListRow);
+        watchLaterListRowAdded = true;
     }
 
     private void addLiveTV() {
@@ -270,10 +288,9 @@ public class HomeFragment extends RowsFragment {
 
                 } else {
                     // User not authenticated
-
-                    mRowsAdapter.remove(favoritesListRow);
-                    mRowsAdapter.remove(continueWatchingListRow);
-                    mRowsAdapter.remove(watchLaterListRow);
+                    showHideFavorites();
+                    showHideContinueWatching();
+                    showHideWatchLater();
 
                     favoritesLoaded = true;
                     resumePointsLoaded = true;
@@ -306,11 +323,7 @@ public class HomeFragment extends RowsFragment {
 
                     // Set favorites
                     favoritesAdapter.setItems(ProgramList.getInstance().getFavorites(), null);
-
-                    if(favoritesAdapter.size() == 0) {
-                        mRowsAdapter.remove(favoritesListRow);
-                    }
-
+                    showHideFavorites();
                 }
 
                 favoritesLoaded = true;
@@ -341,18 +354,11 @@ public class HomeFragment extends RowsFragment {
 
                     // Set Continue watching Later
                     continueWatchingAdapter.setItems(getContinueWatchingList(), null);
-
-                    if(continueWatchingAdapter.size() == 0) {
-                        mRowsAdapter.remove(continueWatchingListRow);
-                    }
+                    showHideContinueWatching();
 
                     // Set Watch Later
                     watchLaterAdapter.setItems(VideoWatchLaterList.getInstance().getVideos(), null);
-
-                    if(watchLaterAdapter.size() == 0) {
-                        mRowsAdapter.remove(watchLaterListRow);
-                    }
-
+                    showHideWatchLater();
                 }
 
                 resumePointsLoaded = true;
@@ -385,4 +391,36 @@ public class HomeFragment extends RowsFragment {
         super.setExpand(true);
     }
 
+    private void showHideFavorites() {
+
+        if(favoritesAdapter.size() == 0 && favoritesListRowAdded) {
+            mRowsAdapter.replace(1, new ListRow(null, new ArrayObjectAdapter()));
+            favoritesListRowAdded = false;
+        } else if(favoritesAdapter.size() > 0 && !favoritesListRowAdded) {
+            mRowsAdapter.replace(1, favoritesListRow);
+            favoritesListRowAdded = true;
+        }
+    }
+
+    private void showHideContinueWatching() {
+
+        if(continueWatchingAdapter.size() == 0 && continueWatchingListRowAdded) {
+            mRowsAdapter.replace(2, new ListRow(null, new ArrayObjectAdapter()));
+            continueWatchingListRowAdded = false;
+        } else if(continueWatchingAdapter.size() > 0 && !continueWatchingListRowAdded) {
+            mRowsAdapter.replace(2, continueWatchingListRow);
+            continueWatchingListRowAdded = true;
+        }
+    }
+
+    private void showHideWatchLater() {
+
+        if(watchLaterAdapter.size() == 0 && watchLaterListRowAdded) {
+            mRowsAdapter.replace(3, new ListRow(null, new ArrayObjectAdapter()));
+            watchLaterListRowAdded = false;
+        } else if(watchLaterAdapter.size() > 0 && !watchLaterListRowAdded) {
+            mRowsAdapter.replace(3, watchLaterListRow);
+            watchLaterListRowAdded = true;
+        }
+    }
 }

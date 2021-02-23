@@ -30,6 +30,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import be.lorang.nuplayer.R;
 import be.lorang.nuplayer.model.Video;
+import be.lorang.nuplayer.ui.VideoLongPressListener;
 
 /*
  * Card presenter for Videos - will set Program Name, episode, run time, description
@@ -47,6 +48,9 @@ public class VideoPresenter<T extends BaseCardView> extends BaseCardPresenter {
 
     public void onBindViewHolder(Object item, BaseCardView cardView) {
         Video video = (Video) item;
+
+        // Set long press listener on card
+        cardView.setOnLongClickListener(new VideoLongPressListener(getContext(), video));
 
         // set background image
         ImageView imageView = cardView.findViewById(R.id.main_image);
