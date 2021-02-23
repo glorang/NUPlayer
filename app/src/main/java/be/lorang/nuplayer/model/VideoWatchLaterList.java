@@ -57,6 +57,26 @@ public class VideoWatchLaterList {
         videoListInitialized = true;
     }
 
+    public void clear() {
+        mVideos.clear();
+        videoListInitialized = false;
+    }
+
+    public void removeVideo(Video video) {
+        Video videoToRemove = null;
+        for(Video mVideo : mVideos) {
+            if(mVideo.getVideoId().equals(video.getVideoId()) &&
+                    mVideo.getPubId().equals(video.getPubId())
+            ) {
+                videoToRemove = mVideo;
+            }
+        }
+
+        if(videoToRemove != null) {
+            mVideos.remove(videoToRemove);
+        }
+    }
+
     public boolean isVideoListInitialized() {
         return videoListInitialized;
     }

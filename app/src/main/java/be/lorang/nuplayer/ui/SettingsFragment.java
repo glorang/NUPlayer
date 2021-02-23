@@ -23,6 +23,8 @@ import androidx.leanback.app.BrowseFragment;
 
 import be.lorang.nuplayer.R;
 import be.lorang.nuplayer.model.ProgramList;
+import be.lorang.nuplayer.model.VideoContinueWatchingList;
+import be.lorang.nuplayer.model.VideoWatchLaterList;
 import be.lorang.nuplayer.services.AccessTokenService;
 import be.lorang.nuplayer.services.AuthService;
 import be.lorang.nuplayer.services.CatalogService;
@@ -133,6 +135,12 @@ public class SettingsFragment extends Fragment implements BrowseFragment.MainFra
 
                 // Clear catalog
                 ProgramList.getInstance().clear();
+
+                // Clear continue watching
+                VideoContinueWatchingList.getInstance().clear();
+
+                // Clear Watch Later
+                VideoWatchLaterList.getInstance().clear();
 
                 // Clear all caches
                 HTTPClient.clearCache(getActivity().getCacheDir());
