@@ -18,6 +18,7 @@
 
 package be.lorang.nuplayer.ui;
 
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -56,6 +57,7 @@ public class SearchFragment extends SearchSupportFragment
     private ArrayObjectAdapter mRowsAdapter;
     private boolean mResultsFound = false;
     private static final int REQUEST_SPEECH = 0x00000010;
+    private static final boolean FINISH_ON_RECOGNIZER_CANCELED = true;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -89,6 +91,27 @@ public class SearchFragment extends SearchSupportFragment
     public void onPause() {
         mHandler.removeCallbacksAndMessages(null);
         super.onPause();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_SPEECH:
+                switch (resultCode) {
+                    case Activity.RESULT_OK:
+                        setSearchQuery(data, true);
+                        break;
+                    default:
+                        // If recognizer is canceled or failed, keep focus on the search orb
+                        if (FINISH_ON_RECOGNIZER_CANCELED) {
+                            if (!hasResults()) {
+                                getView().findViewById(R.id.lb_search_bar_speech_orb).requestFocus();
+                            }
+                        }
+                        break;
+                }
+                break;
+        }
     }
 
     @Override
