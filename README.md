@@ -1,6 +1,6 @@
 # NUPlayer
 
-This project hosts NUPlayer an, unofficial, Android TV / Google TV player for VRT.NU content based on the [Leanback library](https://github.com/android/tv-samples) by Google.
+This project hosts NUPlayer. An, unofficial, Android TV / Google TV player for VRT.NU content based on the [Leanback library](https://github.com/android/tv-samples) by Google.
 
 Without the great and awesome work of the guys who wrote the [Kodi VRT.NU plugin](https://github.com/add-ons/plugin.video.vrt.nu/) this project would never have existed.
 
@@ -10,7 +10,7 @@ For now only tested on Google 2020 Chromecast (the one with remote). Any recent 
 
 # Current status
 
-## Works (yay!)
+More or less everything I wanted to implement is implemented now, this includes:
 
 - VRT login
 - Live TV
@@ -18,12 +18,15 @@ For now only tested on Google 2020 Chromecast (the one with remote). Any recent 
 - Playback of any on-demand program in the catalog (including DRM protected content)
 - Resume points / video progress
 - Favorites
-- Watch later (get only)
+- Watch later
 
-## Doesn't work yet
+What is not implemented / known limitations / known bugs:
 
-- Watch later (add/remove)
-- All stuff I didn't think about
+- Full TV guide is not implemented (no plans to implement, yet)
+- Categories is not implemented (no plans to implement, yet)
+- The search can be voice controlled but is rather useless in English
+- EPG data is not updated when Live TV stream switches program
+- A lof of info is not displayed (Description, Geo-location availability, Age restrictions, Genre, etc etc)
 
 # Installation
 
@@ -34,6 +37,12 @@ For now only tested on Google 2020 Chromecast (the one with remote). Any recent 
 - Enjoy!
 
 # Release history
+
+## v1.1.2 (2021-02-24)
+
+- Improve Series display
+- Implement Watch Later (add/remove)
+- Implement long press context menu for Videos to add/remove Watch Later & Resume points
 
 ## v1.1.1 (2021-02-11)
 
