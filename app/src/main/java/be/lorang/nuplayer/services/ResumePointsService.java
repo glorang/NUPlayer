@@ -60,10 +60,12 @@ public class ResumePointsService extends IntentService {
 
     public final static String ACTION_GET = "getContinueWatchingWatchLater";
     public final static String ACTION_UPDATE_RESUME_POINT = "updateResumePoint";
+    public final static String ACTION_UPDATE_WATCH_LATER = "updateWatchLater";
 
     private HTTPClient httpClient = new HTTPClient();
     private Bundle resultData = new Bundle();
     private String xvrttoken = "";
+    private Video video;
 
     public ResumePointsService() {
         super(TAG);
@@ -84,16 +86,21 @@ public class ResumePointsService extends IntentService {
                     populateVideoLists();
                     break;
                 case ResumePointsService.ACTION_UPDATE_RESUME_POINT:
-                    Video video = new Gson().fromJson(workIntent.getExtras().getString("VIDEO_OBJECT"), Video.class);
+                    video = new Gson().fromJson(workIntent.getExtras().getString("VIDEO_OBJECT"), Video.class);
                     int position = workIntent.getExtras().getInt("PLAYER_CURRENT_POSITION");
                     updateResumePoint(video, position);
+                    break;
+                case ResumePointsService.ACTION_UPDATE_WATCH_LATER:
+                    video = new Gson().fromJson(workIntent.getExtras().getString("VIDEO_OBJECT"), Video.class);
+                    boolean watchLater = workIntent.getExtras().getBoolean("WATCH_LATER");
+                    updateWatchLater(video, watchLater);
                     break;
             }
 
             receiver.send(Activity.RESULT_OK, resultData);
 
         } catch (Exception e) {
-            String message = "Could not download get resume points: " + e.getMessage();
+            String message = "Could not get/set resume point(s)/watch later: " + e.getMessage();
             Log.e(TAG, message);
             e.printStackTrace();
             resultData.putString("MSG", message);
@@ -248,6 +255,58 @@ public class ResumePointsService extends IntentService {
         }
 
         Log.d(TAG, "Resume point updated successfully");
+
+    }
+
+    // Toggle watch later
+    private void updateWatchLater(Video video, boolean watchLater) throws JSONException, IOException {
+
+        if(video == null) { return; }
+
+        // Don't add Live tv to watch later (no listener attached in any case)
+        if(video.getStreamType().equals(StreamService.STREAMTYPE_LIVETV)) {
+            return;
+        }
+
+        // Add to/remove from watch later list
+        VideoWatchLaterList videoWatchLaterList = VideoWatchLaterList.getInstance();
+        if(watchLater) {
+            video.setProgressPct(0);
+            videoWatchLaterList.addVideo(video);
+        } else {
+            videoWatchLaterList.removeVideo(video);
+        }
+
+        // Add / remove on VRT side
+        // Note that it takes multiple minutes before this change is visible @ VRT side
+        String assetPath = video.getAssetPath()
+                .replaceAll("[^a-zA-Z0-9]", "")
+                .toLowerCase();
+
+        // Remove base url if present
+        String videoUrl = video.getURL();
+        videoUrl = videoUrl.replaceFirst("^(https:)?//www.vrt.be", "");
+
+        JSONObject postData = new JSONObject();
+        postData.put("url", videoUrl);
+        postData.put("position", 0);
+        postData.put("total", 100);
+        postData.put("watchLater", watchLater);
+
+        Log.d(TAG, "Updating watch later, post data = " + postData);
+        String url = getString(R.string.service_resumepoints_url) + "/" + assetPath;
+
+        Map<String, String> headers = new HashMap<>();
+        if(xvrttoken.length() > 0) {
+            headers.put("authorization", "Bearer " + xvrttoken);
+        }
+
+        httpClient.postRequest(url, "application/json", postData, headers);
+        if(httpClient.getResponseCode() != 200) {
+            throw new HttpException(httpClient.getResponseCode() + ": " + httpClient.getResponseMessage());
+        }
+
+        Log.d(TAG, "Watch later updated successfully");
 
     }
 }
