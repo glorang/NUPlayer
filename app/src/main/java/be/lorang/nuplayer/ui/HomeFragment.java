@@ -393,6 +393,8 @@ public class HomeFragment extends RowsFragment {
 
     private void showHideFavorites() {
 
+        if(!favoritesLoaded) { return; }
+
         if(favoritesAdapter.size() == 0 && favoritesListRowAdded) {
             mRowsAdapter.replace(1, new ListRow(null, new ArrayObjectAdapter()));
             favoritesListRowAdded = false;
@@ -404,6 +406,8 @@ public class HomeFragment extends RowsFragment {
 
     private void showHideContinueWatching() {
 
+        if(!resumePointsLoaded) { return; }
+
         if(continueWatchingAdapter.size() == 0 && continueWatchingListRowAdded) {
             mRowsAdapter.replace(2, new ListRow(null, new ArrayObjectAdapter()));
             continueWatchingListRowAdded = false;
@@ -414,6 +418,8 @@ public class HomeFragment extends RowsFragment {
     }
 
     private void showHideWatchLater() {
+
+        if(!resumePointsLoaded) { return; }
 
         if(watchLaterAdapter.size() == 0 && watchLaterListRowAdded) {
             mRowsAdapter.replace(3, new ListRow(null, new ArrayObjectAdapter()));
