@@ -50,9 +50,12 @@ import java.util.Map;
  *  - vrtlogin-rt (refresh token): used to refresh vrtlogin-at and X-VRT-Token, valid for 1 year
  *  - vrtlogin-expiry, timestamp when X-VRT-Token and vrtlogin-at will expire, cookie itself is valid for 1 year
  *
- * Every time you refresh your token (AccessTokenService) vrtlogin-rt and vrtlogin-expiry are extended
- * Basically this means you need to use VRT.NU once before vrtlogin-rt expires and you never
- * need to re-authenticate
+ * Every time you refresh your token (AccessTokenService) vrtlogin-at and X-VRT-Token are valid again for 1 hour.
+ * vrtlogin-rt and vrtlogin-expiry are currently set to expire after 1 year.
+ *
+ * - They do not auto extend but this might "magically" be the case when expiry dates comes closer
+ * - If you call refresh token without vrtlogin-at and X-VRT-Token cookies set you get a new vrtlogin-{rt,expiry}
+ *   again valid for 1 year but unsure if this is the purpose
  *
  * X-VRT-Token and vrtlogin-at are always refreshed at the same time
  *
