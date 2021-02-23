@@ -93,6 +93,7 @@ public class EPGService extends IntentService {
             while(keys.hasNext()) {
                 String channel = keys.next();
                 JSONArray channelItems = result.getJSONArray(channel);
+                boolean epgUpdated = false;
 
                 for(int i=0; i<channelItems.length(); i++) {
                     JSONObject epgEntry = channelItems.getJSONObject(i);
@@ -119,8 +120,14 @@ public class EPGService extends IntentService {
                         int progress = (int) (((double) (currentDateTime.toInstant().toEpochMilli() - startTime.toInstant().toEpochMilli()) / duration) * 100);
                         Log.d(TAG, "Setting EPG for channel " + channel + " to " + title + " " + timeslot);
                         channelList.setEPGInfo(channel, title, description, timeslot, progress);
+                        epgUpdated = true;
                         break;
                     }
+                }
+
+                if(!epgUpdated) {
+                    channelList.setEPGInfo(channel, channelList.channelMapping.get(channel),
+                            "", "", 0);
                 }
             }
 

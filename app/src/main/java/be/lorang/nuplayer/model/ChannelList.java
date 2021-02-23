@@ -17,8 +17,11 @@
 
 package be.lorang.nuplayer.model;
 
+import com.google.common.collect.ImmutableMap;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import be.lorang.nuplayer.services.StreamService;
 
@@ -27,6 +30,12 @@ import be.lorang.nuplayer.services.StreamService;
  * This is a Singleton class so we only create it once as this is a fixed list
  */
 public class ChannelList {
+
+    public final Map<String, String> channelMapping = ImmutableMap.of(
+            "O8", "één",
+            "1H", "Canvas",
+            "O9", "Ketnet"
+    );
 
     // Singleton instance
     private static ChannelList instance = null;
