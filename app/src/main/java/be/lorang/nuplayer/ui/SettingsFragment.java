@@ -23,6 +23,7 @@ import androidx.leanback.app.BrowseFragment;
 
 import be.lorang.nuplayer.R;
 import be.lorang.nuplayer.model.ProgramList;
+import be.lorang.nuplayer.model.ResumePointList;
 import be.lorang.nuplayer.model.VideoContinueWatchingList;
 import be.lorang.nuplayer.model.VideoWatchLaterList;
 import be.lorang.nuplayer.services.AccessTokenService;
@@ -135,6 +136,9 @@ public class SettingsFragment extends Fragment implements BrowseFragment.MainFra
 
                 // Clear catalog
                 ProgramList.getInstance().clear();
+
+                // Cleare Resume Points
+                ResumePointList.getInstance().clear();
 
                 // Clear continue watching
                 VideoContinueWatchingList.getInstance().clear();
