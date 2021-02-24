@@ -188,6 +188,12 @@ public class ResumePointsService extends IntentService {
                 resumePoint.setWatchLater(watchLater);
             }
 
+            // A video can be both a "Continue Watching" as a "Watch Later" video
+            // If progress >= 5% "Continue Watching" takes precedence
+            if(watchLater && progress >= 5) {
+                watchLater = false;
+            }
+
             // Add to ResumePointList
             resumePointList.add(resumePoint);
 
@@ -226,7 +232,7 @@ public class ResumePointsService extends IntentService {
             // Parse (first) result to Video object
             JSONArray items = videoReturnObject.getJSONArray("results");
             JSONObject program = items.getJSONObject(0);
-            String imageServer = getString(R.string.model_image_server); // FIXME: quick hack
+            String imageServer = getString(R.string.model_image_server);
             Video video = ProgramService.parseVideoFromJSON(program, imageServer);
             video.setProgressPct(progress.intValue());
             video.setCurrentPosition(position.intValue());
