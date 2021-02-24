@@ -26,7 +26,8 @@ import android.util.Log;
 
 import be.lorang.nuplayer.R;
 import be.lorang.nuplayer.model.Program;
-import be.lorang.nuplayer.model.VideoContinueWatchingList;
+import be.lorang.nuplayer.model.ResumePoint;
+import be.lorang.nuplayer.model.ResumePointList;
 import be.lorang.nuplayer.utils.HTTPClient;
 import be.lorang.nuplayer.model.Video;
 import be.lorang.nuplayer.model.VideoList;
@@ -302,15 +303,12 @@ public class ProgramService extends IntentService {
                 String imageServer = getString(R.string.model_image_server); // FIXME: quick hack
                 Video video = parseVideoFromJSON(program, imageServer);
 
-                // Copy progress from VideoContinueWatchingList
-                for(Video videoContinueWatching : VideoContinueWatchingList.getInstance().getVideos()) {
-                    if(videoContinueWatching.getVideoId().equals(video.getVideoId()) &&
-                            videoContinueWatching.getPubId().equals(video.getPubId())) {
-                        if(videoContinueWatching.getProgressPct() > 0) {
-                            Log.d(TAG, "Copying videoProgress for " + video.getTitle());
-                            video.setProgressPct(videoContinueWatching.getProgressPct());
-                            video.setCurrentPosition(videoContinueWatching.getCurrentPosition());
-                        }
+                // Copy progress from ResumePointsList
+                for(ResumePoint resumePoint : ResumePointList.getInstance().getResumePoints()) {
+                    if(resumePoint.getUrl().equals(video.getURL()) && resumePoint.getProgress() > 0) {
+                        Log.d(TAG, "Copying videoProgress for " + video.getTitle());
+                        video.setProgressPct((int)resumePoint.getProgress());
+                        video.setCurrentPosition((int)resumePoint.getPosition());
                     }
                 }
                 videoList.addVideo(video);

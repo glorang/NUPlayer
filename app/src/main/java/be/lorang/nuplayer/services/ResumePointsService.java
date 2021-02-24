@@ -28,6 +28,8 @@ import com.bumptech.glide.load.HttpException;
 import com.google.gson.Gson;
 
 import be.lorang.nuplayer.R;
+import be.lorang.nuplayer.model.ResumePoint;
+import be.lorang.nuplayer.model.ResumePointList;
 import be.lorang.nuplayer.model.Video;
 import be.lorang.nuplayer.model.VideoContinueWatchingList;
 import be.lorang.nuplayer.model.VideoList;
@@ -47,10 +49,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 /*
- * This class will get or update Resume Points for a Video object and query for all "Watch Later"
- * Videos.
+ * ResumePoint service is responsible for:
+ * - Getting all ResumePoints
+ * - Getting all Watch Later items (they are returned in the same API call)
  *
- * It will populate / manage the VideoContinueWatchList and VideoWatchLaterList singleton classes
+ * It will:
+ * - Add all ResumePoints of last year to ResumePointsList so ProgramService can track progress of ALL videos (of last year)
+ * - Add all watch later items as Video to VideoWatchLaterList
+ * - Add all ResumePoints as Videos with progress > 5 & < 95 from last month to VideoContinueWatchList
+ *     For those last two this class will parse a ResumePoint to a Video, this requires
+ *     an extra API call for each Video so we try to reduce the elements as much as possible / cache them for a long time.
+ *     A single video object shouldn't update in any case
+ *
+ * - Update ResumePoints / Watch Later entries (either on user request or when a video is stopped / paused)
  *
  */
 
@@ -111,12 +122,14 @@ public class ResumePointsService extends IntentService {
     // Get all resume points and store them in classes VideoContinueWatchingList and VideoWatchLaterList
     private void populateVideoLists() throws IOException, JSONException {
 
+        ResumePointList resumePointList = ResumePointList.getInstance();
+
         // Only run once as we track resume points / watch later ourselves once initialized
-        if(VideoWatchLaterList.getInstance().isVideoListInitialized() &&
-                VideoContinueWatchingList.getInstance().isVideoListInitialized())  {
+        if(resumePointList.getResumePoints().size() > 0) {
             return;
         }
 
+        // Get all resume points from VRT
         Map<String, String> headers = new HashMap<>();
         if(xvrttoken.length() > 0){
             headers.put("authorization", "Bearer " + xvrttoken);
@@ -127,43 +140,65 @@ public class ResumePointsService extends IntentService {
             throw new HttpException(httpClient.getResponseCode() + ": " + httpClient.getResponseMessage());
         }
 
-        // only show resume points of last month (FIXME: add setting if we ever have a settings menu)
+        // only track resume points of last year
         Instant lastMonth = ZonedDateTime.now().minusMonths(1).toInstant();
+        Instant lastYear = ZonedDateTime.now().minusYears(1).toInstant();
 
         for (int i = 0; i < returnObject.names().length(); i++) {
             String key = returnObject.names().getString(i);
             JSONObject resumePointObject = returnObject.getJSONObject(key);
+
+            // Parse JSON to ResumePoint object
+            long created = resumePointObject.getLong("created");
+
+            // Skip if entry if older than 1 year
+            Instant createdInstant = new Timestamp(created).toInstant();
+            if (createdInstant.isBefore(lastYear)) {
+                continue;
+            }
+
+            // Get remaining fields from JSONObject
+            long updated = resumePointObject.getLong("updated");
             JSONObject value = resumePointObject.getJSONObject("value");
-
-            Instant created = new Timestamp(resumePointObject.getLong("created")).toInstant();
             String url = value.getString("url");
+            Double position = value.getDouble("position");
+            Double total = value.getDouble("total");
+            Double progress = (position / total) * 100;
+            boolean watchLater = false;
 
-            Log.d(TAG, "url =" + url);
 
             // add base url if missing
             if(url.startsWith("/vrtnu/a-z/")) {
                 url = "//www.vrt.be" + url;
             }
 
-            // Check if watchLater or resume point
-            boolean watchLater = false;
+            // Create ResumePoint object
+            ResumePoint resumePoint = new ResumePoint(
+                    created,
+                    updated,
+                    url,
+                    position,
+                    total,
+                    progress
+            );
+
+            // Check if watchLater is set
             if(value.has("watchLater")) {
                 watchLater = value.getBoolean("watchLater");
-                Log.d(TAG,"watch later = " + watchLater + " for url " + url);
+                resumePoint.setWatchLater(watchLater);
             }
 
-            Log.d(TAG, "Parsing resume point entry: " + resumePointObject.toString());
+            // Add to ResumePointList
+            resumePointList.add(resumePoint);
+
+            // Parse ResumePoints of last month with with 5 < progress > 95 to a Video object
+            // for display on HomeFragment's Watch Later | Continue Watching ListRows
 
             // Skip resume points who are created more than a month ago
-            if (!watchLater && created.isBefore(lastMonth)) {
-                Log.d(TAG, "Skipping " + url + " as created > 1 month " + created.toString());
+            if (!watchLater && createdInstant.isBefore(lastMonth)) {
+                Log.d(TAG, "Skipping " + url + " as created > 1 month " + createdInstant.toString());
                 continue;
             }
-
-            // Get current position / total / progress
-            Double position = value.getDouble("position");
-            Double total = value.getDouble("total");
-            Double progress = (position / total) * 100;
 
             // skip videos with 5 < progress > 95
             if (!watchLater && (progress < 5 || progress > 95)) {
@@ -175,7 +210,8 @@ public class ResumePointsService extends IntentService {
             String queryURL = String.format(getString(R.string.service_resumepoints_video_url), url);
             Log.d(TAG, "Getting video info at: " + queryURL);
             HTTPClient videoHTTPClient = new HTTPClient();
-            JSONObject videoReturnObject = videoHTTPClient.getCachedRequest(getCacheDir(), queryURL, 1440);
+            // Cache single video object (size=1) for 30 days, worst case some title or thumbnail is off
+            JSONObject videoReturnObject = videoHTTPClient.getCachedRequest(getCacheDir(), queryURL, 43200);
             if(videoHTTPClient.getResponseCode() != 200) {
                 continue;
             }
@@ -221,6 +257,23 @@ public class ResumePointsService extends IntentService {
             VideoContinueWatchingList.getInstance().addVideo(video);
             VideoContinueWatchingList.getInstance().setProgress(video, position);
         }
+
+        // Update progress in ResumePointList
+        if(!ResumePointList.getInstance().setProgress(video, position)) {
+            // ResumePoint not found, create new one and set progress
+            ResumePoint resumePoint = new ResumePoint(
+                    System.currentTimeMillis(),
+                    System.currentTimeMillis(),
+                    video.getURL(),
+                    video.getCurrentPosition(),
+                    video.getDuration(),
+                    0
+            );
+
+            ResumePointList.getInstance().add(resumePoint);
+            ResumePointList.getInstance().setProgress(video, position);
+        }
+
 
         // Update progress in VideoList
         VideoList.getInstance().setProgress(video, position);
