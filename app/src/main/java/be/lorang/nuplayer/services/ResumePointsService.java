@@ -251,11 +251,20 @@ public class ResumePointsService extends IntentService {
             return;
         }
 
+        // Calculate progress
+        int progress = (int) (((double) position / video.getDuration()) * 100);
+
         // Update progress in VideoContinueWatchingList
         if(!VideoContinueWatchingList.getInstance().setProgress(video, position)) {
             // Video not found, add it and set progress
             VideoContinueWatchingList.getInstance().addVideo(video);
             VideoContinueWatchingList.getInstance().setProgress(video, position);
+        }
+
+        // Remove from VideoWatchLaterList if present as it is in VideoContinueWatchingList if progress > 5%
+        if(progress > 5) {
+            Log.d(TAG, "Removing from video watchlater, progress = " + progress);
+            VideoWatchLaterList.getInstance().removeVideo(video);
         }
 
         // Update progress in ResumePointList
@@ -267,13 +276,10 @@ public class ResumePointsService extends IntentService {
                     video.getURL(),
                     video.getCurrentPosition(),
                     video.getDuration(),
-                    0
+                    progress
             );
-
             ResumePointList.getInstance().add(resumePoint);
-            ResumePointList.getInstance().setProgress(video, position);
         }
-
 
         // Update progress in VideoList
         VideoList.getInstance().setProgress(video, position);

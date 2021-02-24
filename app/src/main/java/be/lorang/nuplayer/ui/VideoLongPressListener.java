@@ -42,14 +42,12 @@ public class VideoLongPressListener implements View.OnLongClickListener {
 
         ArrayList<String> menuOptions = new ArrayList<>();
 
+        VideoWatchLaterList videoWatchLaterList = VideoWatchLaterList.getInstance();
         if(video.getProgressPct() > 0) {
             menuOptions.add(context.getString(R.string.context_remove_continue_watching));
-        }
-
-        VideoWatchLaterList videoWatchLaterList = VideoWatchLaterList.getInstance();
-        if(videoWatchLaterList.getVideos().contains(video)) {
+        } else if(videoWatchLaterList.getVideos().contains(video)) {
             menuOptions.add(context.getString(R.string.context_remove_watch_later));
-        } else {
+        } else if(!videoWatchLaterList.getVideos().contains(video)){
             menuOptions.add(context.getString(R.string.context_add_watch_later));
         }
 
