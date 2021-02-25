@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/vrtnu_black_tint_1_alpha_60">
+    android:background="@drawable/series_gradient">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,12 +13,12 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="250dp"
+            android:layout_height="300dp"
             android:orientation="vertical">
 
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:paddingLeft="60dp"
                 android:paddingTop="20dp"
@@ -32,6 +32,25 @@
                     android:layout_marginRight="5dp"
                     android:scaleType="fitStart" />
 
+                <TextView
+                    android:id="@+id/seriesTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="85dp"
+                    android:fontFamily="sans-serif-condensed"
+                    android:lines="1"
+                    android:maxLines="1"
+                    android:textSize="30sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/seriesDescription"
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="150dp"
+                    android:fontFamily="sans-serif-condensed"
+                    android:lines="7"
+                    android:maxLines="7" />
 
             </FrameLayout>
         </LinearLayout>

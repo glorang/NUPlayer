@@ -22,8 +22,8 @@
 
             <ImageView
                 android:id="@+id/main_image"
-                android:layout_width="130dp"
-                android:layout_height="186dp"
+                android:layout_width="105dp"
+                android:layout_height="150dp"
                 android:adjustViewBounds="true"
                 android:scaleType="fitXY"
                 lb:layout_viewType="main" />
