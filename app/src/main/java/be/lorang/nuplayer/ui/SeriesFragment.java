@@ -36,11 +36,13 @@ import androidx.leanback.widget.ListRowPresenter;
 
 import android.os.Handler;
 import android.os.ResultReceiver;
+import android.text.Html;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import be.lorang.nuplayer.R;
@@ -61,7 +63,7 @@ public class SeriesFragment extends Fragment implements BrowseFragment.MainFragm
 
     private ArrayObjectAdapter mAdapter;
     private BackgroundManager mBackgroundManager;
-    private Drawable mDefaulBackgroundImage;
+    private Program program = null;
 
     @Override
     public BrowseFragment.MainFragmentAdapter getMainFragmentAdapter() {
@@ -72,10 +74,15 @@ public class SeriesFragment extends Fragment implements BrowseFragment.MainFragm
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         loadData();
-
-        // set default background
-        mDefaulBackgroundImage = getResources().getDrawable(R.drawable.default_background, null);
         getMainFragmentAdapter().getFragmentHost().notifyDataReady(getMainFragmentAdapter());
+    }
+
+    @Override
+    public void onResume() {
+        if(program != null) {
+            updateBackground(program.getThumbnail("w1920hx"));
+        }
+        super.onResume();
     }
 
     @Override
@@ -91,7 +98,10 @@ public class SeriesFragment extends Fragment implements BrowseFragment.MainFragm
         rowsFragment.setOnItemViewSelectedListener((itemViewHolder, item, rowViewHolder, row) -> {
             if(item instanceof Program) {
                 Program program = (Program) item;
+                this.program = program;
                 setBrandLogo(program.getBrand());
+                setTitle(program.getTitle());
+                setDescription(program.getDescription());
                 updateBackground(program.getThumbnail("w1920hx"));
             }
         });
@@ -157,6 +167,25 @@ public class SeriesFragment extends Fragment implements BrowseFragment.MainFragm
         }
     }
 
+    private void setTitle(String title) {
+        TextView textViewTitle = getView().findViewById(R.id.seriesTitle);
+        if(textViewTitle != null) {
+            textViewTitle.setText(Html.fromHtml(title, Html.FROM_HTML_MODE_COMPACT));
+        }
+
+    }
+
+    private void setDescription(String description) {
+        TextView textViewDescription = getView().findViewById(R.id.seriesDescription);
+        if(textViewDescription != null) {
+            if (description.length() > 350) {
+                textViewDescription.setText(Html.fromHtml(description.substring(0, 350).concat("..."), Html.FROM_HTML_MODE_COMPACT));
+            } else {
+                textViewDescription.setText(Html.fromHtml(description, Html.FROM_HTML_MODE_COMPACT));
+            }
+        }
+    }
+
     private void updateBackground(String uri) {
 
         mBackgroundManager = BackgroundManager.getInstance(getActivity());
@@ -170,7 +199,6 @@ public class SeriesFragment extends Fragment implements BrowseFragment.MainFragm
         int height = mMetrics.heightPixels;
 
         RequestOptions options = new RequestOptions()
-                .errorOf(mDefaulBackgroundImage)
                 .centerCrop();
 
         Glide.with(this)
