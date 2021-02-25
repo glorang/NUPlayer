@@ -144,18 +144,24 @@ public class HomeFragment extends RowsFragment {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                favoritesAdapter.setItems(ProgramList.getInstance().getFavorites(), null);
-                continueWatchingAdapter.setItems(getContinueWatchingList(), null);
-                watchLaterAdapter.setItems(VideoWatchLaterList.getInstance().getVideos(), null);
 
                 liveTVAdapter.notifyArrayItemRangeChanged(0, liveTVAdapter.size());
-                favoritesAdapter.notifyArrayItemRangeChanged(0, favoritesAdapter.size());
-                continueWatchingAdapter.notifyArrayItemRangeChanged(0, continueWatchingAdapter.size());
-                watchLaterAdapter.notifyArrayItemRangeChanged(0, watchLaterAdapter.size());
 
-                showHideFavorites();
-                showHideContinueWatching();
-                showHideWatchLater();
+                if(favoritesLoaded) {
+                    favoritesAdapter.setItems(ProgramList.getInstance().getFavorites(), null);
+                    favoritesAdapter.notifyArrayItemRangeChanged(0, favoritesAdapter.size());
+                    showHideFavorites();
+                }
+
+                if(resumePointsLoaded) {
+                    continueWatchingAdapter.setItems(getContinueWatchingList(), null);
+                    continueWatchingAdapter.notifyArrayItemRangeChanged(0, continueWatchingAdapter.size());
+                    showHideContinueWatching();
+
+                    watchLaterAdapter.setItems(VideoWatchLaterList.getInstance().getVideos(), null);
+                    watchLaterAdapter.notifyArrayItemRangeChanged(0, watchLaterAdapter.size());
+                    showHideWatchLater();
+                }
 
             }
         }, 1000);
@@ -288,12 +294,13 @@ public class HomeFragment extends RowsFragment {
 
                 } else {
                     // User not authenticated
+                    favoritesLoaded = true;
+                    resumePointsLoaded = true;
+
                     showHideFavorites();
                     showHideContinueWatching();
                     showHideWatchLater();
 
-                    favoritesLoaded = true;
-                    resumePointsLoaded = true;
                     notifyDataReady();
                 }
             }
@@ -323,10 +330,10 @@ public class HomeFragment extends RowsFragment {
 
                     // Set favorites
                     favoritesAdapter.setItems(ProgramList.getInstance().getFavorites(), null);
-                    showHideFavorites();
                 }
 
                 favoritesLoaded = true;
+                showHideFavorites();
                 notifyDataReady();
             }
         });
@@ -354,14 +361,14 @@ public class HomeFragment extends RowsFragment {
 
                     // Set Continue watching Later
                     continueWatchingAdapter.setItems(getContinueWatchingList(), null);
-                    showHideContinueWatching();
 
                     // Set Watch Later
                     watchLaterAdapter.setItems(VideoWatchLaterList.getInstance().getVideos(), null);
-                    showHideWatchLater();
                 }
 
                 resumePointsLoaded = true;
+                showHideContinueWatching();
+                showHideWatchLater();
                 notifyDataReady();
 
             }
@@ -393,8 +400,6 @@ public class HomeFragment extends RowsFragment {
 
     private void showHideFavorites() {
 
-        if(!favoritesLoaded) { return; }
-
         if(favoritesAdapter.size() == 0 && favoritesListRowAdded) {
             mRowsAdapter.replace(1, new ListRow(null, new ArrayObjectAdapter()));
             favoritesListRowAdded = false;
@@ -406,8 +411,6 @@ public class HomeFragment extends RowsFragment {
 
     private void showHideContinueWatching() {
 
-        if(!resumePointsLoaded) { return; }
-
         if(continueWatchingAdapter.size() == 0 && continueWatchingListRowAdded) {
             mRowsAdapter.replace(2, new ListRow(null, new ArrayObjectAdapter()));
             continueWatchingListRowAdded = false;
@@ -418,8 +421,6 @@ public class HomeFragment extends RowsFragment {
     }
 
     private void showHideWatchLater() {
-
-        if(!resumePointsLoaded) { return; }
 
         if(watchLaterAdapter.size() == 0 && watchLaterListRowAdded) {
             mRowsAdapter.replace(3, new ListRow(null, new ArrayObjectAdapter()));
