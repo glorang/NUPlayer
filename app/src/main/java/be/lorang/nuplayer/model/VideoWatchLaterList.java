@@ -77,6 +77,17 @@ public class VideoWatchLaterList {
         }
     }
 
+    public boolean contains (Video video) {
+        for(Video mVideo : mVideos) {
+            if(mVideo.getVideoId().equals(video.getVideoId()) &&
+                    mVideo.getPubId().equals(video.getPubId())
+            ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean isVideoListInitialized() {
         return videoListInitialized;
     }
