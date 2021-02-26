@@ -42,11 +42,24 @@ See [Changelog](CHANGELOG.md)
 
 # Screenshots
 
-## Home
-![Home screen](/screenshots/screenshot_home.png?raw=true "Home screen")
+<table>
+    <tr>
+        <th>Home</th>
+        <th>Catalog</th>
+    </tr>
+    <tr>
+        <td><img src="screenshots/screenshot_home.png" width="400"></td>
+        <td><img src="screenshots/screenshot_catalog.png" width="400"></td>
+    </tr>
+</table>
 
-## Catalog
-![Catalog](/screenshots/screenshot_catalog.png?raw=true "Catalog")
-
-## Program detail
-![Program detail](/screenshots/screenshot_journaal.png?raw=true "Program detail")
+<table>
+    <tr>
+        <th>Program detail</th>
+        <th>Series</th>
+    </tr>
+    <tr>
+        <td><img src="screenshots/screenshot_journaal.png" width="400"></td>
+        <td><img src="screenshots/screenshot_series.png" width="400"></td>
+    </tr>
+</table>
