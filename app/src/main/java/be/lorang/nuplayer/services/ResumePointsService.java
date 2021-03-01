@@ -145,8 +145,8 @@ public class ResumePointsService extends IntentService {
         Instant lastYear = ZonedDateTime.now().minusYears(1).toInstant();
 
         for (int i = 0; i < returnObject.names().length(); i++) {
-            String key = returnObject.names().getString(i);
-            JSONObject resumePointObject = returnObject.getJSONObject(key);
+            String assetPath = returnObject.names().getString(i);
+            JSONObject resumePointObject = returnObject.getJSONObject(assetPath);
 
             // Parse JSON to ResumePoint object
             long created = resumePointObject.getLong("created");
@@ -236,6 +236,10 @@ public class ResumePointsService extends IntentService {
             Video video = ProgramService.parseVideoFromJSON(program, imageServer);
             video.setProgressPct(progress.intValue());
             video.setCurrentPosition(position.intValue());
+
+            // (Some) Videos that are currently live are already available but their asset path might
+            // change once finished so always use the asset path provided by the resume point (JSON key)
+            video.setAssetPath(assetPath);
 
             if(watchLater) {
                 VideoWatchLaterList.getInstance().addVideo(video);
