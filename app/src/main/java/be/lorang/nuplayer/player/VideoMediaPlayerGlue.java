@@ -132,6 +132,10 @@ public class VideoMediaPlayerGlue<T extends PlayerAdapter> extends PlaybackTrans
 
         VideoPlaybackActivity vpa = (VideoPlaybackActivity) getContext();
         Video video = vpa.getVideo();
+        int position = (int)(getPlayerAdapter().getCurrentPosition() / 1000);
+        if(position == 0) { return; }
+
+        Log.d(TAG, "Setting position = " + position + " total = " + video.getDuration());
 
         Intent accessTokenIntent = new Intent(getContext(), AccessTokenService.class);
         accessTokenIntent.putExtra(AccessTokenService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
@@ -143,7 +147,7 @@ public class VideoMediaPlayerGlue<T extends PlayerAdapter> extends PlaybackTrans
                     Intent resumePointsIntent = new Intent(getContext(), ResumePointsService.class);
                     resumePointsIntent.putExtra("ACTION", ResumePointsService.ACTION_UPDATE_RESUME_POINT);
                     resumePointsIntent.putExtra("X-VRT-Token", resultData.getString("X-VRT-Token"));
-                    resumePointsIntent.putExtra("PLAYER_CURRENT_POSITION", (int)(getPlayerAdapter().getCurrentPosition() / 1000));
+                    resumePointsIntent.putExtra("PLAYER_CURRENT_POSITION", position);
                     resumePointsIntent.putExtra("VIDEO_OBJECT", new Gson().toJson(video));
 
                     resumePointsIntent.putExtra(ResumePointsService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
