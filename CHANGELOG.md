@@ -1,3 +1,10 @@
+## v1.1.4 (2021-03-01)
+
+- Add description to Series
+- Fix possible crash on startup
+- More Resume Point bug fixes
+- Make sure Video can only be added once to Watch Later
+
 ## v1.1.3 (2021-02-24)
 
 - Fix missing resume points for videos with progress < 5 or progress > 95
