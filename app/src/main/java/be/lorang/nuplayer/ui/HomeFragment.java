@@ -147,7 +147,6 @@ public class HomeFragment extends RowsFragment {
             public void run() {
 
                 if(liveTVLoaded) {
-                    liveTVAdapter.notifyArrayItemRangeChanged(0, liveTVAdapter.size());
                     updateEPGData();
                 }
 
