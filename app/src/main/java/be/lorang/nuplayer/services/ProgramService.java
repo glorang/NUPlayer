@@ -98,12 +98,16 @@ public class ProgramService extends IntentService {
         try {
 
             // https://www.vrt.be/vrtnu/a-z/het-journaal.model.json
-            // path1 : [":items"].parsys[":items"].container[":items"].banner[":items"].navigation[":itemsOrder"]               // generic, valid for most cases
-            // path2 : [":items"].parsys[":items"].container[":items"]["episodes-list"][":items"].navigation[":itemsOrder"]     // la-theorie-du-y.model.json
-            // path3 : [":items"].parsys[":items"].container[":items"].navigation[":items"].container.title (=trailer)          // trailer available
+            // path1   : [":items"].parsys[":items"].container[":items"].banner[":items"].navigation[":items"] && .navigation[":itemsOrder"]            // generic
+            // path2   : [":items"].parsys[":items"].container[":items"].banner[":items"] && banner[":itemsOrder"]                                      // generic
+            // path3   : [":items"].parsys[":items"].container[":items"]["episodes-list"][":items"].navigation[":items"] && .navigation[":itemsOrder"]  // la-theorie-du-y.model.json (series?)
+            // path4   : [":items"].parsys[":items"].container[":items"]["episodes-list"][":items"] && ["episodes-list"][":itemsOrder"]                 // de-shaq.model.json.json (series?)
+            // trailer : [":items"].parsys[":items"].container[":items"].navigation[":items"].container.title (=trailer)                                // trailer available
             // [":items"].parsys[":items"].container[":items"].banner[":items"] (empty)                                 // albatros.model.json, unreleased, no seasons/episodes yet
 
             JSONObject parseObject = null;
+            JSONArray itemsOrder = null;
+            JSONObject items = null;
 
             // try path1
             try {
@@ -116,12 +120,35 @@ public class ProgramService extends IntentService {
                         .getJSONObject("banner")
                         .getJSONObject(":items")
                         .getJSONObject("navigation");
+
+                 itemsOrder = parseObject.getJSONArray(":itemsOrder");
+                 items = parseObject.getJSONObject(":items");
+
             } catch(JSONException e) {
                 e.printStackTrace();
             }
 
             // try path2
-            if(parseObject == null) {
+            if(itemsOrder == null || items == null) {
+                try {
+                    parseObject = inputData
+                            .getJSONObject(":items")
+                            .getJSONObject("parsys")
+                            .getJSONObject(":items")
+                            .getJSONObject("container")
+                            .getJSONObject(":items")
+                            .getJSONObject("banner");
+
+                    itemsOrder = parseObject.getJSONArray(":itemsOrder");
+                    items = parseObject.getJSONObject(":items");
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            // try path3
+            if(itemsOrder == null || items == null) {
                 try {
                     parseObject = inputData
                             .getJSONObject(":items")
@@ -132,14 +159,35 @@ public class ProgramService extends IntentService {
                             .getJSONObject("episodes-list")
                             .getJSONObject(":items")
                             .getJSONObject("navigation");
+
+                    itemsOrder = parseObject.getJSONArray(":itemsOrder");
+                    items = parseObject.getJSONObject(":items");
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
 
-            if(parseObject != null) {
-                JSONArray itemsOrder = parseObject.getJSONArray(":itemsOrder");
-                JSONObject items = parseObject.getJSONObject(":items");
+            // try path4
+            if(itemsOrder == null || items == null) {
+                try {
+                    parseObject = inputData
+                            .getJSONObject(":items")
+                            .getJSONObject("parsys")
+                            .getJSONObject(":items")
+                            .getJSONObject("container")
+                            .getJSONObject(":items")
+                            .getJSONObject("episodes-list");
+
+                    itemsOrder = parseObject.getJSONArray(":itemsOrder");
+                    items = parseObject.getJSONObject(":items");
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if(itemsOrder != null && items != null) {
 
                 Log.d(TAG, "Seasons discovered: " + itemsOrder.toString());
 
@@ -161,7 +209,7 @@ public class ProgramService extends IntentService {
                 }
             }
 
-            // try path3 (trailer) to see if we should add a "Trailer season"
+            // try trailer path to see if we should add a "Trailer season"
             try {
                 parseObject = inputData
                         .getJSONObject(":items")
@@ -268,7 +316,10 @@ public class ProgramService extends IntentService {
             // get selected season
             if(seasons != null && seasons.size() > 0) {
                 String seasonName = (new ArrayList<String>(seasons.keySet())).get(seasonIndex);
-                url = url + "&facets[seasonName]=" + seasonName;
+                // Don't query our own dummy season
+                if(!seasonName.equals("0")) {
+                    url = url + "&facets[seasonName]=" + seasonName;
+                }
             } else {
                 // If seasons is still null here we either failed to decode the JSON or failed to
                 // fetch the model.json, create dummy season
