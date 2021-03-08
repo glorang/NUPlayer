@@ -30,11 +30,9 @@ What is not implemented / known limitations / known bugs:
 
 # Installation
 
-- Enable developer mode on your Chromecast (Settings > System > About > Android TV OS Build > Keep clicking it until it says "Developer Mode enabled")
-- Install a file manager (X-plore File Manager highly recommended)
-- Download APK from releases and transfer via file manager
-- Install
-- Enjoy!
+NUPlayer is available on [Google Play](https://play.google.com/store/apps/details?id=be.lorang.nuplayer).
+
+Install it via the link above on your target device or search for it on your TV via Apps > Search for apps.
 
 # Release history
 

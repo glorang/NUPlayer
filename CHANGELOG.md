@@ -1,3 +1,8 @@
+## v1.1.5 (2021-03-08)
+
+- Fix season parsing
+- Update Live TV EPG data on resume
+
 ## v1.1.4 (2021-03-01)
 
 - Add description to Series
