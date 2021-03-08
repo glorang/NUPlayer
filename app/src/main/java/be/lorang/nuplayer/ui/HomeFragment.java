@@ -83,6 +83,7 @@ public class HomeFragment extends RowsFragment {
     private Intent favoritesIntent;
     private Intent resumePointsIntent;
 
+    private boolean liveTVLoaded = false;
     private boolean favoritesLoaded = false;
     private boolean resumePointsLoaded = false;
 
@@ -145,7 +146,10 @@ public class HomeFragment extends RowsFragment {
             @Override
             public void run() {
 
-                liveTVAdapter.notifyArrayItemRangeChanged(0, liveTVAdapter.size());
+                if(liveTVLoaded) {
+                    liveTVAdapter.notifyArrayItemRangeChanged(0, liveTVAdapter.size());
+                    updateEPGData();
+                }
 
                 if(favoritesLoaded) {
                     favoritesAdapter.setItems(ProgramList.getInstance().getFavorites(), null);
@@ -168,7 +172,7 @@ public class HomeFragment extends RowsFragment {
     }
 
     public void notifyDataReady() {
-        if(favoritesLoaded && resumePointsLoaded) {
+        if(favoritesLoaded && resumePointsLoaded && liveTVLoaded) {
             getMainFragmentAdapter().getFragmentHost().notifyDataReady(getMainFragmentAdapter());
         }
     }
@@ -226,6 +230,13 @@ public class HomeFragment extends RowsFragment {
             mRowsAdapter.remove(liveTVListRow);
         }
 
+        // Add EPG data
+        updateEPGData();
+
+    }
+
+    private void updateEPGData() {
+
         // start an Intent to fetch EPG data
         Intent epgIntent = new Intent(getActivity(), EPGService.class);
         epgIntent.putExtra(EPGService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
@@ -242,11 +253,13 @@ public class HomeFragment extends RowsFragment {
                 if (resultCode == Activity.RESULT_OK) {
                     liveTVAdapter.notifyArrayItemRangeChanged(0, liveTVAdapter.size());
                 }
+
+                liveTVLoaded = true;
+                notifyDataReady();
             }
         });
 
         getActivity().startService(epgIntent);
-
     }
 
     private void populateCatalog() {
