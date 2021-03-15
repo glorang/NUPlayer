@@ -1,3 +1,8 @@
+## v1.1.6 (2021-03-16)
+
+- Improve video controls and seeking
+- Fix season parsing in rare cases
+
 ## v1.1.5 (2021-03-08)
 
 - Fix season parsing
