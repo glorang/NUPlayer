@@ -256,6 +256,8 @@ public class ExoPlayerAdapter extends PlayerAdapter implements ExoPlayer.EventLi
         return mContext;
     }
 
+    public int getPlaybackState() { return mPlayer.getPlaybackState(); }
+
     /**
      * Sets the media source of the player with a given URI.
      *

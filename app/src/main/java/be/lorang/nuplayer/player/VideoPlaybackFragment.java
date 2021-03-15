@@ -27,6 +27,8 @@ import androidx.leanback.app.VideoFragment;
 import androidx.leanback.app.VideoFragmentGlueHost;
 import androidx.leanback.media.PlaybackGlue;
 
+import com.google.android.exoplayer2.ExoPlayer;
+
 import be.lorang.nuplayer.model.Video;
 
 public class VideoPlaybackFragment extends VideoFragment {
@@ -58,13 +60,22 @@ public class VideoPlaybackFragment extends VideoFragment {
         mMediaPlayerGlue.setSubtitle(Html.fromHtml(video.getDescription(), Html.FROM_HTML_MODE_COMPACT));
         mMediaPlayerGlue.getPlayerAdapter().setDrmToken(drmToken);
         mMediaPlayerGlue.getPlayerAdapter().setDataSource(Uri.parse(videoUrl));
+        mMediaPlayerGlue.setControlsOverlayAutoHideEnabled(true);
 
-        // Exit player when playback is completed
+        // Exit player when playback is completed or stopped
         mMediaPlayerGlue.addPlayerCallback(new PlaybackGlue.PlayerCallback() {
             @Override
             public void onPlayCompleted(PlaybackGlue glue) {
                 super.onPlayCompleted(glue);
                 getActivity().finishAfterTransition();
+            }
+
+            @Override
+            public void onPlayStateChanged(PlaybackGlue glue) {
+                if(mMediaPlayerGlue.getPlayerAdapter().getPlaybackState() == ExoPlayer.STATE_IDLE) {
+                    super.onPlayStateChanged(glue);
+                    getActivity().finishAfterTransition();
+                }
             }
         });
 

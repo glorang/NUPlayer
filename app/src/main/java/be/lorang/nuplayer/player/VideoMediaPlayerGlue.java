@@ -24,10 +24,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.View;
 import android.widget.Toast;
 
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.ActivityOptionsCompat;
 import androidx.leanback.media.PlaybackTransportControlGlue;
 import androidx.leanback.media.PlayerAdapter;
 import androidx.leanback.widget.Action;
@@ -48,53 +48,72 @@ public class VideoMediaPlayerGlue<T extends PlayerAdapter> extends PlaybackTrans
 
     private static final String TAG = "VideoMediaPlayerGlue";
 
+    private static final int TIMESEEK = 30; // in seconds
+    private static final int MAX_MULTIPLIER = 5;
+    private int prevKeyCode = -1;
+    private int buttonCount = 0;
+    private int currentMultiplier = 1;
+
     private PlaybackControlsRow.RewindAction mRewindAction;
     private PlaybackControlsRow.FastForwardAction mFastForwardAction;
 
-
     public VideoMediaPlayerGlue(Activity context, T impl) {
         super(context, impl);
-        mRewindAction = new PlaybackControlsRow.RewindAction(context);
-        mFastForwardAction = new PlaybackControlsRow.FastForwardAction(context);
     }
 
     @Override
     protected void onCreatePrimaryActions(ArrayObjectAdapter adapter) {
         super.onCreatePrimaryActions(adapter);
-        adapter.add(mRewindAction);
-        adapter.add(mFastForwardAction);
     }
 
     @Override
-    public void onActionClicked(Action action) {
+    public boolean onKey(View v, int keyCode, KeyEvent event) {
 
-        // FIXME: when you hit rewind at EOF the progress bar does not update until you press pause/play
+        // Every 5 clicks (or long presses) in the same 'direction' (rewind | forward) we increase
+        // the multiplier, this makes progress skip forward|backwards between 30 seconds and 2.5 minutes
+        if(event.getAction() == KeyEvent.ACTION_DOWN &&
+                (keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT)) {
 
-        if (action.getId() == mFastForwardAction.getId()) {
-            getPlayerAdapter().seekTo(getPlayerAdapter().getCurrentPosition() + (30 * 1000));
-        } else if (action.getId() == mRewindAction.getId()) {
-            getPlayerAdapter().seekTo(getPlayerAdapter().getCurrentPosition() - (30 * 1000));
+            if(currentMultiplier < MAX_MULTIPLIER && prevKeyCode == keyCode) {
+                buttonCount++;
+                if((buttonCount % 5) == 0) {
+                    currentMultiplier++;
+                }
+            }
         }
 
-        /*
-        if (shouldDispatchAction(action)) {
-            dispatchAction(action);
-            return;
+        if(event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
+            fastForward();
+            getControlsRow().setCurrentPosition(getPlayerAdapter().isPrepared() ? getPlayerAdapter().getCurrentPosition() : -1);
         }
-         */
 
-        super.onActionClicked(action);
+        if(event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
+            rewind();
+            getControlsRow().setCurrentPosition(getPlayerAdapter().isPrepared() ? getPlayerAdapter().getCurrentPosition() : -1);
+        }
 
+        if(prevKeyCode != keyCode) {
+            currentMultiplier = 1;
+            buttonCount = 0;
+        }
+
+        prevKeyCode = keyCode;
+
+        return super.onKey(v, keyCode, event);
     }
 
-    private boolean shouldDispatchAction(Action action) {
-        return action == mFastForwardAction || action == mRewindAction;
+    public void rewind() {
+        long newPosition = getCurrentPosition() - (TIMESEEK * 1000 * currentMultiplier);
+        newPosition = (newPosition < 0) ? 0 : newPosition;
+        getPlayerAdapter().seekTo(newPosition);
     }
 
-    private void dispatchAction(Action action) {
-        PlaybackControlsRow.MultiAction multiAction = (PlaybackControlsRow.MultiAction) action;
-        multiAction.nextIndex();
-        notifyActionChanged(multiAction);
+    public void fastForward() {
+        if (getDuration() > -1) {
+            long newPosition = getCurrentPosition() + (TIMESEEK * 1000 * currentMultiplier);
+            newPosition = (newPosition > getDuration()) ? getDuration() : newPosition;
+            getPlayerAdapter().seekTo(newPosition);
+        }
     }
 
     private void notifyActionChanged(PlaybackControlsRow.MultiAction action) {
