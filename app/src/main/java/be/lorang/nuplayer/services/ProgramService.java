@@ -97,13 +97,12 @@ public class ProgramService extends IntentService {
 
         try {
 
-            // https://www.vrt.be/vrtnu/a-z/het-journaal.model.json
             // path1   : [":items"].parsys[":items"].container[":items"].banner[":items"].navigation[":items"] && .navigation[":itemsOrder"]            // generic
             // path2   : [":items"].parsys[":items"].container[":items"].banner[":items"] && banner[":itemsOrder"]                                      // generic
             // path3   : [":items"].parsys[":items"].container[":items"]["episodes-list"][":items"].navigation[":items"] && .navigation[":itemsOrder"]  // la-theorie-du-y.model.json (series?)
             // path4   : [":items"].parsys[":items"].container[":items"]["episodes-list"][":items"] && ["episodes-list"][":itemsOrder"]                 // de-shaq.model.json.json (series?)
+            // path5   : [":items"].parsys[":items"].container[":items"].episodes_list_268730743[":items"].navigation[":items"] && [":itemsOrder"]      // salah.model.json, let's hope this is a rare exception
             // trailer : [":items"].parsys[":items"].container[":items"].navigation[":items"].container.title (=trailer)                                // trailer available
-            // [":items"].parsys[":items"].container[":items"].banner[":items"] (empty)                                 // albatros.model.json, unreleased, no seasons/episodes yet
 
             JSONObject parseObject = null;
             JSONArray itemsOrder = null;
@@ -181,6 +180,36 @@ public class ProgramService extends IntentService {
 
                     itemsOrder = parseObject.getJSONArray(":itemsOrder");
                     items = parseObject.getJSONObject(":items");
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            // try path5
+            if(itemsOrder == null || items == null) {
+                try {
+                    parseObject = inputData
+                            .getJSONObject(":items")
+                            .getJSONObject("parsys")
+                            .getJSONObject(":items")
+                            .getJSONObject("container")
+                            .getJSONObject(":items");
+
+                    JSONObject parseObject2 = null;
+
+                    Iterator<String> keys = parseObject.keys();
+                    while(keys.hasNext()) {
+                        String key = keys.next();
+                        if(key.startsWith("episodes_list_")) {
+                            parseObject2 = parseObject.getJSONObject(key)
+                                    .getJSONObject(":items")
+                                    .getJSONObject("navigation");
+                        }
+                    }
+
+                    itemsOrder = parseObject2.getJSONArray(":itemsOrder");
+                    items = parseObject2.getJSONObject(":items");
 
                 } catch (JSONException e) {
                     e.printStackTrace();
