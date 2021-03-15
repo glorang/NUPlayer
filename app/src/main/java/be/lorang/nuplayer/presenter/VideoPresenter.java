@@ -103,7 +103,7 @@ public class VideoPresenter<T extends BaseCardView> extends BaseCardPresenter {
                 (video.getDuration() / 60) + " min";
 
         TextView primaryText = cardView.findViewById(R.id.videoPrimaryText);
-        primaryText.setText(primaryTextValue);
+        primaryText.setText(Html.fromHtml(primaryTextValue, Html.FROM_HTML_MODE_COMPACT));
 
         // set video description
         TextView secondaryText = cardView.findViewById(R.id.videoSecondaryText);

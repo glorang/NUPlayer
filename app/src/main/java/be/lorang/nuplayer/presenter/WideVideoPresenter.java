@@ -83,7 +83,7 @@ public class WideVideoPresenter<T extends BaseCardView> extends BaseCardPresente
         }
 
         TextView titleTextView = cardView.findViewById(R.id.videoWideTitle);
-        titleTextView.setText(title);
+        titleTextView.setText(Html.fromHtml(title, Html.FROM_HTML_MODE_COMPACT));
 
         TextView primaryTextView = cardView.findViewById(R.id.videoWidePrimaryText);
         primaryTextView.setText(Html.fromHtml(video.getDescription(), Html.FROM_HTML_MODE_COMPACT));

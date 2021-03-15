@@ -18,6 +18,7 @@
 package be.lorang.nuplayer.presenter;
 
 import android.content.Context;
+import android.text.Html;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -77,7 +78,7 @@ public class CatalogPresenter<T extends BaseCardView> extends BaseCardPresenter 
 
         // set title
         TextView textViewTitle = cardView.findViewById(R.id.programTitle);
-        textViewTitle.setText(program.getTitle());
+        textViewTitle.setText(Html.fromHtml(program.getTitle(), Html.FROM_HTML_MODE_COMPACT));
     }
 
 }
