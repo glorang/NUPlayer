@@ -18,6 +18,7 @@
 package be.lorang.nuplayer.presenter;
 
 import android.content.Context;
+import android.text.Html;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -78,7 +79,7 @@ public class FavoritesPresenter<T extends BaseCardView> extends BaseCardPresente
 
         // set title
         TextView textViewTitle = cardView.findViewById(R.id.favoriteTitle);
-        textViewTitle.setText(program.getTitle());
+        textViewTitle.setText(Html.fromHtml(program.getTitle(), Html.FROM_HTML_MODE_COMPACT));
     }
 
 }

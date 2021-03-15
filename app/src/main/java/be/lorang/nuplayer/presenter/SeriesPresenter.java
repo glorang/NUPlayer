@@ -69,7 +69,7 @@ public class SeriesPresenter<T extends BaseCardView> extends BaseCardPresenter {
 
         // set title
         TextView textViewTitle = cardView.findViewById(R.id.serieTitle);
-        textViewTitle.setText(program.getTitle());
+        textViewTitle.setText(Html.fromHtml(program.getTitle(), Html.FROM_HTML_MODE_COMPACT));
 
     }
 
