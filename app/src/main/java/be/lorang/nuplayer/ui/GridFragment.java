@@ -18,11 +18,11 @@
 
 package be.lorang.nuplayer.ui;
 
-import android.app.Fragment;
 import android.os.Bundle;
-import androidx.leanback.app.BrowseFragment;
 import be.lorang.nuplayer.R;
 
+import androidx.fragment.app.Fragment;
+import androidx.leanback.app.BrowseSupportFragment;
 import androidx.leanback.transition.TransitionHelper;
 import androidx.leanback.widget.ObjectAdapter;
 import androidx.leanback.widget.OnChildLaidOutListener;
@@ -40,7 +40,7 @@ import android.view.ViewGroup;
 /**
  * A fragment for rendering items in a vertical grids.
  */
-public class GridFragment extends Fragment implements BrowseFragment.MainFragmentAdapterProvider {
+public class GridFragment extends Fragment implements BrowseSupportFragment.MainFragmentAdapterProvider {
     private static final String TAG = "VerticalGridFragment";
     private static boolean DEBUG = false;
 
@@ -52,8 +52,8 @@ public class GridFragment extends Fragment implements BrowseFragment.MainFragmen
     private Object mSceneAfterEntranceTransition;
     private int mSelectedPosition = -1;
 
-    private BrowseFragment.MainFragmentAdapter mMainFragmentAdapter =
-            new BrowseFragment.MainFragmentAdapter(this) {
+    private BrowseSupportFragment.MainFragmentAdapter mMainFragmentAdapter =
+            new BrowseSupportFragment.MainFragmentAdapter(this) {
                 @Override
                 public void setEntranceTransitionState(boolean state) {
                     GridFragment.this.setEntranceTransitionState(state);
@@ -196,7 +196,7 @@ public class GridFragment extends Fragment implements BrowseFragment.MainFragmen
     }
 
     @Override
-    public BrowseFragment.MainFragmentAdapter getMainFragmentAdapter() {
+    public BrowseSupportFragment.MainFragmentAdapter getMainFragmentAdapter() {
         return mMainFragmentAdapter;
     }
 

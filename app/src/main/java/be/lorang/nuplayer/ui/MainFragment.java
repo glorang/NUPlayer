@@ -18,13 +18,13 @@
 
 package be.lorang.nuplayer.ui;
 
-import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 import androidx.leanback.app.BackgroundManager;
-import androidx.leanback.app.BrowseFragment;
+import androidx.leanback.app.BrowseSupportFragment;
 import androidx.leanback.widget.ArrayObjectAdapter;
 import androidx.leanback.widget.BrowseFrameLayout;
 import androidx.leanback.widget.HeaderItem;
@@ -37,7 +37,7 @@ import android.view.View;
 
 import be.lorang.nuplayer.R;
 
-public class MainFragment extends BrowseFragment {
+public class MainFragment extends BrowseSupportFragment {
     private static final String TAG = "MainFragment";
     private static final String[] menuItems = {"Home", "Latest", "Series", "Catalog" ,"Settings"};
     private BackgroundManager mBackgroundManager;
@@ -112,7 +112,7 @@ public class MainFragment extends BrowseFragment {
         startEntranceTransition();
     }
 
-    private class PageRowFragmentFactory extends BrowseFragment.FragmentFactory {
+    private class PageRowFragmentFactory extends BrowseSupportFragment.FragmentFactory {
         private final BackgroundManager mBackgroundManager;
 
         PageRowFragmentFactory(BackgroundManager backgroundManager) {

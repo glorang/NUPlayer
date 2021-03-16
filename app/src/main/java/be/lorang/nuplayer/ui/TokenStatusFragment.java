@@ -18,7 +18,6 @@
 
 package be.lorang.nuplayer.ui;
 
-import android.app.Fragment;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -27,7 +26,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
-import androidx.leanback.app.BrowseFragment;
+import androidx.fragment.app.Fragment;
+import androidx.leanback.app.BrowseSupportFragment;
 
 import org.json.JSONObject;
 
@@ -50,13 +50,13 @@ import static android.content.Context.MODE_PRIVATE;
  * Fragment to show token status
  */
 
-public class TokenStatusFragment extends Fragment implements BrowseFragment.MainFragmentAdapterProvider {
+public class TokenStatusFragment extends Fragment implements BrowseSupportFragment.MainFragmentAdapterProvider {
 
-    private BrowseFragment.MainFragmentAdapter mMainFragmentAdapter = new BrowseFragment.MainFragmentAdapter(this);
+    private BrowseSupportFragment.MainFragmentAdapter mMainFragmentAdapter = new BrowseSupportFragment.MainFragmentAdapter(this);
     private static final String TAG = "TokenStatusFragment";
 
     @Override
-    public BrowseFragment.MainFragmentAdapter getMainFragmentAdapter() {
+    public BrowseSupportFragment.MainFragmentAdapter getMainFragmentAdapter() {
         return mMainFragmentAdapter;
     }
 

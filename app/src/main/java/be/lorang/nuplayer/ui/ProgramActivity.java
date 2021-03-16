@@ -18,13 +18,13 @@
 
 package be.lorang.nuplayer.ui;
 
-import android.app.Activity;
 import android.os.Bundle;
+import androidx.fragment.app.FragmentActivity;
 import be.lorang.nuplayer.R;
 import be.lorang.nuplayer.model.Program;
 import com.google.gson.Gson;
 
-public class ProgramActivity extends Activity {
+public class ProgramActivity extends FragmentActivity {
 
     private Program program;
 

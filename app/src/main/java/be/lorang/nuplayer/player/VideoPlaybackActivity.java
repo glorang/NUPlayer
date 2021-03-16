@@ -19,17 +19,18 @@
 
 package be.lorang.nuplayer.player;
 
-import android.app.Activity;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
+
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentTransaction;
 
 import be.lorang.nuplayer.R;
 import be.lorang.nuplayer.model.Video;
 
 import com.google.gson.Gson;
 
-public class VideoPlaybackActivity extends Activity {
+public class VideoPlaybackActivity extends FragmentActivity {
 
     public static final String TAG = "VideoPlaybackActivity";
 
@@ -52,7 +53,7 @@ public class VideoPlaybackActivity extends Activity {
         drmToken = getIntent().getExtras().getString("VUALTO_TOKEN");
 
         if (savedInstanceState == null) {
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.add(R.id.videoFragment, new VideoPlaybackFragment(), VideoPlaybackFragment.TAG);
             ft.commit();
         }

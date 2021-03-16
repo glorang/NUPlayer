@@ -5,7 +5,6 @@ package be.lorang.nuplayer.ui;
  */
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -19,7 +18,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.leanback.app.BrowseFragment;
+import androidx.fragment.app.Fragment;
+import androidx.leanback.app.BrowseSupportFragment;
 
 import be.lorang.nuplayer.R;
 import be.lorang.nuplayer.model.ProgramList;
@@ -36,9 +36,9 @@ import be.lorang.nuplayer.utils.HTTPClient;
 
 import static android.content.Context.MODE_PRIVATE;
 
-public class SettingsFragment extends Fragment implements BrowseFragment.MainFragmentAdapterProvider {
+public class SettingsFragment extends Fragment implements BrowseSupportFragment.MainFragmentAdapterProvider {
 
-    private BrowseFragment.MainFragmentAdapter mMainFragmentAdapter = new BrowseFragment.MainFragmentAdapter(this);
+    private BrowseSupportFragment.MainFragmentAdapter mMainFragmentAdapter = new BrowseSupportFragment.MainFragmentAdapter(this);
     private static final String TAG = "SettingsFragment";
 
     private Intent catalogIntent;
@@ -63,7 +63,7 @@ public class SettingsFragment extends Fragment implements BrowseFragment.MainFra
     private String xvrttoken;
 
     @Override
-    public BrowseFragment.MainFragmentAdapter getMainFragmentAdapter() {
+    public BrowseSupportFragment.MainFragmentAdapter getMainFragmentAdapter() {
         return mMainFragmentAdapter;
     }
 

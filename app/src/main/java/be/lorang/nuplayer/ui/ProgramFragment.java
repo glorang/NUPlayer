@@ -25,10 +25,9 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 
-import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.leanback.app.BackgroundManager;
-import androidx.leanback.app.VerticalGridFragment;
+import androidx.leanback.app.VerticalGridSupportFragment;
 import androidx.leanback.widget.ArrayObjectAdapter;
 import androidx.leanback.widget.FocusHighlight;
 import androidx.leanback.widget.OnItemViewSelectedListener;
@@ -72,7 +71,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ProgramFragment extends VerticalGridFragment implements OnItemViewSelectedListener {
+public class ProgramFragment extends VerticalGridSupportFragment implements OnItemViewSelectedListener {
 
     private static final int COLUMNS = 1;
     private static final int ZOOM_FACTOR = FocusHighlight.ZOOM_FACTOR_SMALL;
@@ -366,7 +365,7 @@ public class ProgramFragment extends VerticalGridFragment implements OnItemViewS
                 .errorOf(mDefaulBackgroundImage)
                 .centerCrop();
 
-        Glide.with(this)
+        Glide.with(getActivity())
                 .asBitmap()
                 .load(uri)
                 .apply(options)
@@ -385,7 +384,9 @@ public class ProgramFragment extends VerticalGridFragment implements OnItemViewS
     public void onDestroy() {
         // If the background image of a program is missing it will show the background of the
         // previous program, make sure to unset it
-        mBackgroundManager.clearDrawable();
+        if(mBackgroundManager.getDrawable() != null) {
+            mBackgroundManager.clearDrawable();
+        }
         super.onDestroy();
     }
 

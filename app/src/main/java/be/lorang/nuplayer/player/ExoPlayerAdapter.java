@@ -369,7 +369,7 @@ public class ExoPlayerAdapter extends PlayerAdapter implements ExoPlayer.EventLi
     }
 
     @Override
-    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+    public void onPlaybackStateChanged(int playbackState) {
         mBufferingStart = false;
         if (playbackState == ExoPlayer.STATE_READY && !mInitialized) {
             mInitialized = true;

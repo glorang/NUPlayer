@@ -23,7 +23,8 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
-import androidx.leanback.app.GuidedStepFragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.leanback.app.GuidedStepSupportFragment;
 import androidx.leanback.widget.GuidanceStylist;
 import androidx.leanback.widget.GuidedAction;
 
@@ -38,7 +39,7 @@ import be.lorang.nuplayer.services.CatalogService;
 
 import java.util.List;
 
-public class LoginActivity extends Activity {
+public class LoginActivity extends FragmentActivity {
 
     private static final int EMAIL = 1;
     private static final int PASSWORD = 2;
@@ -48,11 +49,11 @@ public class LoginActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (null == savedInstanceState) {
-            GuidedStepFragment.addAsRoot(this, new FirstStepFragment(), android.R.id.content);
+            GuidedStepSupportFragment.addAsRoot(this, new FirstStepFragment(), android.R.id.content);
         }
     }
 
-    public static class FirstStepFragment extends GuidedStepFragment {
+    public static class FirstStepFragment extends GuidedStepSupportFragment {
 
         private String loginID = "";
         private String password = "";
@@ -73,18 +74,18 @@ public class LoginActivity extends Activity {
 
         @Override
         public void onCreateActions(@NonNull List<GuidedAction> actions, Bundle savedInstanceState) {
-            GuidedAction enterEmail = new GuidedAction.Builder()
+            GuidedAction enterEmail = new GuidedAction.Builder(getContext())
                     .id(EMAIL)
                     .title(getString(R.string.pref_title_email))
                     .descriptionEditable(true)
                     .build();
-            GuidedAction enterPassword = new GuidedAction.Builder()
+            GuidedAction enterPassword = new GuidedAction.Builder(getContext())
                     .id(PASSWORD)
                     .title(getString(R.string.pref_title_password))
                     .descriptionEditable(true)
                     .descriptionInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD | InputType.TYPE_CLASS_TEXT)
                     .build();
-            GuidedAction login = new GuidedAction.Builder()
+            GuidedAction login = new GuidedAction.Builder(getContext())
                     .id(SUBMIT)
                     .title(getString(R.string.pref_title_login))
                     .build();
