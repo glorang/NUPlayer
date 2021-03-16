@@ -23,20 +23,20 @@ import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
 
-import androidx.leanback.app.VideoFragment;
-import androidx.leanback.app.VideoFragmentGlueHost;
+import androidx.leanback.app.VideoSupportFragment;
+import androidx.leanback.app.VideoSupportFragmentGlueHost;
 import androidx.leanback.media.PlaybackGlue;
 
 import com.google.android.exoplayer2.ExoPlayer;
 
 import be.lorang.nuplayer.model.Video;
 
-public class VideoPlaybackFragment extends VideoFragment {
+public class VideoPlaybackFragment extends VideoSupportFragment {
 
     public static final String TAG = "VideoPlaybackFragment";
     private VideoMediaPlayerGlue<ExoPlayerAdapter> mMediaPlayerGlue;
     private ExoPlayerAdapter playerAdapter;
-    final VideoFragmentGlueHost mHost = new VideoFragmentGlueHost(this);
+    final VideoSupportFragmentGlueHost mHost = new VideoSupportFragmentGlueHost(this);
 
     private Video video;
     private String videoUrl;

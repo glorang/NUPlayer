@@ -17,9 +17,6 @@
 
 package be.lorang.nuplayer.ui;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,7 +25,10 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 
 
-import androidx.leanback.app.BrowseFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.leanback.app.BrowseSupportFragment;
 
 import be.lorang.nuplayer.R;
 
@@ -37,13 +37,13 @@ import be.lorang.nuplayer.R;
  * Fragment that manages the Settings (sub)menu
  */
 
-public class SettingsMainFragment extends Fragment implements BrowseFragment.MainFragmentAdapterProvider {
+public class SettingsMainFragment extends Fragment implements BrowseSupportFragment.MainFragmentAdapterProvider {
 
-    private BrowseFragment.MainFragmentAdapter mMainFragmentAdapter = new BrowseFragment.MainFragmentAdapter(this);
+    private BrowseSupportFragment.MainFragmentAdapter mMainFragmentAdapter = new BrowseSupportFragment.MainFragmentAdapter(this);
     private static final String TAG = "SettingsDummyFragment";
 
     @Override
-    public BrowseFragment.MainFragmentAdapter getMainFragmentAdapter() {
+    public BrowseSupportFragment.MainFragmentAdapter getMainFragmentAdapter() {
         return mMainFragmentAdapter;
     }
 
@@ -61,7 +61,7 @@ public class SettingsMainFragment extends Fragment implements BrowseFragment.Mai
         Button settingsButtonAbout = view.findViewById(R.id.buttonSettingsMainAbout);
 
         // add default Fragment
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.add(R.id.settingsContainerLayout, new SettingsFragment());
         fragmentTransaction.commit();

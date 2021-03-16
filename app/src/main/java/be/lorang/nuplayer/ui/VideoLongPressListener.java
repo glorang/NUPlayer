@@ -12,7 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import android.app.Fragment;
+import androidx.fragment.app.Fragment;
 
 import com.google.gson.Gson;
 
@@ -100,7 +100,7 @@ public class VideoLongPressListener implements View.OnLongClickListener {
 
         if(context instanceof MainActivity) {
             MainActivity activity = (MainActivity) context;
-            List<Fragment> mainFragments = activity.getFragmentManager().getFragments();
+            List<Fragment> mainFragments = activity.getSupportFragmentManager().getFragments();
             for (Fragment fragment : mainFragments) {
                 if (fragment instanceof MainFragment) {
                     MainFragment m = (MainFragment) fragment;

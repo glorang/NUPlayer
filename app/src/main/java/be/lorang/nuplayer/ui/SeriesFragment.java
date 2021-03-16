@@ -19,17 +19,17 @@
 package be.lorang.nuplayer.ui;
 
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.leanback.app.BackgroundManager;
-import androidx.leanback.app.BrowseFragment;
-import androidx.leanback.app.RowsFragment;
+import androidx.leanback.app.BrowseSupportFragment;
+import androidx.leanback.app.RowsSupportFragment;
 import androidx.leanback.widget.ArrayObjectAdapter;
 import androidx.leanback.widget.ListRow;
 import androidx.leanback.widget.ListRowPresenter;
@@ -56,9 +56,9 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 
-public class SeriesFragment extends Fragment implements BrowseFragment.MainFragmentAdapterProvider {
+public class SeriesFragment extends Fragment implements BrowseSupportFragment.MainFragmentAdapterProvider {
 
-    private BrowseFragment.MainFragmentAdapter mMainFragmentAdapter = new BrowseFragment.MainFragmentAdapter(this);
+    private BrowseSupportFragment.MainFragmentAdapter mMainFragmentAdapter = new BrowseSupportFragment.MainFragmentAdapter(this);
     private static final String TAG = "SeriesFragment";
 
     private ArrayObjectAdapter mAdapter;
@@ -66,7 +66,7 @@ public class SeriesFragment extends Fragment implements BrowseFragment.MainFragm
     private Program program = null;
 
     @Override
-    public BrowseFragment.MainFragmentAdapter getMainFragmentAdapter() {
+    public BrowseSupportFragment.MainFragmentAdapter getMainFragmentAdapter() {
         return mMainFragmentAdapter;
     }
 
@@ -90,7 +90,7 @@ public class SeriesFragment extends Fragment implements BrowseFragment.MainFragm
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_series, container, false);
 
-        RowsFragment rowsFragment = new RowsFragment();
+        RowsSupportFragment rowsFragment = new RowsSupportFragment();
 
         // setup listeners
         rowsFragment.setOnItemViewClickedListener(new VideoProgramListener(this));
@@ -115,7 +115,7 @@ public class SeriesFragment extends Fragment implements BrowseFragment.MainFragm
         ListRow seriesListrow = new ListRow(null, mAdapter);
         mRowsAdapter.add(seriesListrow);
 
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.add(R.id.seriesContainer, rowsFragment);
         fragmentTransaction.commit();
@@ -201,7 +201,7 @@ public class SeriesFragment extends Fragment implements BrowseFragment.MainFragm
         RequestOptions options = new RequestOptions()
                 .centerCrop();
 
-        Glide.with(this)
+        Glide.with(getActivity())
                 .asBitmap()
                 .load(uri)
                 .apply(options)

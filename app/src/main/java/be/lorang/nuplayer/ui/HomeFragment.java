@@ -28,7 +28,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.leanback.app.RowsFragment;
+import androidx.leanback.app.RowsSupportFragment;
 import androidx.leanback.widget.ArrayObjectAdapter;
 import androidx.leanback.widget.HeaderItem;
 import androidx.leanback.widget.ListRow;
@@ -54,7 +54,7 @@ import be.lorang.nuplayer.services.ResumePointsService;
 
 import static android.content.Context.MODE_PRIVATE;
 
-public class HomeFragment extends RowsFragment {
+public class HomeFragment extends RowsSupportFragment {
 
     public static String TAG = "HomeFragment";
 

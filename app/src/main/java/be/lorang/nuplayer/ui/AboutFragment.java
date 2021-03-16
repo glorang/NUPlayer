@@ -17,12 +17,12 @@
 
 package be.lorang.nuplayer.ui;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import androidx.leanback.app.BrowseFragment;
+import androidx.fragment.app.Fragment;
+import androidx.leanback.app.BrowseSupportFragment;
 import be.lorang.nuplayer.R;
 
 
@@ -30,13 +30,13 @@ import be.lorang.nuplayer.R;
  * Simple fragment to show some general info and debug output, should be cleaned up for final release
  */
 
-public class AboutFragment extends Fragment implements BrowseFragment.MainFragmentAdapterProvider {
+public class AboutFragment extends Fragment implements BrowseSupportFragment.MainFragmentAdapterProvider {
 
-    private BrowseFragment.MainFragmentAdapter mMainFragmentAdapter = new BrowseFragment.MainFragmentAdapter(this);
+    private BrowseSupportFragment.MainFragmentAdapter mMainFragmentAdapter = new BrowseSupportFragment.MainFragmentAdapter(this);
     private static final String TAG = "AboutFragment";
 
     @Override
-    public BrowseFragment.MainFragmentAdapter getMainFragmentAdapter() {
+    public BrowseSupportFragment.MainFragmentAdapter getMainFragmentAdapter() {
         return mMainFragmentAdapter;
     }
 
