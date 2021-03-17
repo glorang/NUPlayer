@@ -8,6 +8,7 @@
         <item name="android:colorPrimary">@color/fastlane_background</item>
         <item name="android:windowAllowReturnTransitionOverlap">true</item>
         <item name="android:windowAllowEnterTransitionOverlap">true</item>
+        <item name="playbackControlsAutoHideTickleTimeout" format="integer">3000</item>
     </style>
 
     <!-- Use in Card Presenters -->
@@ -16,7 +17,4 @@
         <item name="cardBackground">@null</item>
     </style>
 
-    <!-- This is supposed to hide the controls overlay after 3 seconds but doens't work unfortunately... -->
-    <attr name="playbackControlsAutoHideTimeout" format="integer">3000</attr>
-    <attr name="playbackControlsAutoHideTickleTimeout" format="integer">3000</attr>
 </resources>

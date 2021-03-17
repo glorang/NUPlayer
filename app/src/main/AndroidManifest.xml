@@ -83,6 +83,7 @@
             android:name=".player.VideoPlaybackActivity"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|layoutDirection"
             android:launchMode="singleTask"
+            android:theme="@style/LeanbackPreferences"
             android:resizeableActivity="true" />
     </application>
 
