@@ -79,7 +79,8 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
             }
         });
 
-        if(video.getCurrentPosition() > 0)  {
+        // Resume video, restart from beginning if progress > 95%
+        if(video.getProgressPct() > 0 && video.getProgressPct() < 95)  {
             Log.d(TAG, "Setting start position = " + video.getCurrentPosition());
             mMediaPlayerGlue.getPlayerAdapter().seekTo(video.getCurrentPosition() * 1000);
         }
