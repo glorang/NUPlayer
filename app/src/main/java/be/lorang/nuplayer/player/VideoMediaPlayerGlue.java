@@ -69,8 +69,14 @@ public class VideoMediaPlayerGlue<T extends PlayerAdapter> extends PlaybackTrans
     @Override
     public boolean onKey(View v, int keyCode, KeyEvent event) {
 
-        // Every 5 clicks (or long presses) in the same 'direction' (rewind | forward) we increase
-        // the multiplier, this makes progress skip forward|backwards between 30 seconds and 2.5 minutes
+        // Reset counters when other button is pressed
+        if(prevKeyCode != keyCode) {
+            currentMultiplier = 1;
+            buttonCount = 0;
+        }
+
+        // Every 5 clicks (or long presses) of the same button (rewind | forward) we increase the multiplier
+        // This makes progress skip forward | backwards between 30 seconds and 2.5 minutes intervals
         if(event.getAction() == KeyEvent.ACTION_DOWN &&
                 (keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT)) {
 
@@ -90,11 +96,6 @@ public class VideoMediaPlayerGlue<T extends PlayerAdapter> extends PlaybackTrans
         if(event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
             rewind();
             getControlsRow().setCurrentPosition(getPlayerAdapter().isPrepared() ? getPlayerAdapter().getCurrentPosition() : -1);
-        }
-
-        if(prevKeyCode != keyCode) {
-            currentMultiplier = 1;
-            buttonCount = 0;
         }
 
         prevKeyCode = keyCode;
