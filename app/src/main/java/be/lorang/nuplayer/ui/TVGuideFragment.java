@@ -26,6 +26,7 @@ import android.os.Handler;
 import android.os.ResultReceiver;
 import android.text.Html;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -162,7 +163,9 @@ public class TVGuideFragment extends Fragment implements BrowseSupportFragment.M
                     values[7] = "Today";
                     values[8] = "Tomorrow";
 
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    AlertDialog.Builder builder = new AlertDialog.Builder(
+                            new ContextThemeWrapper(getActivity(), R.style.dialogAlertTheme));
+
                     builder.setTitle(getActivity().getString(R.string.epg_dialog_title))
                             .setSingleChoiceItems(values, 7, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int index) {

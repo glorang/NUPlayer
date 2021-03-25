@@ -26,6 +26,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.Toast;
 
@@ -75,7 +76,8 @@ public class VideoLongPressListener implements View.OnLongClickListener {
             test[i] = menuOptions.get(i);
         }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        AlertDialog.Builder builder = new AlertDialog.Builder(
+                new ContextThemeWrapper(context, R.style.dialogAlertTheme));
         builder.setTitle(context.getString(R.string.context_title))
                 .setItems(test, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int index) {
