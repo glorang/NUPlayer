@@ -17,4 +17,11 @@
         <item name="cardBackground">@null</item>
     </style>
 
+    <style name="dialogAlertTheme" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="android:background">@drawable/alert_dialog_background</item>
+        <item name="colorAccent">@color/vrtnu_white</item>
+        <item name="android:fontFamily">sans-serif-condensed</item>
+    </style>
+
+
 </resources>
