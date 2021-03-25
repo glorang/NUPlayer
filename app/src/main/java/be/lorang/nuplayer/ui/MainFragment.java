@@ -39,7 +39,7 @@ import be.lorang.nuplayer.R;
 
 public class MainFragment extends BrowseSupportFragment {
     private static final String TAG = "MainFragment";
-    private static final String[] menuItems = {"Home", "Latest", "Series", "Catalog" ,"Settings"};
+    private static final String[] menuItems = {"Home", "TV Guide", "Latest", "Series", "Catalog" ,"Settings"};
     private BackgroundManager mBackgroundManager;
 
     private ArrayObjectAdapter mRowsAdapter;
@@ -87,9 +87,9 @@ public class MainFragment extends BrowseSupportFragment {
      */
 
     @Override
-    public void onViewCreated(View b, Bundle savedInstanceState) {
-        super.onViewCreated(b, savedInstanceState);
-        BrowseFrameLayout mBrowseFrame = b.findViewById(R.id.browse_frame);
+    public void onViewCreated(View v, Bundle savedInstanceState) {
+        super.onViewCreated(v, savedInstanceState);
+        BrowseFrameLayout mBrowseFrame = v.findViewById(R.id.browse_frame);
         if(mBrowseFrame != null) {
             mBrowseFrame.setOnFocusSearchListener(null);
         }
@@ -127,6 +127,8 @@ public class MainFragment extends BrowseSupportFragment {
             switch(row.getHeaderItem().getName()) {
                 case "Home":
                     return new HomeFragment();
+                case "TV Guide":
+                    return new TVGuideFragment();
                 case "Catalog":
                     return new CatalogFragment();
                 case "Series":

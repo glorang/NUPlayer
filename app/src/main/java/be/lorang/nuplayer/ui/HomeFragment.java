@@ -238,6 +238,7 @@ public class HomeFragment extends RowsSupportFragment {
 
         // start an Intent to fetch EPG data
         Intent epgIntent = new Intent(getActivity(), EPGService.class);
+        epgIntent.putExtra("ACTION", EPGService.ACTION_UPDATE_LIVE_TV_EPG);
         epgIntent.putExtra(EPGService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
             @Override
             protected void onReceiveResult(int resultCode, Bundle resultData) {

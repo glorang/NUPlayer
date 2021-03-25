@@ -50,4 +50,7 @@
     <string name="context_remove_watch_later">Remove from watch later</string>
     <string name="context_cancel">Cancel</string>
 
+    <!-- EPG Dialog -->
+    <string name="epg_dialog_title">Select date</string>
+
 </resources>

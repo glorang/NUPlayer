@@ -118,6 +118,15 @@ public class ProgramList {
         return result;
     }
 
+    public Program getProgram(String title) {
+        for(Program program : mPrograms) {
+            if(program.getTitle().toLowerCase().equals(title.toLowerCase())) {
+                return program;
+            }
+        }
+        return null;
+    }
+
     public List<String> getBrands() {
         List<String> result = new ArrayList<>();
         for(Program program : mPrograms) {
