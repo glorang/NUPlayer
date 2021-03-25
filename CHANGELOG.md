@@ -1,3 +1,10 @@
+## v1.2.0 (2021-03-25)
+
+- Basic TV Guide
+- Improve video controls / seeking (#1)
+- Automatically hide video player's overlay window (#1)
+- Don't resume videos with progress > 95% (#2)
+
 ## v1.1.6 (2021-03-16)
 
 - Improve video controls and seeking

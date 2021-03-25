@@ -16,6 +16,7 @@ For now only tested on Google 2020 Chromecast (the one with remote) and TADAAM T
 
 - VRT login
 - Live TV
+- TV Guide
 - Browsing the VRT.NU catalog
 - Playback of any on-demand program in the catalog
 - Latest episode listing
@@ -26,7 +27,7 @@ For now only tested on Google 2020 Chromecast (the one with remote) and TADAAM T
 
 ## Not (yet) implemented / known limitations / known bugs
 
-- Full TV guide is not implemented (no plans to implement, yet)
+- Live TV cannot be started from the TV Guide
 - Categories is not implemented (no plans to implement, yet)
 - The search can be voice controlled but is rather useless in English
 - EPG data is not updated when Live TV stream switches program
