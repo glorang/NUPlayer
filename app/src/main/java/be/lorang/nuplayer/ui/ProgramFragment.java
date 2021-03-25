@@ -25,6 +25,8 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.leanback.app.BackgroundManager;
 import androidx.leanback.app.VerticalGridSupportFragment;
@@ -36,7 +38,6 @@ import androidx.leanback.widget.Row;
 import androidx.leanback.widget.RowPresenter;
 
 import android.os.ResultReceiver;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -48,8 +49,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 
 import be.lorang.nuplayer.R;
@@ -84,7 +84,6 @@ public class ProgramFragment extends VerticalGridSupportFragment implements OnIt
 
     private ArrayObjectAdapter mAdapter;
     private BackgroundManager mBackgroundManager;
-    private Drawable mDefaulBackgroundImage;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,11 +92,7 @@ public class ProgramFragment extends VerticalGridSupportFragment implements OnIt
         ProgramActivity pa = (ProgramActivity)getActivity();
         program = pa.getProgram();
 
-        // set default background
-        mDefaulBackgroundImage = getResources().getDrawable(R.drawable.default_background, null);
-
         setupAdapter();
-        setupUi();
         loadData(1);
     }
 
@@ -355,44 +350,50 @@ public class ProgramFragment extends VerticalGridSupportFragment implements OnIt
         if(!mBackgroundManager.isAttached()) {
             mBackgroundManager.attach(getActivity().getWindow());
         }
-        DisplayMetrics mMetrics = new DisplayMetrics();
-        getActivity().getWindowManager().getDefaultDisplay().getMetrics(mMetrics);
-
-        int width = mMetrics.widthPixels;
-        int height = mMetrics.heightPixels;
-
-        RequestOptions options = new RequestOptions()
-                .errorOf(mDefaulBackgroundImage)
-                .centerCrop();
 
         Glide.with(getActivity())
                 .asBitmap()
+                .centerCrop()
                 .load(uri)
-                .apply(options)
-                .into(new SimpleTarget<Bitmap>(width, height) {
+                .into(new CustomTarget<Bitmap>() {
                     @Override
-                    public void onResourceReady(
-                            Bitmap resource,
-                            Transition<? super Bitmap> transition) {
-                        //Bitmap b = Utils.adjustOpacity(resource,40);
+                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                         mBackgroundManager.setBitmap(resource);
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) {
                     }
                 });
     }
 
+    // Clearing the drawable here is required to make sure there are no references left
+    // to the image as Glide might recycle it when the activity is paused
     @Override
-    public void onDestroy() {
-        // If the background image of a program is missing it will show the background of the
-        // previous program, make sure to unset it
+    public void onPause() {
+        super.onPause();
         if(mBackgroundManager.getDrawable() != null) {
             mBackgroundManager.clearDrawable();
+            //mBackgroundManager.release();
+         }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // Unset image and release memory
+        if(mBackgroundManager.getDrawable() != null) {
+            mBackgroundManager.clearDrawable();
+            mBackgroundManager.release();
         }
-        super.onDestroy();
     }
 
     @Override
     public void onResume() {
-        // reset background as it was removed in onDestroy()
+        super.onResume();
+
+        // reset background as it was removed in onStop() | onPause()
         setupUi();
 
         // Update adapter with latest progress for all videos
@@ -403,8 +404,6 @@ public class ProgramFragment extends VerticalGridSupportFragment implements OnIt
             }
         }, 2000);
 
-
-        super.onResume();
     }
 
     @Override
