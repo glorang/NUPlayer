@@ -3,8 +3,12 @@
 
     <color name="vrtnu_white">#ffffff</color>
     <color name="vrtnu_white_alpha_20">#33ffffff</color>
+    <color name="vrtnu_white_alpha_60">#99ffffff</color>
+    <color name="vrtnu_white_alpha_80">#CCffffff</color>
     <color name="vrtnu_white_alpha_100">#ffffffff</color>
     <color name="vrtnu_grey">#e5e5e5</color>
+    <color name="vrtnu_grey_tint_2">#353535</color>
+    <color name="vrtnu_grey_tint_3">#252525</color>
     <color name="vrtnu_black_tint_1">#0e0e0e</color>
     <color name="vrtnu_black_tint_1_alpha_80">#CC0e0e0e</color>
     <color name="vrtnu_black_tint_1_alpha_60">#990e0e0e</color>
