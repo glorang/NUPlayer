@@ -24,6 +24,8 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -52,8 +54,7 @@ import be.lorang.nuplayer.model.ProgramList;
 import be.lorang.nuplayer.services.SeriesService;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 
 public class SeriesFragment extends Fragment implements BrowseSupportFragment.MainFragmentAdapterProvider {
@@ -79,10 +80,32 @@ public class SeriesFragment extends Fragment implements BrowseSupportFragment.Ma
 
     @Override
     public void onResume() {
+        super.onResume();
         if(program != null) {
             updateBackground(program.getThumbnail("w1920hx"));
         }
-        super.onResume();
+    }
+
+    // Clearing the drawable here is required to make sure there are no references left
+    // to the image as Glide might recycle it when the activity is paused
+    @Override
+    public void onPause() {
+        super.onPause();
+        if(mBackgroundManager.getDrawable() != null) {
+            mBackgroundManager.clearDrawable();
+            //mBackgroundManager.release();
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // Unset image and release memory
+        if(mBackgroundManager.getDrawable() != null) {
+            mBackgroundManager.clearDrawable();
+            mBackgroundManager.release();
+        }
     }
 
     @Override
@@ -192,25 +215,19 @@ public class SeriesFragment extends Fragment implements BrowseSupportFragment.Ma
         if(!mBackgroundManager.isAttached()) {
             mBackgroundManager.attach(getActivity().getWindow());
         }
-        DisplayMetrics mMetrics = new DisplayMetrics();
-        getActivity().getWindowManager().getDefaultDisplay().getMetrics(mMetrics);
-
-        int width = mMetrics.widthPixels;
-        int height = mMetrics.heightPixels;
-
-        RequestOptions options = new RequestOptions()
-                .centerCrop();
 
         Glide.with(getActivity())
                 .asBitmap()
+                .centerCrop()
                 .load(uri)
-                .apply(options)
-                .into(new SimpleTarget<Bitmap>(width, height) {
+                .into(new CustomTarget<Bitmap>() {
                     @Override
-                    public void onResourceReady(
-                            Bitmap resource,
-                            Transition<? super Bitmap> transition) {
+                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                         mBackgroundManager.setBitmap(resource);
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) {
                     }
                 });
     }
