@@ -150,13 +150,11 @@ public class TVGuideFragment extends Fragment implements BrowseSupportFragment.M
                     String[] keys = new String[15];
                     String[] values = new String[15];
                     ZonedDateTime start = dialogStartDate.minusDays(7);
-                    ZonedDateTime end = dialogStartDate.plusDays(7);
-                    int i=0;
-                    while(start.isBefore(end) || start.equals(end)) {
+
+                    for(int i=0;i<keys.length;i++) {
                         keys[i] = start.toString();
                         values[i] = epgDialogFormatter.format(start);
                         start = start.plusDays(1);
-                        i++;
                     }
 
                     values[6] = "Yesterday";
