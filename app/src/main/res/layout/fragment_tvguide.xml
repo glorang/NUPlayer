@@ -15,7 +15,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="30dp"
             android:orientation="horizontal"
             android:paddingLeft="55dp">
 
@@ -49,7 +50,7 @@
 
             <FrameLayout
                 android:layout_width="50dp"
-                android:layout_height="200dp"
+                android:layout_height="150dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginRight="10dp">
 
@@ -61,8 +62,7 @@
 
                     <FrameLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1">
+                        android:layout_height="50dp">
 
                         <ImageView
                             android:id="@+id/imageViewEen"
@@ -75,8 +75,7 @@
 
                     <FrameLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1">
+                        android:layout_height="50dp">
 
                         <ImageView
                             android:id="@+id/imageViewCanvas"
@@ -88,8 +87,7 @@
 
                     <FrameLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1">
+                        android:layout_height="50dp">
 
                         <ImageView
                             android:id="@+id/imageViewKetnet"
@@ -106,10 +104,10 @@
             <HorizontalScrollView
                 android:id="@+id/epgScrollView"
                 android:layout_width="match_parent"
-                android:layout_height="220dp">
+                android:layout_height="170dp">
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
@@ -124,21 +122,24 @@
                     <FrameLayout
                         android:id="@+id/epgListEen"
                         android:layout_width="match_parent"
-                        android:layout_height="67dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center_vertical"
                         android:layout_weight="1"
                         android:background="@color/vrtnu_grey_tint_3" />
 
                     <FrameLayout
                         android:id="@+id/epgListCanvas"
                         android:layout_width="match_parent"
-                        android:layout_height="67dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center_vertical"
                         android:layout_weight="1"
                         android:background="@color/vrtnu_grey_tint_3" />
 
                     <FrameLayout
                         android:id="@+id/epgListKetnet"
                         android:layout_width="match_parent"
-                        android:layout_height="67dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center_vertical"
                         android:layout_weight="1"
                         android:background="@color/vrtnu_grey_tint_3" />
 
@@ -159,10 +160,10 @@
                 android:layout_width="200dp"
                 android:layout_height="match_parent"
                 android:layout_gravity="top"
-                android:layout_marginLeft="60dp" />
+                android:layout_marginStart="60dp" />
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:orientation="vertical">
@@ -172,7 +173,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-condensed"
-                    android:paddingLeft="20dp"
+                    android:paddingStart="20dp"
                     android:textColor="@android:color/white"
                     android:textSize="18sp" />
 
@@ -181,7 +182,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-condensed"
-                    android:paddingLeft="20dp"
+                    android:paddingStart="20dp"
                     android:textSize="14sp"
                     android:textStyle="italic" />
 
@@ -192,7 +193,7 @@
                     android:fontFamily="sans-serif-condensed"
                     android:lines="4"
                     android:maxLines="4"
-                    android:paddingLeft="20dp" />
+                    android:paddingStart="20dp" />
 
             </LinearLayout>
 
