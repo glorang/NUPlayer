@@ -139,4 +139,13 @@ public class ChannelList {
         }
     }
 
+    public Video getLiveChannel(String channelID) {
+        for(Video video : mChannels) {
+            if(video.getPubId().equals(channelID)) {
+                return video;
+            }
+        }
+        return null;
+    }
+
 }
