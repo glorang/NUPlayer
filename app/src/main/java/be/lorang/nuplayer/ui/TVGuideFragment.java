@@ -292,9 +292,15 @@ public class TVGuideFragment extends Fragment implements BrowseSupportFragment.M
                 if(channelLayoutCanvas != null) { channelLayoutCanvas.removeAllViews(); }
 
                 if(epgList != null) {
-                    for(EPGEntry epgEntry : epgList.getEpgData()) {
+                    for(int i=0;i<epgList.getEpgData().size();i++) {
+                        EPGEntry epgEntry = epgList.getEpgData().get(i);
 
-                        Button button = generateEPGEntry(epgEntry);
+                        EPGEntry epgEntryNext = null;
+                        if((i+1) < epgList.getEpgData().size()) {
+                            epgEntryNext = epgList.getEpgData().get(i+1);
+                        }
+
+                        Button button = generateEPGEntry(epgEntry, epgEntryNext);
                         switch (epgEntry.getChannelID()) {
                             case "O8": // een
                                 if(channelLayoutEen != null) { channelLayoutEen.addView(button); }
@@ -354,10 +360,20 @@ public class TVGuideFragment extends Fragment implements BrowseSupportFragment.M
         getActivity().startService(epgIntent);
     }
 
-    private Button generateEPGEntry(EPGEntry epgEntry) {
+    private Button generateEPGEntry(EPGEntry epgEntry, EPGEntry epgEntryNext) {
 
         ZonedDateTime startTime = ZonedDateTime.parse(epgEntry.getStartTime());
+        ZonedDateTime endTimeReal = ZonedDateTime.parse(epgEntry.getEndTime());
         ZonedDateTime endTime = ZonedDateTime.parse(epgEntry.getEndTime());
+
+        // Set endTime to startTime of next extry, this will visually close all gaps
+        if(epgEntryNext != null) {
+            endTime = ZonedDateTime.parse(epgEntryNext.getStartTime()).minusSeconds(30);
+            // Check for channel wrap (epgList contains items for all channels)
+            if(endTime.isBefore(startTime)) {
+                endTime = endTimeReal;
+            }
+        }
 
         long duration = endTime.toEpochSecond() - startTime.toEpochSecond();
         int width = (int)(duration / WIDTH_DIVIDER);
@@ -386,7 +402,7 @@ public class TVGuideFragment extends Fragment implements BrowseSupportFragment.M
 
                 ZonedDateTime currentTime = ZonedDateTime.now(ZoneId.of("Europe/Brussels"));
                 // start Live TV
-                if (currentTime.isAfter(startTime) && currentTime.isBefore(endTime)) {
+                if (currentTime.isAfter(startTime) && currentTime.isBefore(endTimeReal)) {
                     Video video = ChannelList.getInstance().getLiveChannel(epgEntry.getChannelID());
                     if (video != null) {
                         startVideoIntent(video);
