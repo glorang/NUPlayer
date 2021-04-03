@@ -97,18 +97,12 @@ public class ProgramService extends IntentService {
 
         try {
 
-            // path1   : [":items"].parsys[":items"].container[":items"].banner[":items"].navigation[":items"] && .navigation[":itemsOrder"]            // generic
-            // path2   : [":items"].parsys[":items"].container[":items"].banner[":items"] && banner[":itemsOrder"]                                      // generic
-            // path3   : [":items"].parsys[":items"].container[":items"]["episodes-list"][":items"].navigation[":items"] && .navigation[":itemsOrder"]  // la-theorie-du-y.model.json (series?)
-            // path4   : [":items"].parsys[":items"].container[":items"]["episodes-list"][":items"] && ["episodes-list"][":itemsOrder"]                 // de-shaq.model.json.json (series?)
-            // path5   : [":items"].parsys[":items"].container[":items"].episodes_list_268730743[":items"].navigation[":items"] && [":itemsOrder"]      // salah.model.json, let's hope this is a rare exception
-            // trailer : [":items"].parsys[":items"].container[":items"].navigation[":items"].container.title (=trailer)                                // trailer available
-
             JSONObject parseObject = null;
             JSONArray itemsOrder = null;
             JSONObject items = null;
 
             // try path1
+            // [":items"].parsys[":items"].container[":items"].banner[":items"].navigation[":items"] && .navigation[":itemsOrder"]
             try {
                 parseObject = inputData
                         .getJSONObject(":items")
@@ -128,6 +122,7 @@ public class ProgramService extends IntentService {
             }
 
             // try path2
+            // [":items"].parsys[":items"].container[":items"].banner[":items"] && banner[":itemsOrder"]
             if(itemsOrder == null || items == null) {
                 try {
                     parseObject = inputData
@@ -146,7 +141,8 @@ public class ProgramService extends IntentService {
                 }
             }
 
-            // try path3
+            // try path3 - la-theorie-du-y.model.json
+            // [":items"].parsys[":items"].container[":items"]["episodes-list"][":items"].navigation[":items"] && .navigation[":itemsOrder"]
             if(itemsOrder == null || items == null) {
                 try {
                     parseObject = inputData
@@ -167,7 +163,8 @@ public class ProgramService extends IntentService {
                 }
             }
 
-            // try path4
+            // try path4 - de-shaq.model.json.json (series?)
+            // path4   : [":items"].parsys[":items"].container[":items"]["episodes-list"][":items"] && ["episodes-list"][":itemsOrder"]
             if(itemsOrder == null || items == null) {
                 try {
                     parseObject = inputData
@@ -186,7 +183,8 @@ public class ProgramService extends IntentService {
                 }
             }
 
-            // try path5
+            // try path5 - salah.model.json, let's hope this is a rare exception
+            // path5   : [":items"].parsys[":items"].container[":items"].episodes_list_268730743[":items"].navigation[":items"] && [":itemsOrder"]
             if(itemsOrder == null || items == null) {
                 try {
                     parseObject = inputData
@@ -216,6 +214,43 @@ public class ProgramService extends IntentService {
                 }
             }
 
+            // try path6
+            // details.data.program.seasons[0].title.raw (= key) + .value
+            if(itemsOrder == null || items == null) {
+                try {
+
+                    items = new JSONObject();
+                    itemsOrder = new JSONArray();
+
+                    parseObject = inputData
+                            .getJSONObject("details")
+                            .getJSONObject("data")
+                            .getJSONObject("program");
+
+                    JSONArray seasons = parseObject.getJSONArray("seasons");
+
+                    for (int i = 0; i < seasons.length(); i++) {
+                        if (seasons.get(i) instanceof JSONObject) {
+                            JSONObject entry = new JSONObject();
+                            JSONObject title = seasons.getJSONObject(i).getJSONObject("title");
+                            entry.put("title", title.getString("value"));
+                            items.put(title.getString("raw"), entry);
+                            itemsOrder.put(title.getString("raw"));
+                        }
+                    }
+
+                    if (items.length() == 0 || itemsOrder.length() == 0) {
+                        items = null;
+                        itemsOrder = null;
+                    }
+
+                } catch (JSONException e) {
+                    items = null;
+                    itemsOrder = null;
+                    e.printStackTrace();
+                }
+            }
+
             if(itemsOrder != null && items != null) {
 
                 Log.d(TAG, "Seasons discovered: " + itemsOrder.toString());
@@ -239,6 +274,7 @@ public class ProgramService extends IntentService {
             }
 
             // try trailer path to see if we should add a "Trailer season"
+            // [":items"].parsys[":items"].container[":items"].navigation[":items"].container.title
             try {
                 parseObject = inputData
                         .getJSONObject(":items")
