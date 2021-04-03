@@ -376,7 +376,6 @@ public class TVGuideFragment extends Fragment implements BrowseSupportFragment.M
     private EPGButton generateEPGEntry(EPGEntry epgEntry, EPGEntry epgEntryNext) {
 
         ZonedDateTime startTime = ZonedDateTime.parse(epgEntry.getStartTime());
-        ZonedDateTime endTimeReal = ZonedDateTime.parse(epgEntry.getEndTime());
         ZonedDateTime endTime = ZonedDateTime.parse(epgEntry.getEndTime());
 
         // Set endTime to startTime of next entry, this will visually close all gaps
@@ -384,9 +383,12 @@ public class TVGuideFragment extends Fragment implements BrowseSupportFragment.M
             endTime = ZonedDateTime.parse(epgEntryNext.getStartTime()).minusSeconds(30);
             // Check for channel wrap (epgList contains items for all channels)
             if(endTime.isBefore(startTime)) {
-                endTime = endTimeReal;
+                endTime = ZonedDateTime.parse(epgEntry.getEndTime());
             }
         }
+
+        // needs to be final for use in inner class of button listener
+        ZonedDateTime finalEndTime = endTime;
 
         long duration = endTime.toEpochSecond() - startTime.toEpochSecond();
         int width = (int)(duration / WIDTH_DIVIDER);
@@ -417,7 +419,7 @@ public class TVGuideFragment extends Fragment implements BrowseSupportFragment.M
 
                 ZonedDateTime currentTime = ZonedDateTime.now(ZoneId.of("Europe/Brussels"));
                 // start Live TV
-                if (currentTime.isAfter(startTime) && currentTime.isBefore(endTimeReal)) {
+                if (currentTime.isAfter(startTime) && currentTime.isBefore(finalEndTime)) {
                     Video video = ChannelList.getInstance().getLiveChannel(epgEntry.getChannelID());
                     if (video != null) {
                         startVideoIntent(video);
