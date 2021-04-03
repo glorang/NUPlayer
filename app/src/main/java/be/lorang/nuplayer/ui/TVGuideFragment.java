@@ -142,27 +142,22 @@ public class TVGuideFragment extends Fragment implements BrowseSupportFragment.M
         updateEPGData();
     }
 
-    /*
     @Override
     public void onResume() {
         super.onResume();
-        updateMarkers();
-        scrollToNow();
+        setupScrollViewListener();
     }
-    */
 
     @Override
     public void onPause() {
         super.onPause();
+        removeScrollViewListener();
+    }
 
-        HorizontalScrollView epgScrollView = getView().findViewById(R.id.epgScrollView);
-        if (epgScrollView != null) {
-
-            if (epgScrollView.getViewTreeObserver().isAlive()) {
-                Log.d(TAG, "Removing on scroll listener");
-                epgScrollView.getViewTreeObserver().removeOnScrollChangedListener(scrollListener);
-            }
-        }
+    @Override
+    public void onStop() {
+        super.onStop();
+        removeScrollViewListener();
     }
 
     private void setupButtonListeners() {
@@ -478,6 +473,16 @@ public class TVGuideFragment extends Fragment implements BrowseSupportFragment.M
             };
             epgScrollView.getViewTreeObserver().addOnScrollChangedListener(scrollListener);
 
+        }
+    }
+
+    private void removeScrollViewListener() {
+        HorizontalScrollView epgScrollView = getView().findViewById(R.id.epgScrollView);
+        if (epgScrollView != null) {
+            if (epgScrollView.getViewTreeObserver().isAlive()) {
+                Log.d(TAG, "Removing on scroll listener");
+                epgScrollView.getViewTreeObserver().removeOnScrollChangedListener(scrollListener);
+            }
         }
     }
 
