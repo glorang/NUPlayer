@@ -134,7 +134,7 @@ public class Video {
         }
 
         // FIXME: hack for live tv screenshots
-        if(mThumbnail.startsWith("https://vrtnu-api.vrt.be")) {
+        if(mThumbnail.startsWith("https://www.vrt.be/vrtnu-static/screenshots")) {
             return mThumbnail;
         } else if(mThumbnail.length() > 0){
             return mImageServer + "/" + size + "/" + mThumbnail;
