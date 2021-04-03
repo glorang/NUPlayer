@@ -187,11 +187,18 @@ public class CatalogFragment extends GridFragment implements View.OnClickListene
 
         // start an Intent to download the catalog
         // note that normally the catalog is already filled from the HomeFragment
+
+        // return if activity got destroyed in the mean time
+        if(getActivity() == null) { return ; }
+
         Intent serviceIntent = new Intent(getActivity(), CatalogService.class);
         serviceIntent.putExtra(CatalogService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
             @Override
             protected void onReceiveResult(int resultCode, Bundle resultData) {
                 super.onReceiveResult(resultCode, resultData);
+
+                // return if activity got destroyed in the mean time
+                if(getActivity() == null) { return ; }
 
                 // show messages, if any
                 if (resultData.getString("MSG", "").length() > 0) {

@@ -19,6 +19,7 @@
 package be.lorang.nuplayer.ui;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -132,8 +133,8 @@ public class HomeFragment extends RowsSupportFragment {
 
     @Override
     public void onResume() {
-        refreshAdapters();
         super.onResume();
+        refreshAdapters();
     }
 
     // Refresh all adapters with latest status:
@@ -236,6 +237,9 @@ public class HomeFragment extends RowsSupportFragment {
 
     private void updateEPGData() {
 
+        // return if activity got destroyed in the mean time
+        if(getActivity() == null) { return ; }
+
         // start an Intent to fetch EPG data
         Intent epgIntent = new Intent(getActivity(), EPGService.class);
         epgIntent.putExtra("ACTION", EPGService.ACTION_UPDATE_LIVE_TV_EPG);
@@ -243,6 +247,9 @@ public class HomeFragment extends RowsSupportFragment {
             @Override
             protected void onReceiveResult(int resultCode, Bundle resultData) {
                 super.onReceiveResult(resultCode, resultData);
+
+                // return if activity got destroyed in the mean time
+                if(getActivity() == null) { return ; }
 
                 // show messages, if any
                 if (resultData.getString("MSG", "").length() > 0) {
@@ -264,6 +271,9 @@ public class HomeFragment extends RowsSupportFragment {
 
     private void populateCatalog() {
 
+        // return if activity got destroyed in the mean time
+        if(getActivity() == null) { return ; }
+
         // start an Intent to download the Catalog
         Intent catalogIntent = new Intent(getActivity(), CatalogService.class);
         catalogIntent.putExtra(CatalogService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
@@ -271,16 +281,17 @@ public class HomeFragment extends RowsSupportFragment {
             protected void onReceiveResult(int resultCode, Bundle resultData) {
                 super.onReceiveResult(resultCode, resultData);
 
+                // return if activity got destroyed in the mean time
+                if(getActivity() == null) { return ; }
+
                 // show messages, if any
                 if (resultData.getString("MSG", "").length() > 0) {
                     Toast.makeText(getActivity(), resultData.getString("MSG"), Toast.LENGTH_SHORT).show();
                 }
 
                 if (resultCode == Activity.RESULT_OK) {
-
                     // Start AccessTokenIntent which will populate Favorites, Watch Later and Resume Points
                     getActivity().startService(accessTokenIntent);
-
                 }
             }
         });
@@ -289,12 +300,19 @@ public class HomeFragment extends RowsSupportFragment {
     }
 
     private void setupAccessTokenIntent() {
+
+        // return if activity got destroyed in the mean time
+        if(getActivity() == null) { return ; }
+
         accessTokenIntent = new Intent(getActivity(), AccessTokenService.class);
         accessTokenIntent.putExtra(AccessTokenService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
             @Override
             protected void onReceiveResult(int resultCode, Bundle resultData) {
                 super.onReceiveResult(resultCode, resultData);
                 if (resultCode == Activity.RESULT_OK) {
+
+                    // return if activity got destroyed in the mean time
+                    if(getActivity() == null) { return ; }
 
                     // Store X-VRT-Token
                     xvrttoken = resultData.getString("X-VRT-Token", "");
@@ -326,6 +344,9 @@ public class HomeFragment extends RowsSupportFragment {
         // the intent will only start once the catalog has been downloaded, e.g. it is started
         // from populateCatalog() above
 
+        // return if activity got destroyed in the mean time
+        if(getActivity() == null) { return ; }
+
         favoritesIntent = new Intent(getActivity(), FavoriteService.class);
         favoritesIntent.putExtra("ACTION", FavoriteService.ACTION_GET);
         favoritesIntent.putExtra("X-VRT-Token", xvrttoken);
@@ -333,6 +354,9 @@ public class HomeFragment extends RowsSupportFragment {
             @Override
             protected void onReceiveResult(int resultCode, Bundle resultData) {
                 super.onReceiveResult(resultCode, resultData);
+
+                // return if activity got destroyed in the mean time
+                if(getActivity() == null) { return ; }
 
                 // show messages, if any
                 if (resultData.getString("MSG", "").length() > 0) {
@@ -357,6 +381,9 @@ public class HomeFragment extends RowsSupportFragment {
         // start an Intent to get all "Continue Watching" and "Watch Later" from VRT NU API
         // Require valid VRT token, started via AccessToken intent once Catalog is downloaded
 
+        // return if activity got destroyed in the mean time
+        if(getActivity() == null) { return ; }
+
         resumePointsIntent = new Intent(getActivity(), ResumePointsService.class);
         resumePointsIntent.putExtra("ACTION", ResumePointsService.ACTION_GET);
         resumePointsIntent.putExtra("X-VRT-Token", xvrttoken);
@@ -364,6 +391,9 @@ public class HomeFragment extends RowsSupportFragment {
             @Override
             protected void onReceiveResult(int resultCode, Bundle resultData) {
                 super.onReceiveResult(resultCode, resultData);
+
+                // return if activity got destroyed in the mean time
+                if(getActivity() == null) { return ; }
 
                 // show messages, if any
                 if (resultData.getString("MSG", "").length() > 0) {
