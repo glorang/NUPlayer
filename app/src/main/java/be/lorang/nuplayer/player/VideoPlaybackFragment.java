@@ -30,6 +30,7 @@ import androidx.leanback.media.PlaybackGlue;
 import com.google.android.exoplayer2.ExoPlayer;
 
 import be.lorang.nuplayer.model.Video;
+import be.lorang.nuplayer.services.StreamService;
 
 public class VideoPlaybackFragment extends VideoSupportFragment {
 
@@ -80,7 +81,8 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
         });
 
         // Resume video, restart from beginning if progress > 95%
-        if(video.getProgressPct() > 0 && video.getProgressPct() < 95)  {
+        if(video.getProgressPct() > 0 && video.getProgressPct() < 95
+                && !video.getStreamType().equals(StreamService.STREAMTYPE_LIVETV))  {
             Log.d(TAG, "Setting start position = " + video.getCurrentPosition());
             mMediaPlayerGlue.getPlayerAdapter().seekTo(video.getCurrentPosition() * 1000);
         }
