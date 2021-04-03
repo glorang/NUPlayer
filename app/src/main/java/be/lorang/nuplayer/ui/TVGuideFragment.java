@@ -112,6 +112,8 @@ public class TVGuideFragment extends Fragment implements BrowseSupportFragment.M
     private ZonedDateTime startDate = ZonedDateTime.now(ZoneId.of("Europe/Brussels")).with(LocalTime.of(START_HOUR, 0));
     private ZonedDateTime selectedDate = ZonedDateTime.now(ZoneId.of("Europe/Brussels"));
 
+    private ViewTreeObserver.OnScrollChangedListener scrollListener;
+
     @Override
     public BrowseSupportFragment.MainFragmentAdapter getMainFragmentAdapter() {
         return mMainFragmentAdapter;
@@ -148,6 +150,20 @@ public class TVGuideFragment extends Fragment implements BrowseSupportFragment.M
         scrollToNow();
     }
     */
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        HorizontalScrollView epgScrollView = getView().findViewById(R.id.epgScrollView);
+        if (epgScrollView != null) {
+
+            if (epgScrollView.getViewTreeObserver().isAlive()) {
+                Log.d(TAG, "Removing on scroll listener");
+                epgScrollView.getViewTreeObserver().removeOnScrollChangedListener(scrollListener);
+            }
+        }
+    }
 
     private void setupButtonListeners() {
         Button today = getView().findViewById(R.id.buttonToday);
@@ -268,6 +284,9 @@ public class TVGuideFragment extends Fragment implements BrowseSupportFragment.M
 
     private void updateEPGData() {
 
+        // return if activity got destroyed in the mean time
+        if(getActivity() == null) { return ; }
+
         startDate = selectedDate.with(LocalTime.of(START_HOUR,0));
 
         // start an Intent to fetch EPG data
@@ -278,6 +297,9 @@ public class TVGuideFragment extends Fragment implements BrowseSupportFragment.M
             @Override
             protected void onReceiveResult(int resultCode, Bundle resultData) {
                 super.onReceiveResult(resultCode, resultData);
+
+                // return if activity got destroyed in the mean time
+                if(getActivity() == null) { return ; }
 
                 // show messages, if any
                 if (resultData.getString("MSG", "").length() > 0) {
@@ -443,7 +465,7 @@ public class TVGuideFragment extends Fragment implements BrowseSupportFragment.M
         HorizontalScrollView epgScrollView = getView().findViewById(R.id.epgScrollView);
         if (epgScrollView != null) {
 
-            epgScrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+            scrollListener = new ViewTreeObserver.OnScrollChangedListener() {
                 @Override
                 public void onScrollChanged() {
                     new Handler().postDelayed(new Runnable() {
@@ -453,7 +475,9 @@ public class TVGuideFragment extends Fragment implements BrowseSupportFragment.M
                         }
                     }, 100);
                 }
-            });
+            };
+            epgScrollView.getViewTreeObserver().addOnScrollChangedListener(scrollListener);
+
         }
     }
 
@@ -472,19 +496,17 @@ public class TVGuideFragment extends Fragment implements BrowseSupportFragment.M
         HorizontalScrollView epgScrollView = null;
         List<FrameLayout> frameLayoutList = new ArrayList<>();
 
-        try {
-            epgScrollView = getView().findViewById(R.id.epgScrollView);
-            FrameLayout epgListEen = getView().findViewById(R.id.epgListEen);
-            FrameLayout epgListKetnet = getView().findViewById(R.id.epgListKetnet);
-            FrameLayout epgListCanvas = getView().findViewById(R.id.epgListCanvas);
+        if(getView() == null) { return; }
 
-            if(epgListEen != null) { frameLayoutList.add(epgListEen); }
-            if(epgListKetnet != null) { frameLayoutList.add(epgListKetnet); }
-            if(epgListCanvas != null) { frameLayoutList.add(epgListCanvas); }
+        epgScrollView = getView().findViewById(R.id.epgScrollView);
+        FrameLayout epgListEen = getView().findViewById(R.id.epgListEen);
+        FrameLayout epgListKetnet = getView().findViewById(R.id.epgListKetnet);
+        FrameLayout epgListCanvas = getView().findViewById(R.id.epgListCanvas);
 
-        } catch(NullPointerException e) {
-            e.printStackTrace();
-        }
+        if(epgListEen != null) { frameLayoutList.add(epgListEen); }
+        if(epgListKetnet != null) { frameLayoutList.add(epgListKetnet); }
+        if(epgListCanvas != null) { frameLayoutList.add(epgListCanvas); }
+
 
         if(epgScrollView != null) {
 
@@ -513,7 +535,7 @@ public class TVGuideFragment extends Fragment implements BrowseSupportFragment.M
                                 if (button.getEPGLeftMargin() > epgScrollView.getScrollX()
                                         && button.getEPGLeftMargin() < (epgScrollView.getScrollX() + epgScrollView.getWidth())) {
 
-                                    Log.d(TAG, button.getText() + " left side now visible");
+                                    //Log.d(TAG, button.getText() + " left side now visible");
 
                                     width = epgScrollView.getWidth() - (button.getEPGLeftMargin() - epgScrollView.getScrollX());
                                     leftMargin = button.getEPGLeftMargin();
@@ -522,7 +544,7 @@ public class TVGuideFragment extends Fragment implements BrowseSupportFragment.M
                                 } else if((button.getEPGLeftMargin() + button.getEPGWidth()) > epgScrollView.getScrollX()
                                         && (button.getEPGLeftMargin() + button.getEPGWidth()) < (epgScrollView.getScrollX() + epgScrollView.getWidth())) {
 
-                                    Log.d(TAG, button.getText() + " right side now visible");
+                                    //Log.d(TAG, button.getText() + " right side now visible");
 
                                     width = (button.getEPGLeftMargin() + button.getEPGWidth()) - epgScrollView.getScrollX();
                                     leftMargin = epgScrollView.getScrollX();
@@ -533,7 +555,7 @@ public class TVGuideFragment extends Fragment implements BrowseSupportFragment.M
                                     leftMargin = epgScrollView.getScrollX() + 1;
                                 }
 
-                                Log.d(TAG, "Setting width for button " + button.getText() + " = " + width + " left margin = " + leftMargin);
+                                //Log.d(TAG, "Setting width for button " + button.getText() + " = " + width + " left margin = " + leftMargin);
 
                                 FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(width, LinearLayout.LayoutParams.MATCH_PARENT);
                                 params.setMargins(leftMargin, 5, 5, 5);
