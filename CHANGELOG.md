@@ -1,3 +1,8 @@
+## v1.2.1 (2021-04-03)
+
+- Many TV Guide fixes
+- Don't seek in Live TV position on stream start (#3)
+
 ## v1.2.0 (2021-03-25)
 
 - Basic TV Guide

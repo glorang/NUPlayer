@@ -27,7 +27,9 @@ For now only tested on Google 2020 Chromecast (the one with remote) and TADAAM T
 
 ## Not (yet) implemented / known limitations / known bugs
 
-- Live TV cannot be started from the TV Guide
+- TV Guide doesn't always navigate properly
+- Sort order of "Het Journaal" is wrong
+- The app might crash in rare cases, mostly when navigating too fast
 - Categories is not implemented (no plans to implement, yet)
 - The search can be voice controlled but is rather useless in English
 - EPG data is not updated when Live TV stream switches program
