@@ -444,7 +444,12 @@ public class TVGuideFragment extends Fragment implements BrowseSupportFragment.M
             epgScrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
                 @Override
                 public void onScrollChanged() {
-                    updateButtons();
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateButtons();
+                        }
+                    }, 100);
                 }
             });
         }
