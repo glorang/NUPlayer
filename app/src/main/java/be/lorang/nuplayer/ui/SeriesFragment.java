@@ -148,12 +148,18 @@ public class SeriesFragment extends Fragment implements BrowseSupportFragment.Ma
 
     private void loadData() {
 
+        // return if activity got destroyed in the mean time
+        if(getActivity() == null) { return ; }
+
         // start an Intent to get all complete series from the Catalog
         Intent seriesIntent = new Intent(getActivity(), SeriesService.class);
         seriesIntent.putExtra(SeriesService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
             @Override
             protected void onReceiveResult(int resultCode, Bundle resultData) {
                 super.onReceiveResult(resultCode, resultData);
+
+                // return if activity got destroyed in the mean time
+                if(getActivity() == null) { return ; }
 
                 // show messages, if any
                 if (resultData.getString("MSG", "").length() > 0) {

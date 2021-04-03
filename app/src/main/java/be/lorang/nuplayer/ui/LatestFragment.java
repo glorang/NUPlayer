@@ -73,6 +73,9 @@ public class LatestFragment extends GridFragment implements OnItemViewSelectedLi
 
     private void loadData(int startIndex) {
 
+        // return if activity got destroyed in the mean time
+        if(getActivity() == null) { return ; }
+
         // start an Intent to download all latest videos as of startIndex
         Intent latestIntent = new Intent(getActivity(), LatestService.class);
         latestIntent.putExtra("START_INDEX", startIndex);
@@ -81,6 +84,9 @@ public class LatestFragment extends GridFragment implements OnItemViewSelectedLi
             @Override
             protected void onReceiveResult(int resultCode, Bundle resultData) {
                 super.onReceiveResult(resultCode, resultData);
+
+                // return if activity got destroyed in the mean time
+                if(getActivity() == null) { return ; }
 
                 // show messages, if any
                 if (resultData.getString("MSG", "").length() > 0) {
