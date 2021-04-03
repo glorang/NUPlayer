@@ -22,6 +22,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
@@ -33,6 +34,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
@@ -53,16 +55,18 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 import be.lorang.nuplayer.R;
 import be.lorang.nuplayer.model.ChannelList;
+import be.lorang.nuplayer.model.EPGButton;
 import be.lorang.nuplayer.model.EPGEntry;
 import be.lorang.nuplayer.model.EPGList;
 import be.lorang.nuplayer.model.Program;
 import be.lorang.nuplayer.model.ProgramList;
 import be.lorang.nuplayer.model.Video;
 import be.lorang.nuplayer.player.VideoPlaybackActivity;
-import be.lorang.nuplayer.services.AccessTokenService;
 import be.lorang.nuplayer.services.EPGService;
 import be.lorang.nuplayer.services.StreamService;
 import be.lorang.nuplayer.services.VrtPlayerTokenService;
@@ -123,6 +127,7 @@ public class TVGuideFragment extends Fragment implements BrowseSupportFragment.M
     public void onViewCreated(View v, Bundle savedInstanceState) {
         super.onViewCreated(v, savedInstanceState);
         setupButtonListeners();
+        setupScrollViewListener();
         createEPGTimeline();
 
         // EPG Data after midnight is stored in the JSON file of the day before,
@@ -202,7 +207,6 @@ public class TVGuideFragment extends Fragment implements BrowseSupportFragment.M
 
                     today.setText("Today");
                     updateEPGData();
-                    scrollToNow();
                 }
             });
         }
@@ -300,7 +304,7 @@ public class TVGuideFragment extends Fragment implements BrowseSupportFragment.M
                             epgEntryNext = epgList.getEpgData().get(i+1);
                         }
 
-                        Button button = generateEPGEntry(epgEntry, epgEntryNext);
+                        EPGButton button = generateEPGEntry(epgEntry, epgEntryNext);
                         switch (epgEntry.getChannelID()) {
                             case "O8": // een
                                 if(channelLayoutEen != null) { channelLayoutEen.addView(button); }
@@ -353,6 +357,15 @@ public class TVGuideFragment extends Fragment implements BrowseSupportFragment.M
 
                     // Scroll to current time
                     scrollToNow();
+
+                    // Set button padding with 100ms delay to make sure all buttons are drawn
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateButtons();
+                        }
+                    }, 100);
+
                 }
             }
         });
@@ -360,13 +373,13 @@ public class TVGuideFragment extends Fragment implements BrowseSupportFragment.M
         getActivity().startService(epgIntent);
     }
 
-    private Button generateEPGEntry(EPGEntry epgEntry, EPGEntry epgEntryNext) {
+    private EPGButton generateEPGEntry(EPGEntry epgEntry, EPGEntry epgEntryNext) {
 
         ZonedDateTime startTime = ZonedDateTime.parse(epgEntry.getStartTime());
         ZonedDateTime endTimeReal = ZonedDateTime.parse(epgEntry.getEndTime());
         ZonedDateTime endTime = ZonedDateTime.parse(epgEntry.getEndTime());
 
-        // Set endTime to startTime of next extry, this will visually close all gaps
+        // Set endTime to startTime of next entry, this will visually close all gaps
         if(epgEntryNext != null) {
             endTime = ZonedDateTime.parse(epgEntryNext.getStartTime()).minusSeconds(30);
             // Check for channel wrap (epgList contains items for all channels)
@@ -378,16 +391,19 @@ public class TVGuideFragment extends Fragment implements BrowseSupportFragment.M
         long duration = endTime.toEpochSecond() - startTime.toEpochSecond();
         int width = (int)(duration / WIDTH_DIVIDER);
 
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.MATCH_PARENT);
 
         // calculate left margin offset from START_HOUR
         int leftMargin = (int)(startTime.toEpochSecond() - startDate.toEpochSecond()) / WIDTH_DIVIDER;
         params.setMargins(leftMargin,5,5,5);
 
-        //Log.d(TAG, epgEntry.getTitle() + " width = " + width + " margin = " + leftMargin);
+        //Log.d(TAG, epgEntry.getTitle() + " width = " + width + " duration = " + duration);
 
-        Button button = new Button(getActivity());
+        EPGButton button = new EPGButton(getActivity());
+        button.setEPGLeftMargin(leftMargin);
+        button.setEPGWidth(width);
         button.setLayoutParams(params);
+        button.setPadding(20, 20, 0, 0);
         button.setBackground(getResources().getDrawable(R.drawable.button_epg, null));
         button.setAllCaps(false);
         button.setGravity(Gravity.TOP);
@@ -395,7 +411,6 @@ public class TVGuideFragment extends Fragment implements BrowseSupportFragment.M
         button.setStateListAnimator(null);
         button.setTypeface(Typeface.create("sans-serif-condensed", Typeface.NORMAL));
         button.setText(Html.fromHtml(epgEntry.getTitle(), Html.FROM_HTML_MODE_COMPACT));
-
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -421,6 +436,122 @@ public class TVGuideFragment extends Fragment implements BrowseSupportFragment.M
 
         return button;
     }
+    private void setupScrollViewListener() {
+
+        HorizontalScrollView epgScrollView = getView().findViewById(R.id.epgScrollView);
+        if (epgScrollView != null) {
+
+            epgScrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+                @Override
+                public void onScrollChanged() {
+                    updateButtons();
+                }
+            });
+        }
+    }
+
+    // This function is called when another day is selected or when the ScrollView is scrolled
+    //
+    // It will do two things:
+    //
+    // 1) It will adapt the button size of those buttons who are lager than the ScrollView
+    // to make sure they are (better) selectable, this code is still not yet 100% as sometimes
+    // buttons are still not selectable
+    //
+    // 2) It will adjust the left padding of the button to make sure the text is always
+    // within the visible view
+    private void updateButtons() {
+
+        HorizontalScrollView epgScrollView = null;
+        List<FrameLayout> frameLayoutList = new ArrayList<>();
+
+        try {
+            epgScrollView = getView().findViewById(R.id.epgScrollView);
+            FrameLayout epgListEen = getView().findViewById(R.id.epgListEen);
+            FrameLayout epgListKetnet = getView().findViewById(R.id.epgListKetnet);
+            FrameLayout epgListCanvas = getView().findViewById(R.id.epgListCanvas);
+
+            if(epgListEen != null) { frameLayoutList.add(epgListEen); }
+            if(epgListKetnet != null) { frameLayoutList.add(epgListKetnet); }
+            if(epgListCanvas != null) { frameLayoutList.add(epgListCanvas); }
+
+        } catch(NullPointerException e) {
+            e.printStackTrace();
+        }
+
+        if(epgScrollView != null) {
+
+            for (FrameLayout channelFrameLayout : frameLayoutList) {
+                for (int i = 0; i < channelFrameLayout.getChildCount(); i++) {
+
+                    if (channelFrameLayout.getChildAt(i) instanceof EPGButton) {
+                        EPGButton button = (EPGButton) channelFrameLayout.getChildAt(i);
+
+                        Rect scrollBounds = new Rect();
+                        epgScrollView.getHitRect(scrollBounds);
+                        if (button.getLocalVisibleRect(scrollBounds)) {
+
+                            //Log.d(TAG, "Button " + button.getText() + " is visible");
+
+                            if(button.getEPGWidth() > epgScrollView.getWidth()) {
+
+                                //Log.d(TAG, "left margin = " + button.getEPGLeftMargin());
+                                //Log.d(TAG, "scroll x = " +  epgScrollView.getScrollX());
+                                //Log.d(TAG, "scroll width = " +  epgScrollView.getWidth());
+
+                                int width = 0;
+                                int leftMargin = 0;
+
+                                // Left side of button is visible
+                                if (button.getEPGLeftMargin() > epgScrollView.getScrollX()
+                                        && button.getEPGLeftMargin() < (epgScrollView.getScrollX() + epgScrollView.getWidth())) {
+
+                                    Log.d(TAG, button.getText() + " left side now visible");
+
+                                    width = epgScrollView.getWidth() - (button.getEPGLeftMargin() - epgScrollView.getScrollX());
+                                    leftMargin = button.getEPGLeftMargin();
+
+                                // Right side of button is visible
+                                } else if((button.getEPGLeftMargin() + button.getEPGWidth()) > epgScrollView.getScrollX()
+                                        && (button.getEPGLeftMargin() + button.getEPGWidth()) < (epgScrollView.getScrollX() + epgScrollView.getWidth())) {
+
+                                    Log.d(TAG, button.getText() + " right side now visible");
+
+                                    width = (button.getEPGLeftMargin() + button.getEPGWidth()) - epgScrollView.getScrollX();
+                                    leftMargin = epgScrollView.getScrollX();
+
+                                // neither left or right side is visible, show button with length of scrollview (-2)
+                                } else {
+                                    width = epgScrollView.getWidth() - 2;
+                                    leftMargin = epgScrollView.getScrollX() + 1;
+                                }
+
+                                Log.d(TAG, "Setting width for button " + button.getText() + " = " + width + " left margin = " + leftMargin);
+
+                                FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(width, LinearLayout.LayoutParams.MATCH_PARENT);
+                                params.setMargins(leftMargin, 5, 5, 5);
+                                button.setLayoutParams(params);
+                            }
+
+                            // Adjust left padding to make sure text is always within visible view
+                            if (button.getX() < epgScrollView.getScrollX()) {
+                                FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) button.getLayoutParams();
+                                int leftPadding = epgScrollView.getScrollX() - lp.leftMargin + 20;
+                                if (leftPadding < 20) {
+                                    leftPadding = 20;
+                                }
+                                button.setPadding(leftPadding, 20, 0, 0);
+                            } else {
+                                button.setPadding(20, 20, 0, 0);
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 
     private void scrollToNow() {
 

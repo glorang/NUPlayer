@@ -29,6 +29,7 @@
                 android:background="@drawable/button_epg"
                 android:fontFamily="sans-serif-condensed"
                 android:text="Today"
+                android:nextFocusDown="@+id/epgScrollView"
                 android:textAllCaps="false" />
 
             <Button
@@ -40,6 +41,7 @@
                 android:background="@drawable/button_epg"
                 android:fontFamily="sans-serif-condensed"
                 android:text="Back to now"
+                android:nextFocusDown="@+id/epgScrollView"
                 android:textAllCaps="false" />
         </LinearLayout>
 
