@@ -139,7 +139,7 @@ public class ProgramFragment extends VerticalGridSupportFragment implements OnIt
 
         // note: The click listeners must be called before setGridPresenter for the event listeners
         // to be properly registered on the viewholders.
-        setOnItemViewClickedListener(new VideoProgramListener(this));
+        setOnItemViewClickedListener(new VideoProgramListener(getActivity()));
         setOnItemViewSelectedListener(this);
         setGridPresenter(videoGridPresenter);
 
