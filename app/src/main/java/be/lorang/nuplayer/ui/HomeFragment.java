@@ -180,7 +180,7 @@ public class HomeFragment extends RowsSupportFragment {
     private void setupAdapters() {
 
         // setup listener
-        setOnItemViewClickedListener(new VideoProgramListener(this));
+        setOnItemViewClickedListener(new VideoProgramListener(getActivity()));
 
         mRowsAdapter = new ArrayObjectAdapter(new ListRowPresenter());
         setAdapter(mRowsAdapter);

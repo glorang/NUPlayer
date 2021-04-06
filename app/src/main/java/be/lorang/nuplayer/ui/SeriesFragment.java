@@ -116,7 +116,7 @@ public class SeriesFragment extends Fragment implements BrowseSupportFragment.Ma
         RowsSupportFragment rowsFragment = new RowsSupportFragment();
 
         // setup listeners
-        rowsFragment.setOnItemViewClickedListener(new VideoProgramListener(this));
+        rowsFragment.setOnItemViewClickedListener(new VideoProgramListener(getActivity()));
 
         rowsFragment.setOnItemViewSelectedListener((itemViewHolder, item, rowViewHolder, row) -> {
             if(item instanceof Program) {

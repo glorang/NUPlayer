@@ -404,9 +404,6 @@ public class TVGuideFragment extends Fragment implements BrowseSupportFragment.M
             }
         }
 
-        // needs to be final for use in inner class of button listener
-        ZonedDateTime finalEndTime = endTime;
-
         long duration = endTime.toEpochSecond() - startTime.toEpochSecond();
         int width = (int)(duration / WIDTH_DIVIDER);
 
@@ -430,29 +427,7 @@ public class TVGuideFragment extends Fragment implements BrowseSupportFragment.M
         button.setStateListAnimator(null);
         button.setTypeface(Typeface.create("sans-serif-condensed", Typeface.NORMAL));
         button.setText(Html.fromHtml(epgEntry.getTitle(), Html.FROM_HTML_MODE_COMPACT));
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                ZonedDateTime currentTime = ZonedDateTime.now(ZoneId.of("Europe/Brussels"));
-                // start Live TV
-                if (currentTime.isAfter(startTime) && currentTime.isBefore(finalEndTime)) {
-                    Video video = ChannelList.getInstance().getLiveChannel(epgEntry.getChannelID());
-                    if (video != null) {
-                        startVideoIntent(video);
-                    }
-                } else {
-                    // start Program display
-                    Program program = ProgramList.getInstance().getProgram(epgEntry.getTitle());
-                    if (program != null) {
-                        startProgramIntent(program);
-                    } else {
-                        Toast.makeText(getActivity(), "Program not found in catalog", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-        });
-
+        button.setOnClickListener(new TVGuideListener(getActivity(), startTime, endTime, epgEntry));
         return button;
     }
     private void setupScrollViewListener() {
@@ -603,87 +578,6 @@ public class TVGuideFragment extends Fragment implements BrowseSupportFragment.M
     private boolean isAfterMidnightBeforeStart() {
         ZonedDateTime epgDate = ZonedDateTime.now(ZoneId.of("Europe/Brussels"));
         return epgDate.getHour() >= 0 && epgDate.getHour() < START_HOUR;
-    }
-
-    // FIXME: copy/paste from VideoProgramListener
-    private void startProgramIntent(Program program) {
-        Intent programIntent = new Intent(getActivity().getBaseContext(), ProgramActivity.class);
-        programIntent.putExtra("PROGRAM_OBJECT", (new Gson()).toJson(program));
-        Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity()).toBundle();
-        startActivity(programIntent, bundle);
-    }
-
-    // FIXME: simplified (Live TV only) copy/paste from VideoProgramListener
-    private void startVideoIntent(Video video) {
-
-        // Define the stream intent (this is the same for both Live TV as on demand video)
-        // to get required stream info, but do not start it yet
-
-        Intent streamIntent = new Intent(getActivity(), StreamService.class);
-        streamIntent.putExtra("VIDEO_OBJECT", (new Gson()).toJson(video));
-        streamIntent.putExtra(StreamService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
-            @Override
-            protected void onReceiveResult(int resultCode, Bundle resultData) {
-                super.onReceiveResult(resultCode, resultData);
-
-                // show messages, if any
-                if (resultData.getString("MSG", "").length() > 0) {
-                    Toast.makeText(getActivity(), resultData.getString("MSG"), Toast.LENGTH_SHORT).show();
-                }
-
-                if (resultCode == Activity.RESULT_OK) {
-
-                    // Start new Intent to play video
-                    String videoURL = resultData.getString("MPEG_DASH_URL", "");
-                    String drmToken = resultData.getString("VUALTO_TOKEN", "");
-                    if(videoURL.length() > 0) {
-
-                        Intent playbackIntent = new Intent(getActivity(), VideoPlaybackActivity.class);
-                        playbackIntent.putExtra("VIDEO_OBJECT", (new Gson()).toJson(video));
-                        playbackIntent.putExtra("MPEG_DASH_URL", videoURL);
-                        playbackIntent.putExtra("VUALTO_TOKEN", drmToken);
-                        startActivity(playbackIntent);
-
-                    }
-                }
-            }
-        });
-
-        // get vrtPlayerToken
-        SharedPreferences prefs = getActivity().getSharedPreferences(MainActivity.PREFERENCES_NAME, MODE_PRIVATE);
-        String vrtPlayerToken = prefs.getString(VrtPlayerTokenService.VRTPLAYERTOKEN_ANONYMOUS, "");
-        String vrtPlayerTokenExpiry = prefs.getString(VrtPlayerTokenService.VRTPLAYERTOKEN_ANONYMOUS_EXPIRY, "");
-        String tokenType = VrtPlayerTokenService.VRTPLAYERTOKEN_ANONYMOUS;
-
-        // Start extra Intent if we don't have a vrtPlayerToken or if it's expired
-        if(vrtPlayerToken.length() == 0 || Utils.isDateInPast(vrtPlayerTokenExpiry)) {
-
-            Intent playerTokenIntent = new Intent(getActivity(), VrtPlayerTokenService.class);
-            playerTokenIntent.putExtra("TOKEN_TYPE", tokenType);
-
-            playerTokenIntent.putExtra(VrtPlayerTokenService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
-                @Override
-                protected void onReceiveResult(int resultCode, Bundle resultData) {
-                    super.onReceiveResult(resultCode, resultData);
-
-                    // show messages, if any
-                    if(resultData.getString("MSG", "").length() > 0) {
-                        Toast.makeText(getActivity(), resultData.getString("MSG"), Toast.LENGTH_SHORT).show();
-                    }
-
-                    if (resultCode == Activity.RESULT_OK) {
-                        // now that we have a vrtPlayerToken we can start the Stream Intent
-                        getActivity().startService(streamIntent);
-                    }
-                }
-            });
-
-            getActivity().startService(playerTokenIntent);
-
-        } else {
-            // we already have a valid vrtPLayerToken, start Stream Intent immediately
-            getActivity().startService(streamIntent);
-        }
     }
 
 }
