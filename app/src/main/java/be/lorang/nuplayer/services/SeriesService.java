@@ -37,10 +37,12 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 /*
- * This class will download (once) a list of series from the VRT.NU search API and mark
- * each serie in the Catalog as a (time-limited complete) Serie
+ * This class will download the list of series from the VRT.NU website and add them to the
+ * ProgramList Series array
  *
- * The list is only shown on the Home Fragment.
+ * As it is based on a semi-dynamic source (list_946984311.model.json - see plugin.video.vrt.nu > VRT NU API Wiki page)
+ * I've included a backup source as well that will query the real search API which should
+ * be more consistent but it cannot be filtered for 100% correct results or sorting.
  *
  */
 
@@ -69,18 +71,27 @@ public class SeriesService extends IntentService {
 
         try {
 
-            // Get all "time limited" series
+            // Get series from "primary" URL
             JSONObject returnObject = httpClient.getCachedRequest(getCacheDir(), getString(R.string.service_catalog_series_url), 1440);
-            if(httpClient.getResponseCode() != 200) {
-                throw new HttpException(httpClient.getResponseCode() + ": " + httpClient.getResponseMessage());
+            JSONArray items = null;
+            if(httpClient.getResponseCode() == 200) {
+                items = returnObject.getJSONArray("items");
+            } else {
+                // Get series from backup URL
+                returnObject = httpClient.getCachedRequest(getCacheDir(), getString(R.string.service_catalog_series_backup_url), 1440);
+                if(httpClient.getResponseCode() == 200) {
+                    items = returnObject.getJSONArray("data");
+                } else {
+                    throw new HttpException(httpClient.getResponseCode() + ": " + httpClient.getResponseMessage());
+                }
             }
 
-            JSONArray items = returnObject.getJSONArray("data");
-
-            for (int i = 0; i < items.length(); i++) {
-                JSONObject programJSON = items.getJSONObject(i);
-                Log.d(TAG, "Setting isSerie = true for: " + programJSON.get("programName"));
-                programList.setIsSerie(programJSON.getString("programName"));
+            if(items != null) {
+                for (int i = 0; i < items.length(); i++) {
+                    JSONObject programJSON = items.getJSONObject(i);
+                    Log.d(TAG, "Setting isSerie = true for: " + programJSON.get("programName"));
+                    programList.setIsSerie(programJSON.getString("programName"));
+                }
             }
 
             receiver.send(Activity.RESULT_OK, resultData);
