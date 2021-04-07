@@ -125,7 +125,7 @@ public class LatestService extends IntentService {
 
             for (int i = 0; i < items.length(); i++) {
                 JSONObject program = items.getJSONObject(i);
-                String imageServer = getString(R.string.model_image_server); // FIXME: quick hack
+                String imageServer = getString(R.string.model_image_server);
                 Video video = parseVideoFromJSON(program, imageServer);
                 videoList.addVideo(video);
                 Log.d(TAG, "Adding video : " + video.getTitle());
