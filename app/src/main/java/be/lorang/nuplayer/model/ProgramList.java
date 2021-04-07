@@ -30,9 +30,9 @@ public class ProgramList {
 
     // Singleton instance
     private static ProgramList instance = null;
-    private int seriesCount = 0;
-    private int favoritesCount = 0;
     private List<Program> mPrograms = new ArrayList<Program>();
+    private List<Program> mSeries = new ArrayList<Program>();
+    private List<Program> mFavorites = new ArrayList<Program>();
 
     private ProgramList() {}
 
@@ -50,61 +50,47 @@ public class ProgramList {
 
     public void clear() {
         mPrograms.clear();
-        seriesCount = 0;
-        favoritesCount = 0;
+        mSeries.clear();
+        mFavorites.clear();
     }
 
     public void sort() {
         mPrograms.sort(Comparator.comparing(Program::getTitle));
     }
 
-    public List<Program> getFavorites() {
-        List<Program> result = new ArrayList<Program>();
-        for(Program program : mPrograms) {
-            if(program.isFavorite()) {
-                result.add(program);
-            }
-        }
-        result.sort(Comparator.comparing(Program::getTitle));
-        return result;
-    }
+    public List<Program> getFavorites() { return mFavorites; }
 
     public void setIsFavorite(String programTitle, boolean isFavorite) {
         for(Program program : mPrograms) {
             if(program.getTitle().equals(programTitle)) {
                 program.setIsFavorite(isFavorite);
-                favoritesCount++;
+                if(isFavorite) {
+                    mFavorites.add(program);
+                } else {
+                    mFavorites.remove(program);
+                }
             }
         }
+        mFavorites.sort(Comparator.comparing(Program::getTitle));
     }
 
     public int getFavoritesCount() {
-        return favoritesCount;
+        return mFavorites.size();
     }
 
     public void setIsSerie(String programName) {
         for(Program program : mPrograms) {
             if(program.getProgramName().equals(programName)) {
                 program.setIsSerie(true);
-                seriesCount++;
+                mSeries.add(program);
             }
         }
     }
 
     public int getSeriesCount() {
-        return seriesCount;
+        return mSeries.size();
     }
-
-    public List<Program> getSeries() {
-        List<Program> result = new ArrayList<Program>();
-        for(Program program : mPrograms) {
-            if(program.isSerie()) {
-                result.add(program);
-            }
-        }
-        result.sort(Comparator.comparing(Program::getTitle));
-        return result;
-    }
+    public List<Program> getSeries() { return mSeries; }
 
     public List<Program> search(String searchText) {
         List<Program> result = new ArrayList<Program>();
