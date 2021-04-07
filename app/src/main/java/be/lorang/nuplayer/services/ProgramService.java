@@ -416,7 +416,7 @@ public class ProgramService extends IntentService {
 
             for (int i = 0; i < items.length(); i++) {
                 JSONObject program = items.getJSONObject(i);
-                String imageServer = getString(R.string.model_image_server); // FIXME: quick hack
+                String imageServer = getString(R.string.model_image_server);
                 Video video = parseVideoFromJSON(program, imageServer);
 
                 // Copy progress from ResumePointsList
