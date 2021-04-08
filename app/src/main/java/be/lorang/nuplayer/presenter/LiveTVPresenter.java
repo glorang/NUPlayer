@@ -31,6 +31,10 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.signature.ObjectKey;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
+
 import be.lorang.nuplayer.R;
 import be.lorang.nuplayer.model.Video;
 
@@ -55,9 +59,11 @@ public class LiveTVPresenter<T extends BaseCardView> extends BaseCardPresenter {
             int height = (int) getContext().getResources()
                     .getDimension(R.dimen.livetv_height);
 
-            // Don't cache live tv screenshots
+            // Cache live tv screenshots for 5 minutes
+            ZonedDateTime currentTime = ZonedDateTime.now(ZoneId.of("Europe/Brussels"));
+            ZonedDateTime fiveMinutes = currentTime.truncatedTo(ChronoUnit.HOURS).plusMinutes(5 * (currentTime.getMinute() / 5));
             RequestOptions options = new RequestOptions();
-            options.signature(new ObjectKey(String.valueOf(System.currentTimeMillis())));
+            options.signature(new ObjectKey(String.valueOf(fiveMinutes)));
             options.override(width, height);
 
             Glide.with(getContext())
