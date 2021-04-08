@@ -133,7 +133,7 @@ public class Video {
             return "";
         }
 
-        // FIXME: hack for live tv screenshots
+        // Live TV screenshots are not on images.vrt.be, return thumbnail immediately
         if(mThumbnail.startsWith("https://www.vrt.be/vrtnu-static/screenshots")) {
             return mThumbnail;
         } else if(mThumbnail.length() > 0){
