@@ -442,34 +442,40 @@ public class HomeFragment extends RowsSupportFragment {
     }
 
     private void showHideFavorites() {
+        int index = 1;
 
         if(favoritesAdapter.size() == 0 && favoritesListRowAdded) {
-            mRowsAdapter.replace(1, new ListRow(null, new ArrayObjectAdapter()));
+            mRowsAdapter.remove(favoritesListRow);
             favoritesListRowAdded = false;
         } else if(favoritesAdapter.size() > 0 && !favoritesListRowAdded) {
-            mRowsAdapter.replace(1, favoritesListRow);
+            mRowsAdapter.add(index, favoritesListRow);
             favoritesListRowAdded = true;
         }
     }
 
     private void showHideContinueWatching() {
+        int index = 2;
+        if(favoritesAdapter.size() == 0) { index--; }
 
         if(continueWatchingAdapter.size() == 0 && continueWatchingListRowAdded) {
-            mRowsAdapter.replace(2, new ListRow(null, new ArrayObjectAdapter()));
+            mRowsAdapter.remove(continueWatchingListRow);
             continueWatchingListRowAdded = false;
         } else if(continueWatchingAdapter.size() > 0 && !continueWatchingListRowAdded) {
-            mRowsAdapter.replace(2, continueWatchingListRow);
+            mRowsAdapter.add(index, continueWatchingListRow);
             continueWatchingListRowAdded = true;
         }
     }
 
     private void showHideWatchLater() {
+        int index = 3;
+        if(favoritesAdapter.size() == 0) { index--; }
+        if(continueWatchingAdapter.size() == 0) { index--; }
 
         if(watchLaterAdapter.size() == 0 && watchLaterListRowAdded) {
-            mRowsAdapter.replace(3, new ListRow(null, new ArrayObjectAdapter()));
+            mRowsAdapter.remove(watchLaterListRow);
             watchLaterListRowAdded = false;
         } else if(watchLaterAdapter.size() > 0 && !watchLaterListRowAdded) {
-            mRowsAdapter.replace(3, watchLaterListRow);
+            mRowsAdapter.add(index, watchLaterListRow);
             watchLaterListRowAdded = true;
         }
     }
