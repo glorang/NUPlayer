@@ -45,6 +45,8 @@ public class Video {
     @SerializedName("url") private String mUrl = "";
     @SerializedName("whatsonId") private String mWhatsonId = "";
     @SerializedName("programWhatsonId") private String mProgramWhatsonId = "";
+    @SerializedName("allowedRegion") private String mAllowedRegion = "";
+    @SerializedName("assetOffTime") private String mAssetOffTime = "";
     @SerializedName("imageServer") private String mImageServer = "";
     @SerializedName("streamType") private String mStreamType = "";
     @SerializedName("progressPct") private int mProgressPct = 0;
@@ -68,6 +70,8 @@ public class Video {
                  String url,
                  String whatsonId,
                  String programWhatsonId,
+                 String allowedRegion,
+                 String assetOffTime,
                  String imageServer,
                  String streamType) {
         mTitle = title;
@@ -87,6 +91,8 @@ public class Video {
         mUrl = url;
         mWhatsonId = whatsonId;
         mProgramWhatsonId = programWhatsonId;
+        mAllowedRegion = allowedRegion;
+        mAssetOffTime = assetOffTime;
         mImageServer = imageServer;
         mStreamType = streamType;
     }
@@ -174,6 +180,12 @@ public class Video {
 
     public String getProgramWhatsonId() { return mProgramWhatsonId; }
     public void setProgramWhatsonId(String programWhatsonId) { mProgramWhatsonId = programWhatsonId; }
+
+    public String getAllowedRegion() { return mAllowedRegion; }
+    public void setAllowedRegion(String allowedRegion) { mAllowedRegion = allowedRegion; }
+
+    public String getAssetOffTime() { return mAssetOffTime; }
+    public void setAssetOffTime(String assetOffTime) { mAssetOffTime = assetOffTime; }
 
     public String getStreamType() { return mStreamType; }
     public void setStreamType(String streamType) { mStreamType = streamType; }

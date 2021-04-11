@@ -81,6 +81,8 @@ public class ProgramService extends IntentService {
     public static final String TAG_URL = "url";
     public static final String TAG_WHATSONID = "whatsonId";
     public static final String TAG_PROGRAMWHATSONID = "programWhatsonId";
+    public static final String TAG_ALLOWEDREGION = "allowedRegion";
+    public static final String TAG_ASSETOFFTIME = "assetOffTime";
     public static final String TAG_PROGRAMTYPE = "programType";
 
     public ProgramService() {
@@ -464,6 +466,8 @@ public class ProgramService extends IntentService {
         String url = inputObject.optString(TAG_URL);
         String whatsonId = inputObject.optString(TAG_WHATSONID);
         String programWhatsonId = inputObject.optString(TAG_PROGRAMWHATSONID);
+        String allowedRegion = inputObject.optString(TAG_ALLOWEDREGION);
+        String assetOffTime = inputObject.optString(TAG_ASSETOFFTIME);
 
         // we replace the image server with the one defined in urls.xml
         // this prepends the (often) 'missing' 'https://' and allows us to query our own size ('orig' can go up to 18MB each(!))
@@ -491,6 +495,8 @@ public class ProgramService extends IntentService {
                 url,
                 whatsonId,
                 programWhatsonId,
+                allowedRegion,
+                assetOffTime,
                 imageServer,
                 streamType
         );
