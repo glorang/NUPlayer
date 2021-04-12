@@ -126,6 +126,9 @@ public class LoginActivity extends FragmentActivity {
                     protected void onReceiveResult(int resultCode, Bundle resultData) {
                         super.onReceiveResult(resultCode, resultData);
 
+                        // return if activity got destroyed in the mean time
+                        if(getActivity() == null) { return; }
+
                         if(resultData.getString("MSG", "").length() > 0) {
                             Toast.makeText(getActivity(), resultData.getString("MSG"), Toast.LENGTH_SHORT).show();
                         }
