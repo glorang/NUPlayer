@@ -50,6 +50,7 @@ public class VideoMediaPlayerGlue<T extends PlayerAdapter> extends PlaybackTrans
 
     private static final int TIMESEEK = 30; // in seconds
     private static final int MAX_MULTIPLIER = 5;
+    private static final int MAX_BUTTON_COUNT = 5;
     private int prevKeyCode = -1;
     private int buttonCount = 0;
     private int currentMultiplier = 1;
@@ -75,32 +76,44 @@ public class VideoMediaPlayerGlue<T extends PlayerAdapter> extends PlaybackTrans
             buttonCount = 0;
         }
 
-        // Every 5 clicks (or long presses) of the same button (rewind | forward) we increase the multiplier
-        // This makes progress skip forward | backwards between 30 seconds and 2.5 minutes intervals
-        if(event.getAction() == KeyEvent.ACTION_DOWN &&
-                (keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT)) {
-
-            if(currentMultiplier < MAX_MULTIPLIER && prevKeyCode == keyCode) {
-                buttonCount++;
-                if((buttonCount % 5) == 0) {
-                    currentMultiplier++;
-                }
+        if(event.getAction() == KeyEvent.ACTION_DOWN) {
+            switch(keyCode) {
+                case KeyEvent.KEYCODE_DPAD_RIGHT:
+                case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
+                    updateMultiplier(keyCode);
+                    fastForward();
+                    getControlsRow().setCurrentPosition(getPlayerAdapter().isPrepared() ? getPlayerAdapter().getCurrentPosition() : -1);
+                    return true;
+                case KeyEvent.KEYCODE_DPAD_LEFT:
+                case KeyEvent.KEYCODE_MEDIA_REWIND:
+                    updateMultiplier(keyCode);
+                    rewind();
+                    getControlsRow().setCurrentPosition(getPlayerAdapter().isPrepared() ? getPlayerAdapter().getCurrentPosition() : -1);
+                    return true;
+                case KeyEvent.KEYCODE_MEDIA_STOP:
+                    // Once the video is stopped we can no longer query it for its current position
+                    // so we intercept KEYCODE_MEDIA_STOP here and update the video progress
+                    // before the stop event is fired
+                    if(buttonCount == 0) {
+                        updateVideoProgress();
+                    }
+                    buttonCount++;
             }
         }
-
-        if(event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-            fastForward();
-            getControlsRow().setCurrentPosition(getPlayerAdapter().isPrepared() ? getPlayerAdapter().getCurrentPosition() : -1);
-        }
-
-        if(event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-            rewind();
-            getControlsRow().setCurrentPosition(getPlayerAdapter().isPrepared() ? getPlayerAdapter().getCurrentPosition() : -1);
-        }
-
         prevKeyCode = keyCode;
 
         return super.onKey(v, keyCode, event);
+    }
+
+    // Every MAX_BUTTON_COUNT clicks (or long presses) of the same button (rewind | forward) we increase the multiplier
+    // This makes progress skip forward | backwards between 30 seconds and 2.5 minutes intervals
+    private void updateMultiplier(int keyCode) {
+        if(currentMultiplier < MAX_MULTIPLIER && prevKeyCode == keyCode) {
+            buttonCount++;
+            if((buttonCount % MAX_BUTTON_COUNT) == 0) {
+                currentMultiplier++;
+            }
+        }
     }
 
     public void rewind() {

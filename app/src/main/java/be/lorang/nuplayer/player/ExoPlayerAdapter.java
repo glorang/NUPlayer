@@ -378,7 +378,7 @@ public class ExoPlayerAdapter extends PlayerAdapter implements ExoPlayer.EventLi
             }
         } else if (playbackState == ExoPlayer.STATE_BUFFERING) {
             mBufferingStart = true;
-        } else if (playbackState == ExoPlayer.STATE_ENDED) {
+        } else if (playbackState == ExoPlayer.STATE_ENDED || playbackState == ExoPlayer.STATE_IDLE) {
             getCallback().onPlayStateChanged(ExoPlayerAdapter.this);
             getCallback().onPlayCompleted(ExoPlayerAdapter.this);
         }
