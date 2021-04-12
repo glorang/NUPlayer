@@ -70,14 +70,6 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
                 super.onPlayCompleted(glue);
                 getActivity().finishAfterTransition();
             }
-
-            @Override
-            public void onPlayStateChanged(PlaybackGlue glue) {
-                if(mMediaPlayerGlue.getPlayerAdapter().getPlaybackState() == ExoPlayer.STATE_IDLE) {
-                    super.onPlayStateChanged(glue);
-                    getActivity().finishAfterTransition();
-                }
-            }
         });
 
         // Resume video, restart from beginning if progress > 95%
