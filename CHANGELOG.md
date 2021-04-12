@@ -1,3 +1,11 @@
+## v1.2.2 (2021-04-12)
+
+- Fix Series listing
+- Fix Latest listing
+- Cache Live TV screenshots (5 minutes)
+- Add "Availability" to Program detail
+- Improve video controls for regular remotes (play/pause/stop/rewind/forward)
+
 ## v1.2.1 (2021-04-03)
 
 - Many TV Guide fixes
