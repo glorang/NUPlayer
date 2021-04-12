@@ -22,6 +22,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.ResultReceiver;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -55,8 +56,7 @@ public class VideoMediaPlayerGlue<T extends PlayerAdapter> extends PlaybackTrans
     private int buttonCount = 0;
     private int currentMultiplier = 1;
 
-    private PlaybackControlsRow.RewindAction mRewindAction;
-    private PlaybackControlsRow.FastForwardAction mFastForwardAction;
+    private final Handler handler = new Handler(Looper.getMainLooper());
 
     public VideoMediaPlayerGlue(Activity context, T impl) {
         super(context, impl);
@@ -100,6 +100,27 @@ public class VideoMediaPlayerGlue<T extends PlayerAdapter> extends PlaybackTrans
                     buttonCount++;
             }
         }
+
+        if(event.getAction() == KeyEvent.ACTION_UP) {
+
+            // Reset all counters
+            // cancel all previous timers
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    // Reset all counters
+                    prevKeyCode = -1;
+                    currentMultiplier = 1;
+                    buttonCount = 0;
+
+                    // cancel all previous timers
+                    handler.removeCallbacksAndMessages(null);
+                }
+            };
+
+            handler.postDelayed(runnable, 30000);
+        }
+
         prevKeyCode = keyCode;
 
         return super.onKey(v, keyCode, event);
