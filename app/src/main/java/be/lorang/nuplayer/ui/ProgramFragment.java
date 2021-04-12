@@ -66,6 +66,9 @@ import be.lorang.nuplayer.services.ResumePointsService;
 
 import com.google.gson.Gson;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -132,6 +135,48 @@ public class ProgramFragment extends VerticalGridSupportFragment implements OnIt
         }
     }
 
+    private void setAssetOffTime(String assetOffTime) {
+        try {
+            DateTimeFormatter assetOffTimeFormatter = DateTimeFormatter.ofPattern("dd LLL yyyy")
+                    .withZone(ZoneId.of("Europe/Brussels"));
+            ZonedDateTime assetOffTimeZdt = ZonedDateTime.parse(assetOffTime,
+                    DateTimeFormatter.ofPattern ("yyyy-MM-dd'T'HH:mm:ssZ"));
+
+            TextView assetOffDateText = (TextView) getActivity().findViewById(R.id.assetOffDateText);
+            assetOffDateText.setText(assetOffTimeFormatter.format(assetOffTimeZdt));
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void setRegion(String region) {
+        try {
+
+            String icon = "";
+            switch(region) {
+                case "WORLD":
+                    icon = "ic_globe";
+                    break;
+                case "BE":
+                    icon = "ic_flag_be";
+                    break;
+            }
+
+            ImageView allowedRegionImage = (ImageView) getActivity().findViewById(R.id.allowedRegionImage);
+            if (allowedRegionImage != null) {
+                Log.d(TAG, "Setting image = " + icon);
+                int resourceID = getResources().getIdentifier(icon, "drawable", getActivity().getPackageName());
+                if (resourceID > 0) {
+                    allowedRegionImage.setImageDrawable(getResources().getDrawable(resourceID, null));
+                }
+            }
+
+        } catch(Exception e) {
+            // don't crash if we can't find / load region flag
+            e.printStackTrace();
+        }
+    }
+
     private void setupAdapter() {
 
         CustomVerticalGridPresenter videoGridPresenter = new CustomVerticalGridPresenter(ZOOM_FACTOR, false);
@@ -183,6 +228,12 @@ public class ProgramFragment extends VerticalGridSupportFragment implements OnIt
 
                     setEpisodeCount(videoList.getVideosAvailable(), videoList.getVideosLoaded());
                     updateSeasons(seasons);
+
+                    // Set region from first result
+                    if(videoList.getVideosAvailable() > 0) {
+                        Video video = videoList.getVideo(0);
+                        setRegion(video.getAllowedRegion());
+                    }
 
                     // Add all new videos to the adapter
                     for(int i=(startIndex-1); i<videoList.getVideosLoaded(); i++) {
@@ -421,6 +472,8 @@ public class ProgramFragment extends VerticalGridSupportFragment implements OnIt
                     loadData((selectedIndex+2));
                 }
             }
+
+            setAssetOffTime(((Video) item).getAssetOffTime());
         }
     }
 
