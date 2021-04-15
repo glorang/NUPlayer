@@ -80,7 +80,7 @@ public class LatestFragment extends GridFragment implements OnItemViewSelectedLi
         Intent latestIntent = new Intent(getActivity(), LatestService.class);
         latestIntent.putExtra("START_INDEX", startIndex);
 
-        latestIntent.putExtra(ProgramService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
+        latestIntent.putExtra(LatestService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
             @Override
             protected void onReceiveResult(int resultCode, Bundle resultData) {
                 super.onReceiveResult(resultCode, resultData);
