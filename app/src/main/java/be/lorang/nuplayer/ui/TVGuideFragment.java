@@ -302,7 +302,13 @@ public class TVGuideFragment extends Fragment implements BrowseSupportFragment.M
                 }
 
                 String returnData = resultData.getString("EPG_DATA", "");
-                EPGList epgList = new Gson().fromJson(returnData,EPGList.class);
+                EPGList epgList;
+                try {
+                     epgList = new Gson().fromJson(returnData, EPGList.class);
+                } catch(Exception e) {
+                    Toast.makeText(getActivity(), "Could not get EPG data", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 FrameLayout channelLayoutEen = getView().findViewById(R.id.epgListEen);
                 FrameLayout channelLayoutKetnet = getView().findViewById(R.id.epgListKetnet);
