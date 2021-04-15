@@ -47,6 +47,9 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // return if Activity got destroyed in the mean time
+        if(getActivity() == null) { return; }
+
         // get Video object and videoUrl from VideoPlaybackActivity (still not sure this is how it's done)
         VideoPlaybackActivity vpa = (VideoPlaybackActivity) getActivity();
 

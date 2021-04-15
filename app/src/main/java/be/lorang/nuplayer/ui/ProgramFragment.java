@@ -195,8 +195,10 @@ public class ProgramFragment extends VerticalGridSupportFragment implements OnIt
 
     private void loadData(int startIndex) {
 
-        // start an Intent to download all videos for a specific program
+        // return if Activity got destroyed in the mean time
+        if(getActivity() == null) { return; }
 
+        // start an Intent to download all videos for a specific program
         Intent serviceIntent = new Intent(getActivity(), ProgramService.class);
         serviceIntent.putExtra("PROGRAM_OBJECT", (new Gson()).toJson(program));
         serviceIntent.putExtra("START_INDEX", startIndex);
