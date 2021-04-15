@@ -91,7 +91,7 @@ public class SeriesFragment extends Fragment implements BrowseSupportFragment.Ma
     @Override
     public void onPause() {
         super.onPause();
-        if(mBackgroundManager.getDrawable() != null) {
+        if(mBackgroundManager != null && mBackgroundManager.getDrawable() != null) {
             mBackgroundManager.clearDrawable();
             //mBackgroundManager.release();
         }
@@ -102,7 +102,7 @@ public class SeriesFragment extends Fragment implements BrowseSupportFragment.Ma
         super.onStop();
 
         // Unset image and release memory
-        if(mBackgroundManager.getDrawable() != null) {
+        if(mBackgroundManager != null && mBackgroundManager.getDrawable() != null) {
             mBackgroundManager.clearDrawable();
             mBackgroundManager.release();
         }
