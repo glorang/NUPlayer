@@ -17,6 +17,8 @@
 
 package be.lorang.nuplayer.model;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -124,6 +126,25 @@ public class ProgramList {
 
         Collections.sort(result);
 
+        return result;
+    }
+
+    public void setProgramCategory(String programName, String category) {
+        for(Program program : mPrograms) {
+            if(program.getProgramName().equals(programName)) {
+                program.addCategory(category);
+            }
+        }
+    }
+
+    public List<Program> getProgramsByCategory(String category) {
+        List<Program> result = new ArrayList<>();
+        for(Program program : mPrograms) {
+            if(program.getCategories().contains(category)) {
+                result.add(program);
+            }
+        }
+        result.sort(Comparator.comparing(Program::getTitle));
         return result;
     }
 

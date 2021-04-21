@@ -20,13 +20,17 @@ package be.lorang.nuplayer.model;
 import android.util.Log;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
   * Describe a Program, multiple programs are stored in the ProgramList forming the Catalog
   * Each program (can) contain(s) multiple Videos
   */
 public class Program {
+
+    private final static String TAG = "Program";
 
     @SerializedName("title") private String mTitle = "";
     @SerializedName("description") private String mDescription = "";
@@ -39,6 +43,7 @@ public class Program {
     @SerializedName("imageServer") private String mImageServer = "";
     @SerializedName("isFavorite") private boolean mIsFavorite = false;
     @SerializedName("isSerie") private boolean mIsSerie = false;
+    @SerializedName("categories") private List<String> mCategories = new ArrayList<>();
 
     @SerializedName("validImageSizes") private static String[] mValidImageSizes = {"w160hx", "w320hx", "w640hx", "w1280hx", "w1600hx", "w1920hx", "VV_4x3_120", "VV_4x3_240", "VV_4x3_480"};
 
@@ -156,5 +161,13 @@ public class Program {
         return mIsSerie;
     }
     public void setIsSerie(boolean isSerie) { mIsSerie = isSerie; }
+
+    public void addCategory(String category) {
+        if(!mCategories.contains(category)) {
+            mCategories.add(category);
+        }
+    }
+
+    public List<String> getCategories() { return mCategories; }
 
 }
