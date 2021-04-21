@@ -83,12 +83,14 @@ public class VideoMediaPlayerGlue<T extends PlayerAdapter> extends PlaybackTrans
                     updateMultiplier(keyCode);
                     fastForward();
                     getControlsRow().setCurrentPosition(getPlayerAdapter().isPrepared() ? getPlayerAdapter().getCurrentPosition() : -1);
+                    prevKeyCode = keyCode;
                     return true;
                 case KeyEvent.KEYCODE_DPAD_LEFT:
                 case KeyEvent.KEYCODE_MEDIA_REWIND:
                     updateMultiplier(keyCode);
                     rewind();
                     getControlsRow().setCurrentPosition(getPlayerAdapter().isPrepared() ? getPlayerAdapter().getCurrentPosition() : -1);
+                    prevKeyCode = keyCode;
                     return true;
                 case KeyEvent.KEYCODE_MEDIA_STOP:
                     // Once the video is stopped we can no longer query it for its current position
