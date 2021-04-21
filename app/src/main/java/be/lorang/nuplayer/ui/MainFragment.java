@@ -39,7 +39,7 @@ import be.lorang.nuplayer.R;
 
 public class MainFragment extends BrowseSupportFragment {
     private static final String TAG = "MainFragment";
-    private static final String[] menuItems = {"Home", "TV Guide", "Latest", "Series", "Catalog" ,"Settings"};
+    private static final String[] menuItems = {"Home", "TV Guide", "Latest", "Series", "Categories", "Catalog" ,"Settings"};
     private BackgroundManager mBackgroundManager;
 
     private ArrayObjectAdapter mRowsAdapter;
@@ -129,13 +129,15 @@ public class MainFragment extends BrowseSupportFragment {
                     return new HomeFragment();
                 case "TV Guide":
                     return new TVGuideFragment();
-                case "Catalog":
-                    return new CatalogFragment();
+                case "Latest":
+                    return new LatestFragment();
                 case "Series":
                     setOnSearchClickedListener(null);
                     return new SeriesFragment();
-                case "Latest":
-                    return new LatestFragment();
+                case "Categories":
+                    return new CategoryMainFragment();
+                case "Catalog":
+                    return new CatalogFragment();
                 case "Settings":
                     setOnSearchClickedListener(null);
                     return new SettingsMainFragment();
