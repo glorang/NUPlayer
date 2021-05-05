@@ -22,24 +22,39 @@ import androidx.leanback.widget.VerticalGridPresenter;
 import androidx.leanback.widget.VerticalGridView;
 
 /*
- * Class to implement top padding (340) in Program fragment
+ * Class to implement either top padding or an offset
  */
 
 public class CustomVerticalGridPresenter extends VerticalGridPresenter {
 
+    private static final String TAG = "CustomVerticalGridPresenter";
     VerticalGridView gridView;
+
+    private int offset = 0;
+    private int paddingTop = 0;
 
     public CustomVerticalGridPresenter(int zoom, boolean val){
         super(zoom, val);
+    }
+
+    public void setOffset(int offset) {
+        this.offset = offset;
+    }
+
+    public void setPaddingTop(int paddingTop) {
+        this.paddingTop = paddingTop;
     }
 
     @Override
     protected void initializeGridViewHolder(ViewHolder vh) {
         super.initializeGridViewHolder(vh);
         gridView = vh.getGridView();
-        gridView.setWindowAlignment(BaseGridView.WINDOW_ALIGN_HIGH_EDGE);
-        gridView.setWindowAlignmentOffset(340);
-        int top = gridView.getPaddingTop();
+
+        if(offset > 0) {
+            gridView.setWindowAlignment(BaseGridView.WINDOW_ALIGN_HIGH_EDGE);
+            gridView.setWindowAlignmentOffset(offset);
+        }
+        int top = paddingTop > 0 ? paddingTop : gridView.getPaddingTop();
         int bottom = gridView.getPaddingBottom();
         int right = gridView.getPaddingRight();
         int left = gridView.getPaddingLeft();
