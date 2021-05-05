@@ -25,22 +25,21 @@ import android.os.ResultReceiver;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.leanback.app.VerticalGridSupportFragment;
 import androidx.leanback.widget.ArrayObjectAdapter;
 import androidx.leanback.widget.FocusHighlight;
-import androidx.leanback.widget.VerticalGridPresenter;
 
 import be.lorang.nuplayer.model.Category;
 import be.lorang.nuplayer.model.Program;
 import be.lorang.nuplayer.model.ProgramList;
 import be.lorang.nuplayer.presenter.CatalogPresenter;
+import be.lorang.nuplayer.presenter.CustomVerticalGridPresenter;
 import be.lorang.nuplayer.services.CategoryService;
 
 /*
  * Fragment that show Programs of a Category, initiated from CategoryCategoriesFragment
  */
 
-public class CategoryProgramsFragment extends VerticalGridSupportFragment {
+public class CategoryProgramsFragment extends GridFragment {
 
     private static final String TAG = "CategoryProgramsFragment";
     private static final int COLUMNS = 5;
@@ -60,7 +59,8 @@ public class CategoryProgramsFragment extends VerticalGridSupportFragment {
 
     private void setupAdapter() {
 
-        VerticalGridPresenter presenter = new VerticalGridPresenter(ZOOM_FACTOR, false);
+        CustomVerticalGridPresenter presenter = new CustomVerticalGridPresenter(ZOOM_FACTOR, false);
+        presenter.setPaddingTop(100);
         presenter.setNumberOfColumns(COLUMNS);
 
         // note: The click listeners must be called before setGridPresenter for the event listeners
@@ -103,6 +103,7 @@ public class CategoryProgramsFragment extends VerticalGridSupportFragment {
                         mAdapter.add(program);
                     }
 
+                    getView().requestFocus();
                 }
 
             }

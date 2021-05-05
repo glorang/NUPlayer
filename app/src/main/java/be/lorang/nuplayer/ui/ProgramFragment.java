@@ -180,6 +180,7 @@ public class ProgramFragment extends VerticalGridSupportFragment implements OnIt
     private void setupAdapter() {
 
         CustomVerticalGridPresenter videoGridPresenter = new CustomVerticalGridPresenter(ZOOM_FACTOR, false);
+        videoGridPresenter.setOffset(340);
         videoGridPresenter.setNumberOfColumns(COLUMNS);
 
         // note: The click listeners must be called before setGridPresenter for the event listeners
@@ -256,6 +257,8 @@ public class ProgramFragment extends VerticalGridSupportFragment implements OnIt
     }
 
     private void updateSeasons(LinkedHashMap<String,String> seasons) {
+
+        if(getActivity() == null) { return; }
 
         Spinner spinner = (Spinner)getActivity().findViewById(R.id.spinner_seasons);
 

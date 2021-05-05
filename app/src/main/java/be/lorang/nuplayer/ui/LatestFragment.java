@@ -28,7 +28,6 @@ import androidx.leanback.widget.OnItemViewSelectedListener;
 import androidx.leanback.widget.Presenter;
 import androidx.leanback.widget.Row;
 import androidx.leanback.widget.RowPresenter;
-import androidx.leanback.widget.VerticalGridPresenter;
 
 import android.os.Handler;
 import android.os.ResultReceiver;
@@ -37,9 +36,9 @@ import android.widget.Toast;
 
 import be.lorang.nuplayer.model.Video;
 import be.lorang.nuplayer.model.VideoList;
+import be.lorang.nuplayer.presenter.CustomVerticalGridPresenter;
 import be.lorang.nuplayer.presenter.WideVideoPresenter;
 import be.lorang.nuplayer.services.LatestService;
-import be.lorang.nuplayer.services.ProgramService;
 
 public class LatestFragment extends GridFragment implements OnItemViewSelectedListener {
     private final static String TAG = "LatestFragment";
@@ -53,12 +52,11 @@ public class LatestFragment extends GridFragment implements OnItemViewSelectedLi
         super.onCreate(savedInstanceState);
         setupAdapter();
         loadData(1);
-        getMainFragmentAdapter().getFragmentHost().notifyDataReady(getMainFragmentAdapter());
     }
 
     private void setupAdapter() {
-
-        VerticalGridPresenter presenter = new VerticalGridPresenter(ZOOM_FACTOR, false);
+        CustomVerticalGridPresenter presenter = new CustomVerticalGridPresenter(ZOOM_FACTOR, false);
+        presenter.setPaddingTop(100);
         presenter.setNumberOfColumns(COLUMNS);
 
         // note: The click listeners must be called before setGridPresenter for the event listeners
