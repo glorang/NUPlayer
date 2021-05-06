@@ -124,6 +124,11 @@ public class CatalogFragment extends GridFragment {
                         }
                     }
                 }
+
+                if(getParentFragment() != null && getParentFragment() instanceof  CatalogMainFragment) {
+                    ((CatalogMainFragment) getParentFragment()).notifyDataReady();
+                }
+
             }
         });
 

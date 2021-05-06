@@ -59,6 +59,7 @@ public class MainFragment extends HorizontalMenuFragment {
 
         LinearLayout menuNavigationContainer = view.findViewById(R.id.menuNavigationContainer);
         LinearLayout mainContainerLayout = view.findViewById(R.id.mainContainerLayout);
+        setContentContainer(mainContainerLayout);
 
         for(int i=0;i<menuItems.length;i++) {
 
@@ -87,6 +88,7 @@ public class MainFragment extends HorizontalMenuFragment {
                     switch (menuItem) {
                         case "Home":
                             if(!(getSelectedFragment() instanceof HomeFragment)) {
+                                showProgressBar();
                                 setSelectedFragment(new HomeFragment());
                             }
                             break;
@@ -152,6 +154,7 @@ public class MainFragment extends HorizontalMenuFragment {
 
         // add default Fragment
         if(mainContainerLayout != null) {
+            showProgressBar();
             setSelectedFragment(new HomeFragment());
             loadFragment(R.id.mainContainerLayout);
         }
