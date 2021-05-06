@@ -21,131 +21,139 @@ package be.lorang.nuplayer.ui;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.leanback.app.BackgroundManager;
-import androidx.leanback.app.BrowseSupportFragment;
-import androidx.leanback.widget.ArrayObjectAdapter;
-import androidx.leanback.widget.BrowseFrameLayout;
-import androidx.leanback.widget.HeaderItem;
-import androidx.leanback.widget.ListRowPresenter;
-import androidx.leanback.widget.PageRow;
-import androidx.leanback.widget.Row;
-
-import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
 
 import be.lorang.nuplayer.R;
 
-public class MainFragment extends BrowseSupportFragment {
+public class MainFragment extends HorizontalMenuFragment {
+
     private static final String TAG = "MainFragment";
-    private static final String[] menuItems = {"Home", "TV Guide", "Latest", "Series", "Categories", "Catalog" ,"Settings"};
-    private BackgroundManager mBackgroundManager;
 
-    private ArrayObjectAdapter mRowsAdapter;
+    private static final String[] menuItems = {
+            "Home",
+            "TV guide",
+            "On demand",
+            "Settings",
+            "Search"
+    };
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setupUi();
-        loadData();
-        mBackgroundManager = BackgroundManager.getInstance(getActivity());
-        mBackgroundManager.attach(getActivity().getWindow());
-        getMainFragmentRegistry().registerFragment(PageRow.class,
-                new PageRowFragmentFactory(mBackgroundManager));
-    }
-
-    private void setupUi() {
-
-        setBadgeDrawable(getActivity().getResources().getDrawable(R.drawable.ic_logo, null));
-        setTitle(getString(R.string.browse_title)); // Badge, when set, takes precedent over title
-        setHeadersState(HEADERS_ENABLED); // Should be HEADERS_HIDDEN
-        setHeadersTransitionOnBackEnabled(true);
-
-        // set menu background (left)
-        setBrandColor(getResources().getColor(R.color.vrtnu_black_tint_1));
-
-        // set content background (right)
-        BackgroundManager.getInstance(getActivity()).setColor(getResources().getColor(R.color.vrtnu_black_tint_2));
-
-        setSearchAffordanceColor(ContextCompat.getColor(getActivity(), R.color.vrtnu_blue));
-        setDefaultSearchListener();
-
-        prepareEntranceTransition();
-    }
-
-    private void setDefaultSearchListener() {
-        setOnSearchClickedListener(view -> {
-            Intent intent = new Intent(getActivity(), SearchActivity.class);
-            startActivity(intent);
-        });
-    }
-
-    /*
-     * The search orb will always try to steal focus so we cannot navigate our own form controls anymore
-     * Disable setOnFocusSearchListener
-     */
+    private static final int[] menuIcons = {
+            R.drawable.ic_baseline_home,
+            R.drawable.ic_baseline_calendar_today,
+            R.drawable.ic_baseline_movie,
+            R.drawable.ic_baseline_settings,
+            R.drawable.ic_baseline_search,
+    };
 
     @Override
-    public void onViewCreated(View v, Bundle savedInstanceState) {
-        super.onViewCreated(v, savedInstanceState);
-        BrowseFrameLayout mBrowseFrame = v.findViewById(R.id.browse_frame);
-        if(mBrowseFrame != null) {
-            mBrowseFrame.setOnFocusSearchListener(null);
-        }
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_main_horizontal, container, false);
     }
 
-    private void loadData() {
-        mRowsAdapter = new ArrayObjectAdapter(new ListRowPresenter());
-        setAdapter(mRowsAdapter);
-        createRows();
-    }
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-    private void createRows() {
-        mRowsAdapter.removeItems(0, mRowsAdapter.size());
+        LinearLayout menuNavigationContainer = view.findViewById(R.id.menuNavigationContainer);
+        LinearLayout mainContainerLayout = view.findViewById(R.id.mainContainerLayout);
+
         for(int i=0;i<menuItems.length;i++) {
-            HeaderItem headerItem = new HeaderItem(i, menuItems[i]);
-            PageRow pageRow = new PageRow(headerItem);
-            mRowsAdapter.add(pageRow);
-        }
 
-        startEntranceTransition();
-    }
+            String menuItem = menuItems[i];
 
-    private class PageRowFragmentFactory extends BrowseSupportFragment.FragmentFactory {
-        private final BackgroundManager mBackgroundManager;
+            Button button = createMenuButton(menuItem, menuIcons[i], 300);
 
-        PageRowFragmentFactory(BackgroundManager backgroundManager) {
-            this.mBackgroundManager = backgroundManager;
-        }
+            // Set click listener for search
+            button.setOnClickListener(v -> {
+                if (menuItem.equals("Search")) {
+                    if (getActivity() == null) {
+                        return;
+                    }
+                    startActivity(new Intent(getActivity(), SearchActivity.class));
+                }
+            });
 
-        @Override
-        public Fragment createFragment(Object rowObj) {
-            Row row = (Row)rowObj;
-            mBackgroundManager.setDrawable(null);
-            setDefaultSearchListener();
-            switch(row.getHeaderItem().getName()) {
-                case "Home":
-                    return new HomeFragment();
-                case "TV Guide":
-                    return new TVGuideFragment();
-                case "Latest":
-                    return new LatestFragment();
-                case "Series":
-                    setOnSearchClickedListener(null);
-                    return new SeriesFragment();
-                case "Categories":
-                    return new CategoryMainFragment();
-                case "Catalog":
-                    return new CatalogFragment();
-                case "Settings":
-                    setOnSearchClickedListener(null);
-                    return new SettingsMainFragment();
-                default:
-                    Log.d(TAG, "Unknown row: " + row.getHeaderItem().getName());
-                    return new HomeFragment();
+            // Set focus listener for all (except search) menu items
+            button.setOnFocusChangeListener((View.OnFocusChangeListener) (v, hasFocus) -> {
+
+                if(hasFocus) {
+
+                    setSelectedMenuButton(button);
+
+                    // Fragment options
+                    switch (menuItem) {
+                        case "Home":
+                            if(!(getSelectedFragment() instanceof HomeFragment)) {
+                                setSelectedFragment(new HomeFragment());
+                            }
+                            break;
+                        case "TV guide":
+                            if(!(getSelectedFragment() instanceof TVGuideFragment)) {
+                                setSelectedFragment(new TVGuideFragment());
+                            }
+                            break;
+                        case "On demand":
+                            if(!(getSelectedFragment() instanceof OnDemandFragment)) {
+                                setSelectedFragment(new OnDemandFragment());
+                            }
+                            break;
+                        case "Settings":
+                            if(!(getSelectedFragment() instanceof SettingsMainFragment)) {
+                                setSelectedFragment(new SettingsMainFragment());
+                            }
+                            break;
+                        default:
+                            setSelectedFragment(null);
+                            break;
+                    }
+
+
+                    if(mainContainerLayout != null) {
+                        loadFragment(R.id.mainContainerLayout);
+                        if(getSelectedFragment() == null) {
+                            mainContainerLayout.removeAllViews();
+                        }
+                    }
+
+                }
+
+            });
+
+            // Set focus to first menu item
+            if(i==0) {
+                button.requestFocus();
             }
 
+            // Set button ids && setNextFocusDownId for items with a submenu
+            switch(menuItems[i]) {
+                case "Home":
+                    button.setId(R.id.buttonTopNavHome);
+                    break;
+                case "TV guide":
+                    button.setId(R.id.buttonTopNavTVGuide);
+                    break;
+                case "On demand":
+                    button.setId(R.id.buttonTopNavOnDemand);
+                    button.setNextFocusDownId(R.id.buttonSubOnDemandLatest);
+                    break;
+                case "Settings":
+                    button.setId(R.id.buttonTopNavSettings);
+                    button.setNextFocusDownId(R.id.buttonSubSettingsSettings);
+                    break;
+            }
+
+            if(menuNavigationContainer != null) {
+                menuNavigationContainer.addView(button);
+            }
+        }
+
+        // add default Fragment
+        if(mainContainerLayout != null) {
+            setSelectedFragment(new HomeFragment());
+            loadFragment(R.id.mainContainerLayout);
         }
     }
 

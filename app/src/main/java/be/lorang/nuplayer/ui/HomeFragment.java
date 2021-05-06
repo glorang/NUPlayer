@@ -26,7 +26,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.leanback.app.RowsSupportFragment;
@@ -110,6 +112,13 @@ public class HomeFragment extends RowsSupportFragment {
 
     }
 
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        view.setPadding(0, 80, 0, 0);
+        return view;
+    }
+
     /*
      * When we open the app we want to hide the menu and only exit when the menu is visible (press return twice)
      * This is *exactly* what:
@@ -173,7 +182,7 @@ public class HomeFragment extends RowsSupportFragment {
 
     public void notifyDataReady() {
         if(favoritesLoaded && resumePointsLoaded && liveTVLoaded) {
-            getMainFragmentAdapter().getFragmentHost().notifyDataReady(getMainFragmentAdapter());
+            //getMainFragmentAdapter().getFragmentHost().notifyDataReady(getMainFragmentAdapter());
         }
     }
 

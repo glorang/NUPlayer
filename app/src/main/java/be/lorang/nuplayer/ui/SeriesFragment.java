@@ -20,12 +20,8 @@ package be.lorang.nuplayer.ui;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -39,7 +35,6 @@ import androidx.leanback.widget.ListRowPresenter;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.text.Html;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,8 +49,6 @@ import be.lorang.nuplayer.model.ProgramList;
 import be.lorang.nuplayer.services.SeriesService;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.CustomTarget;
-import com.bumptech.glide.request.transition.Transition;
 
 public class SeriesFragment extends Fragment implements BrowseSupportFragment.MainFragmentAdapterProvider {
 
@@ -66,6 +59,8 @@ public class SeriesFragment extends Fragment implements BrowseSupportFragment.Ma
     private BackgroundManager mBackgroundManager;
     private Program program = null;
 
+    private ImageView seriesBackgroundImageView = null;
+
     @Override
     public BrowseSupportFragment.MainFragmentAdapter getMainFragmentAdapter() {
         return mMainFragmentAdapter;
@@ -75,7 +70,12 @@ public class SeriesFragment extends Fragment implements BrowseSupportFragment.Ma
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         loadData();
-        getMainFragmentAdapter().getFragmentHost().notifyDataReady(getMainFragmentAdapter());
+        //getMainFragmentAdapter().getFragmentHost().notifyDataReady(getMainFragmentAdapter());
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        seriesBackgroundImageView = view.findViewById(R.id.seriesBackgroundImageView);
     }
 
     @Override
@@ -91,9 +91,8 @@ public class SeriesFragment extends Fragment implements BrowseSupportFragment.Ma
     @Override
     public void onPause() {
         super.onPause();
-        if(mBackgroundManager != null && mBackgroundManager.getDrawable() != null) {
-            mBackgroundManager.clearDrawable();
-            //mBackgroundManager.release();
+        if(seriesBackgroundImageView != null && seriesBackgroundImageView.getBackground() != null) {
+            seriesBackgroundImageView.setBackground(null);
         }
     }
 
@@ -101,10 +100,9 @@ public class SeriesFragment extends Fragment implements BrowseSupportFragment.Ma
     public void onStop() {
         super.onStop();
 
-        // Unset image and release memory
-        if(mBackgroundManager != null && mBackgroundManager.getDrawable() != null) {
-            mBackgroundManager.clearDrawable();
-            mBackgroundManager.release();
+        // Unset background image
+        if(seriesBackgroundImageView != null && seriesBackgroundImageView.getBackground() != null) {
+            seriesBackgroundImageView.setBackground(null);
         }
     }
 
@@ -216,25 +214,9 @@ public class SeriesFragment extends Fragment implements BrowseSupportFragment.Ma
     }
 
     private void updateBackground(String uri) {
-
-        mBackgroundManager = BackgroundManager.getInstance(getActivity());
-        if(!mBackgroundManager.isAttached()) {
-            mBackgroundManager.attach(getActivity().getWindow());
-        }
-
-        Glide.with(getActivity())
-                .asBitmap()
-                .centerCrop()
+        Glide.with(this)
                 .load(uri)
-                .into(new CustomTarget<Bitmap>() {
-                    @Override
-                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                        mBackgroundManager.setBitmap(resource);
-                    }
-
-                    @Override
-                    public void onLoadCleared(@Nullable Drawable placeholder) {
-                    }
-                });
+                .centerInside()
+                .into(seriesBackgroundImageView);
     }
 }

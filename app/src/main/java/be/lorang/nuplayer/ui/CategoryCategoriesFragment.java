@@ -21,33 +21,34 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.leanback.app.VerticalGridSupportFragment;
 import androidx.leanback.widget.ArrayObjectAdapter;
 import androidx.leanback.widget.FocusHighlight;
 import androidx.leanback.widget.OnItemViewClickedListener;
 import androidx.leanback.widget.Presenter;
 import androidx.leanback.widget.Row;
 import androidx.leanback.widget.RowPresenter;
-import androidx.leanback.widget.VerticalGridPresenter;
 
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.Toast;
 
 import be.lorang.nuplayer.R;
 import be.lorang.nuplayer.model.Category;
 import be.lorang.nuplayer.model.CategoryList;
 import be.lorang.nuplayer.presenter.CategoryPresenter;
+import be.lorang.nuplayer.presenter.CustomVerticalGridPresenter;
 import be.lorang.nuplayer.services.CategoryService;
 
 /*
  * Fragment that show Categories, initiated from CategoryMainFragment
  */
 
-public class CategoryCategoriesFragment extends VerticalGridSupportFragment implements OnItemViewClickedListener {
+public class CategoryCategoriesFragment extends GridFragment implements OnItemViewClickedListener {
 
     private final static String TAG = "CategoryCategoriesFragment";
     private static final int COLUMNS = 5;
@@ -63,7 +64,8 @@ public class CategoryCategoriesFragment extends VerticalGridSupportFragment impl
 
     public void setupAdapter() {
 
-        VerticalGridPresenter presenter = new VerticalGridPresenter(ZOOM_FACTOR, false);
+        CustomVerticalGridPresenter presenter = new CustomVerticalGridPresenter(ZOOM_FACTOR, false);
+        presenter.setPaddingTop(100);
         presenter.setNumberOfColumns(COLUMNS);
 
         // note: The click listeners must be called before setGridPresenter for the event listeners
@@ -126,8 +128,22 @@ public class CategoryCategoriesFragment extends VerticalGridSupportFragment impl
 
             // Switch fragment to CategoryProgramsFragment
             FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+
+            // Set focus to submenu button "Categories"
+            for(Fragment fragment : fragmentManager.getFragments()) {
+                if(fragment instanceof MainFragment) {
+                    MainFragment mainFragment = (MainFragment)fragment;
+                    if(mainFragment.getView() != null) {
+                        Button buttonSubOnDemandCategories = fragment.getView().findViewById(R.id.buttonSubOnDemandCategories);
+                        if(buttonSubOnDemandCategories != null) {
+                            buttonSubOnDemandCategories.requestFocus();
+                        }
+                    }
+                }
+            }
+
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.categoryMainContainer, new CategoryProgramsFragment(category));
+            fragmentTransaction.replace(R.id.menuContentContainer, new CategoryProgramsFragment(category));
             fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();
         }

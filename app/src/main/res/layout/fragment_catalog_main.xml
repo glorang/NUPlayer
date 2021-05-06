@@ -6,17 +6,16 @@
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal">
 
         <LinearLayout
             android:layout_width="180dp"
             android:layout_height="match_parent"
-            android:background="@color/vrtnu_black_tint_1_alpha_80"
             android:orientation="vertical"
             android:paddingLeft="20dp"
-            android:paddingTop="100dp"
+            android:paddingTop="10dp"
             android:paddingRight="20dp">
 
             <TextView
@@ -25,9 +24,8 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-condensed"
                 android:paddingLeft="5dp"
-                android:paddingTop="10dp"
-                android:paddingBottom="20dp"
                 android:paddingRight="5dp"
+                android:paddingBottom="20dp"
                 android:text="Channels"
                 android:textAlignment="textStart"
                 android:textSize="18sp"
@@ -36,8 +34,7 @@
             <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scrollbars="none"
-                tools:visibility="gone">
+                android:scrollbars="none">
 
                 <LinearLayout
                     android:id="@+id/brandCheckBoxes"
@@ -48,15 +45,14 @@
 
         </LinearLayout>
 
-
         <RelativeLayout
             android:id="@+id/CatalogLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/vrtnu_black_tint_1_alpha_60">
+            android:layout_height="match_parent">
 
-            <include
-                layout="@layout/fragment_grid"
+            <fragment
+                android:id="@+id/catalogFragment"
+                android:name="be.lorang.nuplayer.ui.CatalogFragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
         </RelativeLayout>

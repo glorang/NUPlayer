@@ -21,6 +21,10 @@ package be.lorang.nuplayer.ui;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.widget.Button;
+import android.widget.LinearLayout;
+
+import androidx.fragment.app.Fragment;
 
 import java.net.CookieHandler;
 import java.net.CookieManager;
@@ -59,6 +63,71 @@ public class MainActivity extends LeanbackActivity {
 
         // Remove expired caches
         HTTPClient.clearExpiredCache(getCacheDir());
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        for(Fragment fragment : getSupportFragmentManager().getFragments()) {
+            if(fragment instanceof CategoryProgramsFragment) {
+                super.onBackPressed();
+            } else if(fragment instanceof MainFragment) {
+                MainFragment mainFragment = (MainFragment)fragment;
+
+                if(mainFragment != null) {
+
+                    LinearLayout menuNavigationContainer = mainFragment.getView().findViewById(R.id.menuNavigationContainer);
+                    if (menuNavigationContainer != null) {
+
+                        // Check if any button has focus
+                        boolean topNavHasFocus = false;
+                        for (int i=0;i< menuNavigationContainer.getChildCount();i++) {
+                            if (menuNavigationContainer.getChildAt(i) instanceof Button) {
+                                Button menuButton = (Button) menuNavigationContainer.getChildAt(i);
+                                if (menuButton.hasFocus()) {
+                                    topNavHasFocus = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        // exit app when focus is on top navigation
+                        if(topNavHasFocus) {
+                            super.onBackPressed();
+                            return;
+                        } else {
+
+                            // Get last selected menu item from top nav
+                            Button button = mainFragment.getSelectedMenuButton();
+
+                            // Submenu overrules top nav, unless it already has focus
+                            Fragment loadedFragment = getSupportFragmentManager().findFragmentById(R.id.mainContainerLayout);
+
+                            if(loadedFragment instanceof HorizontalMenuFragment) {
+                                HorizontalMenuFragment horizontalMenuFragment = (HorizontalMenuFragment)loadedFragment;
+                                if(horizontalMenuFragment != null) {
+                                    button = horizontalMenuFragment.getSelectedMenuButton();
+
+                                    // return again one up (subnav -> main nav)
+                                    if(button != null && button.hasFocus()) {
+                                        button =  mainFragment.getSelectedMenuButton();
+                                    }
+                                }
+                            }
+
+                            // Set focus to latest selected (sub)menu button
+                            if (button != null) {
+                                button.requestFocus();
+                            }
+
+                        }
+
+                    }
+
+                }
+            }
+
+        }
     }
 
 }

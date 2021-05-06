@@ -31,7 +31,7 @@ import be.lorang.nuplayer.R;
 import be.lorang.nuplayer.model.Program;
 
 /*
-    Series Card presenter in 4:3 format for Series on home fragment
+    Series Card presenter in 2:3 format for Series on home fragment
  */
 
 public class SeriesPresenter<T extends BaseCardView> extends BaseCardPresenter {
@@ -53,17 +53,9 @@ public class SeriesPresenter<T extends BaseCardView> extends BaseCardPresenter {
         // set background image
         ImageView imageView = cardView.findViewById(R.id.main_image);
         if (image != null) {
-            int width = (int) getContext().getResources()
-                    .getDimension(R.dimen.series_width);
-            int height = (int) getContext().getResources()
-                    .getDimension(R.dimen.series_height);
-
-            RequestOptions myOptions = new RequestOptions()
-                    .override(width, height);
             Glide.with(getContext())
                     .asBitmap()
                     .load(image)
-                    .apply(myOptions)
                     .into(imageView);
         }
 

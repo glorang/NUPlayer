@@ -70,7 +70,9 @@ public class SearchFragment extends SearchSupportFragment
 
         // set background color
         BackgroundManager mBackgroundManager = BackgroundManager.getInstance(getActivity());
-        mBackgroundManager.attach(getActivity().getWindow());
+        if(!mBackgroundManager.isAttached()){
+            mBackgroundManager.attach(getActivity().getWindow());
+        }
         mBackgroundManager.setColor(getResources().getColor(R.color.vrtnu_black_tint_2));
 
         // FIXME: this call is actually deprecated but depending on android.permission.RECORD_AUDIO
