@@ -78,6 +78,10 @@ public class VideoMediaPlayerGlue<T extends PlayerAdapter> extends PlaybackTrans
 
         if(event.getAction() == KeyEvent.ACTION_DOWN) {
             switch(keyCode) {
+                case KeyEvent.KEYCODE_DPAD_CENTER:
+                    togglePlayState();
+                    prevKeyCode = -1;
+                    return true;
                 case KeyEvent.KEYCODE_DPAD_RIGHT:
                 case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
                     updateMultiplier(keyCode);
@@ -136,6 +140,14 @@ public class VideoMediaPlayerGlue<T extends PlayerAdapter> extends PlaybackTrans
             if((buttonCount % MAX_BUTTON_COUNT) == 0) {
                 currentMultiplier++;
             }
+        }
+    }
+
+    public void togglePlayState() {
+        if(getPlayerAdapter().isPlaying()) {
+            getPlayerAdapter().pause();
+        } else {
+            getPlayerAdapter().play();
         }
     }
 
