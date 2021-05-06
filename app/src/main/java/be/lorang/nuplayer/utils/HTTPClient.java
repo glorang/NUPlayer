@@ -192,7 +192,7 @@ public class HTTPClient {
 
                 // Setup cache object as JSON with current timestamp
                 JSONObject cacheObject = new JSONObject();
-                cacheObject.put("timestampCacheExpires", (System.currentTimeMillis() + (ttl * 60 * 1000)));
+                cacheObject.put("timestampCacheExpires", (System.currentTimeMillis() + (Long.valueOf(ttl) * 60 * 1000)));
                 cacheObject.put("object", returnObject.toString());
 
                 Log.d(TAG, "Writing to cache: " + cacheObject.toString().substring(0,100));
