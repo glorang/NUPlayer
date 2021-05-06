@@ -19,11 +19,13 @@
 package be.lorang.nuplayer.ui;
 
 import android.os.Bundle;
-import be.lorang.nuplayer.R;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
-import androidx.leanback.app.BrowseSupportFragment;
-import androidx.leanback.transition.TransitionHelper;
+import androidx.leanback.R;
 import androidx.leanback.widget.ObjectAdapter;
 import androidx.leanback.widget.OnChildLaidOutListener;
 import androidx.leanback.widget.OnItemViewClickedListener;
@@ -32,33 +34,25 @@ import androidx.leanback.widget.Presenter;
 import androidx.leanback.widget.Row;
 import androidx.leanback.widget.RowPresenter;
 import androidx.leanback.widget.VerticalGridPresenter;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 /**
- * A fragment for rendering items in a vertical grids.
+ * This class is a striped down copy of Leanback's VerticalGridSupportFragment
+ *
+ * It does not setup the onFocusSearchListener which allows us to regain control of UI elements
+ * above the Vertical Grid
+ *
  */
-public class GridFragment extends Fragment implements BrowseSupportFragment.MainFragmentAdapterProvider {
-    private static final String TAG = "VerticalGridFragment";
-    private static boolean DEBUG = false;
+public class GridFragment extends Fragment {
+    static final String TAG = "VerticalGridFragment";
+    static final boolean DEBUG = false;
 
     private ObjectAdapter mAdapter;
     private VerticalGridPresenter mGridPresenter;
-    private VerticalGridPresenter.ViewHolder mGridViewHolder;
-    private OnItemViewSelectedListener mOnItemViewSelectedListener;
+    VerticalGridPresenter.ViewHolder mGridViewHolder;
+    OnItemViewSelectedListener mOnItemViewSelectedListener;
     private OnItemViewClickedListener mOnItemViewClickedListener;
-    private Object mSceneAfterEntranceTransition;
     private int mSelectedPosition = -1;
 
-    private BrowseSupportFragment.MainFragmentAdapter mMainFragmentAdapter =
-            new BrowseSupportFragment.MainFragmentAdapter(this) {
-                @Override
-                public void setEntranceTransitionState(boolean state) {
-                    GridFragment.this.setEntranceTransitionState(state);
-                }
-            };
     /**
      * Sets the grid presenter.
      */
@@ -139,11 +133,6 @@ public class GridFragment extends Fragment implements BrowseSupportFragment.Main
                 == null) {
             return;
         }
-        if (!mGridViewHolder.getGridView().hasPreviousViewInSameRow(mSelectedPosition)) {
-            mMainFragmentAdapter.getFragmentHost().showTitleView(true);
-        } else {
-            mMainFragmentAdapter.getFragmentHost().showTitleView(false);
-        }
     }
 
     /**
@@ -166,38 +155,22 @@ public class GridFragment extends Fragment implements BrowseSupportFragment.Main
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_grid, container, false);
-    }
+        ViewGroup root = (ViewGroup) inflater.inflate(R.layout.lb_vertical_grid_fragment,
+                container, false);
 
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        ViewGroup gridDock = view.findViewById(R.id.browse_grid_dock);
+        ViewGroup gridDock = (ViewGroup) root.findViewById(R.id.browse_grid_dock);
         mGridViewHolder = mGridPresenter.onCreateViewHolder(gridDock);
         gridDock.addView(mGridViewHolder.view);
         mGridViewHolder.getGridView().setOnChildLaidOutListener(mChildLaidOutListener);
 
-        mSceneAfterEntranceTransition = TransitionHelper.createScene(gridDock, new Runnable() {
-            @Override
-            public void run() {
-                setEntranceTransitionState(true);
-            }
-        });
-
-        getMainFragmentAdapter().getFragmentHost().notifyViewCreated(mMainFragmentAdapter);
         updateAdapter();
-
+        return root;
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         mGridViewHolder = null;
-    }
-
-    @Override
-    public BrowseSupportFragment.MainFragmentAdapter getMainFragmentAdapter() {
-        return mMainFragmentAdapter;
     }
 
     /**
@@ -217,9 +190,5 @@ public class GridFragment extends Fragment implements BrowseSupportFragment.Main
                 mGridViewHolder.getGridView().setSelectedPosition(mSelectedPosition);
             }
         }
-    }
-
-    void setEntranceTransitionState(boolean afterTransition) {
-        mGridPresenter.setEntranceTransitionState(mGridViewHolder, afterTransition);
     }
 }

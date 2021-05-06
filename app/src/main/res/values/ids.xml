@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- main top navigation -->
+    <item type="id" name="buttonTopNavHome" />
+    <item type="id" name="buttonTopNavTVGuide" />
+    <item type="id" name="buttonTopNavOnDemand" />
+    <item type="id" name="buttonTopNavSettings" />
+    <item type="id" name="buttonTopNavSearch" />
+
+    <!-- sub menu on-demand -->
+    <item type="id" name="buttonSubOnDemandLatest" />
+    <item type="id" name="buttonSubOnDemandSeries" />
+    <item type="id" name="buttonSubOnDemandCategories" />
+    <item type="id" name="buttonSubOnDemandCatalog" />
+
+    <!-- sub menu settings -->
+    <item type="id" name="buttonSubSettingsSettings" />
+    <item type="id" name="buttonSubSettingsTokenStatus" />
+    <item type="id" name="buttonSubSettingsAbout" />
+
+</resources>

@@ -23,17 +23,17 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
-
 import be.lorang.nuplayer.R;
 
+
 /*
- * Fragment that manages the Settings (sub)menu
+ * Fragment that shows all "on-demand" fragments with submenu
  */
 
-public class SettingsMainFragment extends HorizontalMenuFragment {
+public class OnDemandFragment extends HorizontalMenuFragment {
 
-    private static final String TAG = "SettingsMainFragment";
-    private static final String[] menuItems = {"Settings", "Token status", "About"};
+    private static final String TAG = "OnDemandFragment";
+    private static final String[] menuItems = {"Latest", "Series", "Categories", "Catalog"};
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -45,7 +45,7 @@ public class SettingsMainFragment extends HorizontalMenuFragment {
         for(int i=0;i<menuItems.length;i++) {
 
             Button button = createMenuButton(menuItems[i]);
-            button.setNextFocusUpId(R.id.buttonTopNavSettings);
+            button.setNextFocusUpId(R.id.buttonTopNavOnDemand);
 
             button.setOnFocusChangeListener((v, hasFocus) -> {
 
@@ -57,19 +57,24 @@ public class SettingsMainFragment extends HorizontalMenuFragment {
                     String buttonText = button.getText().toString();
                     switch(buttonText) {
 
-                        case "Settings":
-                            if(!(getSelectedFragment() instanceof SettingsFragment)) {
-                                setSelectedFragment(new SettingsFragment());
+                        case "Latest":
+                            if(!(getSelectedFragment() instanceof LatestFragment)) {
+                                setSelectedFragment(new LatestFragment());
                             }
                             break;
-                        case "Token status":
-                            if(!(getSelectedFragment() instanceof TokenStatusFragment)) {
-                                setSelectedFragment(new TokenStatusFragment());
+                        case "Series":
+                            if(!(getSelectedFragment() instanceof SeriesFragment)) {
+                                setSelectedFragment(new SeriesFragment());
                             }
                             break;
-                        case "About":
-                            if(!(getSelectedFragment() instanceof AboutFragment)) {
-                                setSelectedFragment(new AboutFragment());
+                        case "Categories":
+                            if(!(getSelectedFragment() instanceof CategoryCategoriesFragment)) {
+                                setSelectedFragment(new CategoryCategoriesFragment());
+                            }
+                            break;
+                        case "Catalog":
+                            if(!(getSelectedFragment() instanceof CatalogMainFragment)) {
+                                setSelectedFragment(new CatalogMainFragment());
                             }
                             break;
                         default:
@@ -80,19 +85,23 @@ public class SettingsMainFragment extends HorizontalMenuFragment {
                     if(menuContentContainer != null) {
                         loadFragment(R.id.menuContentContainer);
                     }
+
                 }
             });
 
             // Set button ids
             switch(menuItems[i]) {
-                case "Settings":
-                    button.setId(R.id.buttonSubSettingsSettings);
+                case "Latest":
+                    button.setId(R.id.buttonSubOnDemandLatest);
                     break;
-                case "Token status":
-                    button.setId(R.id.buttonSubSettingsTokenStatus);
+                case "Series":
+                    button.setId(R.id.buttonSubOnDemandSeries);
                     break;
-                case "About":
-                    button.setId(R.id.buttonSubSettingsAbout);
+                case "Categories":
+                    button.setId(R.id.buttonSubOnDemandCategories);
+                    break;
+                case "Catalog":
+                    button.setId(R.id.buttonSubOnDemandCatalog);
                     break;
             }
 
@@ -103,7 +112,7 @@ public class SettingsMainFragment extends HorizontalMenuFragment {
 
         // add default Fragment
         if(menuContentContainer != null) {
-            setSelectedFragment(new SettingsFragment());
+            setSelectedFragment(new LatestFragment());
             loadFragment(R.id.menuContentContainer);
         }
 

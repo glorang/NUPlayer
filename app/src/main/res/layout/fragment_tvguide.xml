@@ -3,19 +3,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingLeft="50dp"
-    android:paddingTop="100dp"
+    android:paddingTop="20dp"
     android:paddingRight="50dp"
     android:paddingBottom="30dp">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
             android:layout_marginBottom="30dp"
             android:orientation="horizontal"
             android:paddingLeft="55dp">
@@ -28,8 +28,9 @@
                 android:layout_marginRight="5dp"
                 android:background="@drawable/button_epg"
                 android:fontFamily="sans-serif-condensed"
-                android:text="Today"
+                android:nextFocusUp="@+id/buttonTopNavTVGuide"
                 android:nextFocusDown="@+id/epgScrollView"
+                android:text="Today"
                 android:textAllCaps="false" />
 
             <Button
@@ -40,8 +41,9 @@
                 android:layout_marginRight="5dp"
                 android:background="@drawable/button_epg"
                 android:fontFamily="sans-serif-condensed"
-                android:text="Back to now"
+                android:nextFocusUp="@+id/buttonTopNavTVGuide"
                 android:nextFocusDown="@+id/epgScrollView"
+                android:text="Back to now"
                 android:textAllCaps="false" />
         </LinearLayout>
 
@@ -193,8 +195,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-condensed"
-                    android:lines="4"
-                    android:maxLines="4"
+                    android:lines="5"
+                    android:maxLines="5"
                     android:paddingStart="20dp" />
 
             </LinearLayout>

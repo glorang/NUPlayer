@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingLeft="50dp"
-    android:paddingTop="25dp"
+    android:paddingTop="20dp"
     android:paddingRight="50dp">
 
     <LinearLayout
@@ -42,8 +42,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/button_default"
-                    android:nextFocusUp="@+id/buttonSettingsMainSettings"
                     android:nextFocusLeft="@+id/buttonSettingsMainSettings"
+                    android:nextFocusUp="@+id/buttonSettingsMainSettings"
                     android:nextFocusDown="@+id/buttonSettingsJSONCache"
                     android:text="Refresh"
                     android:visibility="visible" />
@@ -103,8 +103,8 @@
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:background="@drawable/button_default"
-                android:nextFocusUp="@+id/buttonSettingsCatalogRefresh"
                 android:nextFocusLeft="@+id/buttonSettingsMainSettings"
+                android:nextFocusUp="@+id/buttonSettingsCatalogRefresh"
                 android:nextFocusDown="@+id/buttonSettingsLoggedIn"
                 android:text="Purge" />
 
@@ -151,8 +151,8 @@
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:background="@drawable/button_default"
-                android:nextFocusUp="@id/buttonSettingsJSONCache"
                 android:nextFocusLeft="@+id/buttonSettingsMainSettings"
+                android:nextFocusUp="@id/buttonSettingsJSONCache"
                 android:nextFocusDown="@id/buttonSettingsCatalogRefresh"
                 android:text="Logout" />
 

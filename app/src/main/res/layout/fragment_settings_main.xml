@@ -11,11 +11,11 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="70dp"
             android:background="@color/vrtnu_black_tint_1"
             android:orientation="horizontal"
             android:paddingLeft="50dp"
-            android:paddingTop="25dp"
+            android:paddingTop="10dp"
             android:paddingRight="20dp">
 
             <Button

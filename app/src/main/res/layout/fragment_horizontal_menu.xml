@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp">
+
+            <LinearLayout
+                android:id="@+id/menuNavigationContainer"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@color/vrtnu_black_tint_1_alpha_40"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal" />
+
+            <FrameLayout
+                android:id="@+id/menuNavigationOverlay"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:focusable="true"
+                android:focusableInTouchMode="true" />
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/menuContentContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal" />
+
+    </LinearLayout>
+
+</FrameLayout>
