@@ -26,6 +26,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -44,6 +46,7 @@ public class HorizontalMenuFragment extends Fragment {
     private Button selectedMenuButton = null;
     private Fragment selectedFragment = null;
     private Fragment loadedFragment = null;
+    private LinearLayout contentContainer;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -120,6 +123,39 @@ public class HorizontalMenuFragment extends Fragment {
         button.setCompoundDrawablesWithIntrinsicBounds(drawable, 0, 0, 0);
         button.setCompoundDrawablePadding(0);
         return button;
+    }
+
+    public void setContentContainer(LinearLayout contentContainer) {
+        this.contentContainer = contentContainer;
+    }
+
+    public void showProgressBar() {
+        if(getView() != null) {
+            ProgressBar loadingProgressBar = getView().findViewById(R.id.loadingProgressBar);
+
+            if(loadingProgressBar != null) {
+                loadingProgressBar.setVisibility(View.VISIBLE);
+            }
+
+            if(contentContainer != null) {
+                contentContainer.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    public void hideProgressBar() {
+        if(getView() != null) {
+            ProgressBar loadingProgressBar = getView().findViewById(R.id.loadingProgressBar);
+
+            if(loadingProgressBar != null) {
+                loadingProgressBar.setVisibility(View.GONE);
+            }
+
+            if(contentContainer != null) {
+                contentContainer.setVisibility(View.VISIBLE);
+            }
+
+        }
     }
 
 }

@@ -22,6 +22,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.fragment.app.Fragment;
 import androidx.leanback.widget.ArrayObjectAdapter;
 import androidx.leanback.widget.FocusHighlight;
 import androidx.leanback.widget.OnItemViewSelectedListener;
@@ -52,6 +53,16 @@ public class LatestFragment extends GridFragment implements OnItemViewSelectedLi
         super.onCreate(savedInstanceState);
         setupAdapter();
         loadData(1);
+    }
+
+    public void notifyDataReady() {
+        if(getFragmentManager() != null) {
+            for (Fragment fragment : getFragmentManager().getFragments()) {
+                if (fragment instanceof OnDemandFragment) {
+                    ((OnDemandFragment) fragment).hideProgressBar();
+                }
+            }
+        }
     }
 
     private void setupAdapter() {
@@ -100,6 +111,8 @@ public class LatestFragment extends GridFragment implements OnItemViewSelectedLi
                     }
 
                 }
+
+                notifyDataReady();
 
             }
         });

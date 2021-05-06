@@ -62,6 +62,16 @@ public class CategoryCategoriesFragment extends GridFragment implements OnItemVi
         loadData();
     }
 
+    public void notifyDataReady() {
+        if(getFragmentManager() != null) {
+            for (Fragment fragment : getFragmentManager().getFragments()) {
+                if (fragment instanceof OnDemandFragment) {
+                    ((OnDemandFragment) fragment).hideProgressBar();
+                }
+            }
+        }
+    }
+
     public void setupAdapter() {
 
         CustomVerticalGridPresenter presenter = new CustomVerticalGridPresenter(ZOOM_FACTOR, false);
@@ -107,6 +117,8 @@ public class CategoryCategoriesFragment extends GridFragment implements OnItemVi
                         mAdapter.add(category);
                     }
                 }
+
+                notifyDataReady();
 
             }
         });

@@ -60,4 +60,14 @@
 
     </LinearLayout>
 
+    <ProgressBar
+        android:id="@+id/loadingProgressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminate="true"
+        android:indeterminateTint="@color/vrtnu_blue"
+        android:visibility="gone" />
+
 </FrameLayout>

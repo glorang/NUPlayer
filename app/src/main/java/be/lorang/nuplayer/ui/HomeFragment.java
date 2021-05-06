@@ -31,6 +31,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.fragment.app.Fragment;
 import androidx.leanback.app.RowsSupportFragment;
 import androidx.leanback.widget.ArrayObjectAdapter;
 import androidx.leanback.widget.HeaderItem;
@@ -182,7 +183,13 @@ public class HomeFragment extends RowsSupportFragment {
 
     public void notifyDataReady() {
         if(favoritesLoaded && resumePointsLoaded && liveTVLoaded) {
-            //getMainFragmentAdapter().getFragmentHost().notifyDataReady(getMainFragmentAdapter());
+            if(getFragmentManager() != null) {
+                for (Fragment fragment : getFragmentManager().getFragments()) {
+                    if (fragment instanceof MainFragment) {
+                        ((MainFragment) fragment).hideProgressBar();
+                    }
+                }
+            }
         }
     }
 

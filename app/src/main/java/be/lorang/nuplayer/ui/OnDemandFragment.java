@@ -41,6 +41,7 @@ public class OnDemandFragment extends HorizontalMenuFragment {
 
         LinearLayout menuNavigationContainer = view.findViewById(R.id.menuNavigationContainer);
         LinearLayout menuContentContainer = view.findViewById(R.id.menuContentContainer);
+        setContentContainer(menuContentContainer);
 
         for(int i=0;i<menuItems.length;i++) {
 
@@ -59,21 +60,25 @@ public class OnDemandFragment extends HorizontalMenuFragment {
 
                         case "Latest":
                             if(!(getSelectedFragment() instanceof LatestFragment)) {
+                                showProgressBar();
                                 setSelectedFragment(new LatestFragment());
                             }
                             break;
                         case "Series":
                             if(!(getSelectedFragment() instanceof SeriesFragment)) {
+                                showProgressBar();
                                 setSelectedFragment(new SeriesFragment());
                             }
                             break;
                         case "Categories":
                             if(!(getSelectedFragment() instanceof CategoryCategoriesFragment)) {
+                                showProgressBar();
                                 setSelectedFragment(new CategoryCategoriesFragment());
                             }
                             break;
                         case "Catalog":
                             if(!(getSelectedFragment() instanceof CatalogMainFragment)) {
+                                showProgressBar();
                                 setSelectedFragment(new CatalogMainFragment());
                             }
                             break;

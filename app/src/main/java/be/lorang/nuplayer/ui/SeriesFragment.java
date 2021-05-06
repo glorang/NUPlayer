@@ -50,9 +50,7 @@ import be.lorang.nuplayer.services.SeriesService;
 
 import com.bumptech.glide.Glide;
 
-public class SeriesFragment extends Fragment implements BrowseSupportFragment.MainFragmentAdapterProvider {
-
-    private BrowseSupportFragment.MainFragmentAdapter mMainFragmentAdapter = new BrowseSupportFragment.MainFragmentAdapter(this);
+public class SeriesFragment extends Fragment {
     private static final String TAG = "SeriesFragment";
 
     private ArrayObjectAdapter mAdapter;
@@ -62,20 +60,24 @@ public class SeriesFragment extends Fragment implements BrowseSupportFragment.Ma
     private ImageView seriesBackgroundImageView = null;
 
     @Override
-    public BrowseSupportFragment.MainFragmentAdapter getMainFragmentAdapter() {
-        return mMainFragmentAdapter;
-    }
-
-    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         loadData();
-        //getMainFragmentAdapter().getFragmentHost().notifyDataReady(getMainFragmentAdapter());
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         seriesBackgroundImageView = view.findViewById(R.id.seriesBackgroundImageView);
+    }
+
+    public void notifyDataReady() {
+        if(getFragmentManager() != null) {
+            for (Fragment fragment : getFragmentManager().getFragments()) {
+                if (fragment instanceof OnDemandFragment) {
+                    ((OnDemandFragment) fragment).hideProgressBar();
+                }
+            }
+        }
     }
 
     @Override
@@ -171,6 +173,8 @@ public class SeriesFragment extends Fragment implements BrowseSupportFragment.Ma
                         mAdapter.add(program);
                     }
                 }
+
+                notifyDataReady();
 
             }
         });
