@@ -28,21 +28,20 @@ import com.bumptech.glide.load.HttpException;
 
 import be.lorang.nuplayer.R;
 import be.lorang.nuplayer.utils.HTTPClient;
-import be.lorang.nuplayer.model.Program;
 import be.lorang.nuplayer.model.ProgramList;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
+import java.util.Iterator;
 
 /*
  * This class will download the list of series from the VRT.NU website and add them to the
  * ProgramList Series array
  *
- * As it is based on a semi-dynamic source (list_946984311.model.json - see plugin.video.vrt.nu > VRT NU API Wiki page)
- * I've included a backup source as well that will query the real search API which should
- * be more consistent but it cannot be filtered for 100% correct results or sorting.
+ * The list is parsed based on a static title string ("Bekijk deze volledige fictiereeksen") which
+ * might change over time so I've included a backup source as well that will query the real
+ * search API which should be more consistent but it cannot be filtered for 100% correct results or sorting.
  *
  */
 
@@ -73,20 +72,35 @@ public class SeriesService extends IntentService {
 
             // Get series from "primary" URL
             JSONObject returnObject = httpClient.getCachedRequest(getCacheDir(), getString(R.string.service_catalog_series_url), 1440);
-            JSONArray items = null;
             if(httpClient.getResponseCode() == 200) {
-                items = returnObject.getJSONArray("items");
-            } else {
-                // Get series from backup URL
-                returnObject = httpClient.getCachedRequest(getCacheDir(), getString(R.string.service_catalog_series_backup_url), 1440);
-                if(httpClient.getResponseCode() == 200) {
-                    items = returnObject.getJSONArray("data");
-                } else {
-                    throw new HttpException(httpClient.getResponseCode() + ": " + httpClient.getResponseMessage());
+
+                JSONObject items = returnObject.getJSONObject(":items");
+
+                Iterator<String> keys = items.keys();
+                while (keys.hasNext()) {
+                    String key = keys.next();
+                    if (items.get(key) instanceof JSONObject) {
+                        JSONObject value = items.getJSONObject(key);
+                        if (value.has("title") && value.getString("title").equals("Bekijk deze volledige fictiereeksen")) {
+                            JSONArray itemsOrder = value.getJSONArray(":itemsOrder");
+                            for (int i = 0; i < itemsOrder.length(); i++) {
+                                String programName = itemsOrder.get(i).toString();
+                                Log.d(TAG, "Setting isSerie = true for: " + programName);
+                                programList.setIsSerie(programName);
+                            }
+                        }
+                    }
                 }
             }
 
-            if(items != null) {
+            // Get series from backup URL if series still empty
+            if(programList.getSeriesCount() == 0) {
+                returnObject = httpClient.getCachedRequest(getCacheDir(), getString(R.string.service_catalog_series_backup_url), 1440);
+                if (httpClient.getResponseCode() != 200) {
+                    throw new HttpException(httpClient.getResponseCode() + ": " + httpClient.getResponseMessage());
+                }
+
+                JSONArray items = returnObject.getJSONArray("data");
                 for (int i = 0; i < items.length(); i++) {
                     JSONObject programJSON = items.getJSONObject(i);
                     Log.d(TAG, "Setting isSerie = true for: " + programJSON.get("programName"));

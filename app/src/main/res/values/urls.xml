@@ -17,7 +17,7 @@
     <string name="service_epg_url">https://www.vrt.be/bin/epg/schedule.%s.json</string>
     <string name="service_resumepoints_url">https://video-user-data.vrt.be/resume_points</string>
     <string name="service_resumepoints_video_url">https://vrtnu-api.vrt.be/search?size=1&amp;facets[url]=%s</string>
-    <string name="service_catalog_series_url">https://www.vrt.be/vrtnu/jcr:content/par/list_946984311.model.json</string>
+    <string name="service_catalog_series_url">https://www.vrt.be/vrtnu/jcr:content/par.model.json</string>
     <string name="service_catalog_series_backup_url">https://search.vrt.be/suggest?facets[programTags.parentTitle]=Tijdsgerelateerd&amp;facets[assetStatus]=AVAILABLE&amp;facets[categories]=series</string>
     <string name="service_playertoken_player_token_server">https://media-services-public.vrt.be/vualto-video-aggregator-web/rest/external/v1/tokens</string>
     <string name="service_program_seasons_url">https://www.vrt.be/vrtnu/a-z/%s.model.json</string>
