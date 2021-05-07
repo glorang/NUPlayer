@@ -65,7 +65,7 @@ public class MainFragment extends HorizontalMenuFragment {
 
             String menuItem = menuItems[i];
 
-            Button button = createMenuButton(menuItem, menuIcons[i], 300);
+            Button button = createMenuButton(menuItem, menuIcons[i], 280);
 
             // Set click listener for search
             button.setOnClickListener(v -> {
