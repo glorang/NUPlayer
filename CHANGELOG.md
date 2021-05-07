@@ -1,3 +1,10 @@
+## v1.3.0 (2021-05-07)
+
+- Recreate GUI with horizontal top navigation
+- Implement Categories
+- Video will now pause immediately on first press
+- Fix Series listing pt 2
+
 ## v1.2.2 (2021-04-12)
 
 - Fix Series listing
