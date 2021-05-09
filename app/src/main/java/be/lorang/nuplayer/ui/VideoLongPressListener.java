@@ -101,7 +101,7 @@ public class VideoLongPressListener implements View.OnLongClickListener {
                             updateWatchLater(false);
                         }
 
-                        // Update adapters on HomeFragemnt
+                        // Update adapters on HomeFragment
                         notifyHomeFragment();
 
                     }
@@ -111,24 +111,16 @@ public class VideoLongPressListener implements View.OnLongClickListener {
         return false;
     }
 
-    // Refresh adapters on HomeFragment, there are probably better ways to do this but worksforme[tm]
-    // This function looks for:
-    // MainActivity -> Fragments -> MainFragment -> ChildFragments -> HomeFragment and then calls
-    // refreshAdapters() to make sure we remove adapters if they are (now) empty
+    // Refresh adapters on HomeFragment to make sure they are updated (add/remove/empty)
     private void notifyHomeFragment() {
 
         if(context instanceof MainActivity) {
             MainActivity activity = (MainActivity) context;
-            List<Fragment> mainFragments = activity.getSupportFragmentManager().getFragments();
-            for (Fragment fragment : mainFragments) {
-                if (fragment instanceof MainFragment) {
-                    MainFragment m = (MainFragment) fragment;
-                    List<Fragment> childFragments = m.getChildFragmentManager().getFragments();
-                    for (Fragment childFragment : childFragments) {
-                        if (childFragment instanceof HomeFragment) {
-                            HomeFragment homeFragment = (HomeFragment) childFragment;
-                            homeFragment.refreshAdapters();
-                        }
+            if(activity.getSupportFragmentManager() != null) {
+                for (Fragment fragment : activity.getSupportFragmentManager().getFragments()) {
+                    if (fragment instanceof HomeFragment) {
+                        HomeFragment homeFragment = (HomeFragment) fragment;
+                        homeFragment.refreshAdapters();
                     }
                 }
             }
