@@ -120,27 +120,6 @@ public class HomeFragment extends RowsSupportFragment {
         return view;
     }
 
-    /*
-     * When we open the app we want to hide the menu and only exit when the menu is visible (press return twice)
-     * This is *exactly* what:
-     *   setHeadersState(HEADERS_HIDDEN);
-     *   setHeadersTransitionOnBackEnabled(true);
-     * in MainFragment is supposed to do but doesn't work for on first load, I think there is some
-     * initial state bug, hence we solve this with a quick-and-dirty SharedPreference ¯\_(ツ)_/¯
-     */
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        SharedPreferences viewer = getActivity().getSharedPreferences(MainActivity.PREFERENCES_NAME, MODE_PRIVATE);
-        if(viewer.getBoolean(MainActivity.PREFERENCE_IS_APP_STARTUP, true)) {
-            view.requestFocus();
-            SharedPreferences.Editor editor = getActivity().getSharedPreferences(MainActivity.PREFERENCES_NAME, MODE_PRIVATE).edit();
-            editor.putBoolean(MainActivity.PREFERENCE_IS_APP_STARTUP, false);
-            editor.apply();
-        }
-    }
-
     @Override
     public void onResume() {
         super.onResume();
