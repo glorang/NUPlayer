@@ -31,11 +31,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.leanback.app.BrowseSupportFragment;
 
 import be.lorang.nuplayer.R;
@@ -58,6 +61,8 @@ public class SettingsFragment extends Fragment implements BrowseSupportFragment.
     private BrowseSupportFragment.MainFragmentAdapter mMainFragmentAdapter = new BrowseSupportFragment.MainFragmentAdapter(this);
     private static final String TAG = "SettingsFragment";
 
+    public final static String SETTING_DEVELOPER_MODE = "developerMode";
+
     private Intent catalogIntent;
     private Intent seriesIntent;
     private Intent accessTokenIntent;
@@ -71,9 +76,13 @@ public class SettingsFragment extends Fragment implements BrowseSupportFragment.
     private TextView JSONcacheField;
     private TextView loggedinField;
 
+    private Switch developerModeSwitch;
     private Button catalogButton;
     private Button cacheButton;
     private Button loginButton;
+
+    private LinearLayout catalogContainer;
+    private LinearLayout jsonCacheContainer;
 
     private ProgressBar catalogProgressBar;
 
@@ -92,24 +101,47 @@ public class SettingsFragment extends Fragment implements BrowseSupportFragment.
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View settingsFragment = inflater.inflate(R.layout.fragment_settings, container, false);
+        return inflater.inflate(R.layout.fragment_settings, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
 
         // get form text fields
-        catalogField = settingsFragment.findViewById(R.id.valueSettingsCatalog);
-        JSONcacheField = settingsFragment.findViewById(R.id.valueSettingsJSONCache);
-        loggedinField = settingsFragment.findViewById(R.id.valueSettingsLoggedIn);
+        catalogField = view.findViewById(R.id.valueSettingsCatalog);
+        JSONcacheField = view.findViewById(R.id.valueSettingsJSONCache);
+        loggedinField = view.findViewById(R.id.valueSettingsLoggedIn);
 
         // get form controls
-        catalogButton = settingsFragment.findViewById(R.id.buttonSettingsCatalogRefresh);
-        catalogProgressBar = settingsFragment.findViewById(R.id.progressBarSettingsCatalogRefresh);
-        cacheButton = settingsFragment.findViewById(R.id.buttonSettingsJSONCache);
-        loginButton = settingsFragment.findViewById(R.id.buttonSettingsLoggedIn);
+        developerModeSwitch = view.findViewById(R.id.switchDeveloperMode);
+        catalogButton = view.findViewById(R.id.buttonSettingsCatalogRefresh);
+        catalogProgressBar = view.findViewById(R.id.progressBarSettingsCatalogRefresh);
+        cacheButton = view.findViewById(R.id.buttonSettingsJSONCache);
+        loginButton = view.findViewById(R.id.buttonSettingsLoggedIn);
+
+        // get layouts only visible when developer mode enabled
+        catalogContainer = view.findViewById(R.id.catalogContainer);
+        jsonCacheContainer = view.findViewById(R.id.jsonCacheContainer);
 
         // set initial values
+        setDeveloperMode();
         setCatalogText(catalogField);
         setJSONCacheText(JSONcacheField);
         setLoginText(loggedinField);
         setLoginButtonState();
+
+        // developer mode switch listener
+        developerModeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            SharedPreferences.Editor editor = getActivity().getSharedPreferences(MainActivity.PREFERENCES_NAME, MODE_PRIVATE).edit();
+            editor.putBoolean(SETTING_DEVELOPER_MODE, isChecked);
+            editor.apply();
+
+            // Reload fragment
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.mainContainerLayout, new SettingsMainFragment());
+            fragmentTransaction.commit();
+
+        });
 
         // Catalog listener
         catalogButton.setOnClickListener(v -> {
@@ -194,7 +226,6 @@ public class SettingsFragment extends Fragment implements BrowseSupportFragment.
             setLoginButtonState();
         });
 
-        return settingsFragment;
     }
 
     private void setCatalogText(TextView field) {
@@ -219,6 +250,24 @@ public class SettingsFragment extends Fragment implements BrowseSupportFragment.
             catalogProgressBar.setVisibility(View.VISIBLE);
         }
     }
+
+    private void setDeveloperMode() {
+        SharedPreferences prefs = getActivity().getSharedPreferences(MainActivity.PREFERENCES_NAME, MODE_PRIVATE);
+        boolean developerMode = prefs.getBoolean(SETTING_DEVELOPER_MODE, false);
+        if(developerModeSwitch != null) {
+            developerModeSwitch.setChecked(developerMode);
+        }
+
+        if(developerMode) {
+            catalogContainer.setVisibility(View.VISIBLE);
+            jsonCacheContainer.setVisibility(View.VISIBLE);
+        } else {
+            catalogContainer.setVisibility(View.GONE);
+            jsonCacheContainer.setVisibility(View.GONE);
+        }
+
+    }
+
 
     private void setLoginButtonState() {
         SharedPreferences prefs = getActivity().getSharedPreferences(MainActivity.PREFERENCES_NAME, MODE_PRIVATE);

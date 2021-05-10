@@ -17,6 +17,7 @@
 
 package be.lorang.nuplayer.ui;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -24,7 +25,12 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 
 
+import java.util.Arrays;
+import java.util.List;
+
 import be.lorang.nuplayer.R;
+
+import static android.content.Context.MODE_PRIVATE;
 
 /*
  * Fragment that manages the Settings (sub)menu
@@ -34,6 +40,7 @@ public class SettingsMainFragment extends HorizontalMenuFragment {
 
     private static final String TAG = "SettingsMainFragment";
     private static final String[] menuItems = {"Settings", "Token status", "About"};
+    private static final List<String> menuItemsDeveloperModeOnly = Arrays.asList("Token status");
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -42,7 +49,12 @@ public class SettingsMainFragment extends HorizontalMenuFragment {
         LinearLayout menuNavigationContainer = view.findViewById(R.id.menuNavigationContainer);
         LinearLayout menuContentContainer = view.findViewById(R.id.menuContentContainer);
 
+        SharedPreferences prefs = getActivity().getSharedPreferences(MainActivity.PREFERENCES_NAME, MODE_PRIVATE);
+        boolean developerMode = prefs.getBoolean(SettingsFragment.SETTING_DEVELOPER_MODE, false);
+
         for(int i=0;i<menuItems.length;i++) {
+
+            if(menuItemsDeveloperModeOnly.contains(menuItems[i]) && !developerMode) { continue; }
 
             Button button = createMenuButton(menuItems[i]);
             button.setNextFocusUpId(R.id.buttonTopNavSettings);
