@@ -47,7 +47,7 @@ import java.util.List;
 
 public class CatalogFragment extends GridFragment {
     private final static String TAG = "CatalogFragment";
-    private static final int COLUMNS = 4;
+    private static final int COLUMNS = 5;
     private final int ZOOM_FACTOR = FocusHighlight.ZOOM_FACTOR_MEDIUM;
     private List<String> selectedBrands = new ArrayList<>();
     private ArrayObjectAdapter mAdapter;

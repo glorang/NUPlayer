@@ -1,49 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <LinearLayout
-            android:layout_width="180dp"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
+            android:id="@+id/brandCheckBoxes"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
             android:paddingLeft="20dp"
             android:paddingTop="10dp"
-            android:paddingRight="20dp">
-
-            <TextView
-                android:id="@+id/textView3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-condensed"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
-                android:paddingBottom="20dp"
-                android:text="Channels"
-                android:textAlignment="textStart"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <ScrollView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scrollbars="none">
-
-                <LinearLayout
-                    android:id="@+id/brandCheckBoxes"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical" />
-            </ScrollView>
-
-        </LinearLayout>
+            android:paddingRight="20dp"
+            android:paddingBottom="10dp" />
 
         <RelativeLayout
             android:id="@+id/CatalogLayout"

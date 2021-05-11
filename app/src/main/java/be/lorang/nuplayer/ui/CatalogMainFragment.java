@@ -23,12 +23,11 @@ package be.lorang.nuplayer.ui;
 
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -84,44 +83,10 @@ public class CatalogMainFragment extends Fragment {
         // Create FrameLayout
         FrameLayout frameLayout = new FrameLayout(getContext());
         frameLayout.setLayoutParams(new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                150, ViewGroup.LayoutParams.MATCH_PARENT));
         frameLayout.setPadding(5, 5, 5, 5);
 
-        // Add checkbox + listener
-        CheckBox checkBox = new CheckBox(getContext());
-
-        // slight abuse but whatever. How hard is it again to pass a simple String? DONOTWANT
-        checkBox.setContentDescription(brand);
-
-        checkBox.setLayoutParams(new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        checkBox.setBackground(getResources().getDrawable(R.drawable.button_default, null));
-
-        checkBox.setNextFocusRightId(R.id.catalogFragment);
-
-        checkBox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String selectedBrand = checkBox.getContentDescription().toString();
-                if(((CheckBox) view).isChecked()){
-                    if(!selectedBrands.contains(selectedBrand)) {
-                        selectedBrands.add(selectedBrand);
-                    }
-                } else {
-                    if(selectedBrands.contains(selectedBrand)) {
-                        selectedBrands.remove(selectedBrand);
-                    }
-                }
-                notifyChildFragment();
-            }
-        });
-
-        // Add image view with brand logo
-        ImageView imageView = new ImageView(getContext());
-        LinearLayout.LayoutParams imageViewLayoutParams = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, 30);
-        imageViewLayoutParams.setMargins(0, 15, 0, 15);
-        imageView.setLayoutParams(imageViewLayoutParams);
+        ImageButton imageButton = new ImageButton(getContext());
 
         int resourceID = getContext().getResources().getIdentifier(
                 "ic_" + brand.replaceAll("-", ""),
@@ -132,11 +97,32 @@ public class CatalogMainFragment extends Fragment {
             return null;
         }
 
-        imageView.setImageResource(resourceID);
+        imageButton.setBackground(getResources().getDrawable(R.drawable.button_border_bottom, null));
+        imageButton.setScaleType(ImageView.ScaleType.CENTER);
+        imageButton.setAdjustViewBounds(true);
+        imageButton.setImageResource(resourceID);
 
-        // Add checkbox + brand logo to framelayout
-        frameLayout.addView(checkBox);
-        frameLayout.addView(imageView);
+        // slight abuse but whatever. How hard is it again to pass a simple String? DONOTWANT
+        imageButton.setContentDescription(brand);
+
+        // focus Catalog submenu button on up
+        imageButton.setNextFocusUpId(R.id.buttonSubOnDemandCatalog);
+
+        imageButton.setOnClickListener(view -> {
+            String selectedBrand = imageButton.getContentDescription().toString();
+
+            if(selectedBrands.contains(selectedBrand)) {
+                selectedBrands.remove(selectedBrand);
+                imageButton.setBackground(getResources().getDrawable(R.drawable.button_border_bottom, null));
+            } else {
+                selectedBrands.add(selectedBrand);
+                imageButton.setBackground(getResources().getDrawable(R.drawable.button_border_bottom_selected, null));
+            }
+
+            notifyChildFragment();
+        });
+
+        frameLayout.addView(imageButton);
 
         return frameLayout;
     }
