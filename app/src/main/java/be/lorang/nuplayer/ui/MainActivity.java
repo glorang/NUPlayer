@@ -21,10 +21,14 @@ package be.lorang.nuplayer.ui;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.leanback.widget.SearchEditText;
 
 import java.net.CookieHandler;
 import java.net.CookieManager;
@@ -33,10 +37,9 @@ import be.lorang.nuplayer.R;
 import be.lorang.nuplayer.services.AuthService;
 import be.lorang.nuplayer.utils.HTTPClient;
 
-public class MainActivity extends LeanbackActivity {
+public class MainActivity extends FragmentActivity {
 
     public static String PREFERENCES_NAME = "VRTNUPreferences";
-    public static String PREFERENCE_IS_APP_STARTUP = "isAppStartup";
     private static String TAG = "MainActivity";
 
     @Override
@@ -72,6 +75,7 @@ public class MainActivity extends LeanbackActivity {
                 if(mainFragment != null) {
 
                     LinearLayout menuNavigationContainer = mainFragment.getView().findViewById(R.id.menuNavigationContainer);
+                    FrameLayout menuNavigationOverlay = mainFragment.getView().findViewById(R.id.menuNavigationOverlay);
                     if (menuNavigationContainer != null) {
 
                         // Check if any button has focus
@@ -113,6 +117,14 @@ public class MainActivity extends LeanbackActivity {
                             // Set focus to latest selected (sub)menu button
                             if (button != null) {
                                 button.requestFocus();
+                            }
+
+                            // Hide search bar
+                            SearchEditText searchText = findViewById(R.id.searchText);
+                            if(searchText != null && searchText.getWidth() > 0) {
+                                searchText.getLayoutParams().width = 0;
+                                menuNavigationOverlay.setFocusable(true);
+                                menuNavigationContainer.setVisibility(View.VISIBLE);
                             }
 
                         }

@@ -18,18 +18,28 @@
 
 package be.lorang.nuplayer.ui;
 
-import android.content.Intent;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ValueAnimator;
 import android.os.Bundle;
-
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
+
+import androidx.leanback.widget.SearchEditText;
 
 import be.lorang.nuplayer.R;
 
-public class MainFragment extends HorizontalMenuFragment {
+public class MainFragment extends HorizontalMenuFragment implements TextWatcher {
 
     private static final String TAG = "MainFragment";
 
@@ -37,16 +47,14 @@ public class MainFragment extends HorizontalMenuFragment {
             "Home",
             "TV guide",
             "On demand",
-            "Settings",
-            "Search"
+            "Settings"
     };
 
     private static final int[] menuIcons = {
             R.drawable.ic_baseline_home,
             R.drawable.ic_baseline_calendar_today,
             R.drawable.ic_baseline_movie,
-            R.drawable.ic_baseline_settings,
-            R.drawable.ic_baseline_search,
+            R.drawable.ic_baseline_settings
     };
 
     @Override
@@ -59,23 +67,89 @@ public class MainFragment extends HorizontalMenuFragment {
 
         LinearLayout menuNavigationContainer = view.findViewById(R.id.menuNavigationContainer);
         LinearLayout mainContainerLayout = view.findViewById(R.id.mainContainerLayout);
+        FrameLayout menuNavigationOverlay = view.findViewById(R.id.menuNavigationOverlay);
         setContentContainer(mainContainerLayout);
+
+        ImageButton searchButton = view.findViewById(R.id.searchButton);
+        SearchEditText searchText = view.findViewById(R.id.searchText);
+
+        // Set click listener for Search icon, this will slide in|out the search bar
+        if(searchButton != null && searchText != null) {
+            searchButton.setOnClickListener(v -> {
+
+                // Slide in search bar
+                if(searchText.getWidth() == 0) {
+
+                    // unset any previous search text
+                    searchText.setText(null);
+
+                    menuNavigationOverlay.setFocusable(false);
+                    menuNavigationContainer.setVisibility(View.GONE);
+
+                    ValueAnimator slideAnimator = ValueAnimator
+                            .ofInt(0, menuNavigationContainer.getWidth())
+                            .setDuration(500);
+
+                    slideAnimator.addUpdateListener(animation1 -> {
+                        Integer value = (Integer) animation1.getAnimatedValue();
+                        searchText.getLayoutParams().width = value.intValue();
+                        searchText.requestLayout();
+                    });
+
+                    slideAnimator.addListener(new AnimatorListenerAdapter() {
+                         @Override
+                         public void onAnimationEnd(Animator animation) {
+                             searchText.requestFocus();
+                         }
+                    });
+
+                    AnimatorSet animationSet = new AnimatorSet();
+                    animationSet.setInterpolator(new AccelerateInterpolator());
+                    animationSet.play(slideAnimator);
+                    animationSet.start();
+
+                    setSelectedFragment(new SearchFragment());
+                    loadFragment(R.id.mainContainerLayout);
+
+                // Slide out search bar
+                } else {
+
+                    ValueAnimator slideAnimator = ValueAnimator
+                            .ofInt(searchText.getWidth(), 0)
+                            .setDuration(500);
+
+                    slideAnimator.addUpdateListener(animation1 -> {
+                        Integer value = (Integer) animation1.getAnimatedValue();
+                        searchText.getLayoutParams().width = value.intValue();
+                        searchText.requestLayout();
+                    });
+
+                    slideAnimator.addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            menuNavigationOverlay.setFocusable(true);
+                            menuNavigationContainer.setVisibility(View.VISIBLE);
+                        }
+                    });
+
+                    AnimatorSet animationSet = new AnimatorSet();
+                    animationSet.setInterpolator(new DecelerateInterpolator());
+                    animationSet.play(slideAnimator);
+                    animationSet.start();
+
+                }
+
+            });
+        }
+
+        // Set search text listener to update search results
+        searchText.addTextChangedListener(this);
 
         for(int i=0;i<menuItems.length;i++) {
 
             String menuItem = menuItems[i];
 
             Button button = createMenuButton(menuItem, menuIcons[i], 280);
-
-            // Set click listener for search
-            button.setOnClickListener(v -> {
-                if (menuItem.equals("Search")) {
-                    if (getActivity() == null) {
-                        return;
-                    }
-                    startActivity(new Intent(getActivity(), SearchActivity.class));
-                }
-            });
 
             // Set focus listener for all (except search) menu items
             button.setOnFocusChangeListener((View.OnFocusChangeListener) (v, hasFocus) -> {
@@ -158,6 +232,24 @@ public class MainFragment extends HorizontalMenuFragment {
             setSelectedFragment(new HomeFragment());
             loadFragment(R.id.mainContainerLayout);
         }
+    }
+
+    // TextWatcher listener methods
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+        if(getLoadedFragment() instanceof SearchFragment) {
+            ((SearchFragment)getLoadedFragment()).setSearchQuery(s.toString());
+        }
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+
     }
 
 }
