@@ -2,7 +2,8 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/MainFrameLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/vrtnu_black_tint_2">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -38,11 +39,47 @@
 
                 </FrameLayout>
 
+                <ImageButton
+                    android:id="@+id/searchButton"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginLeft="150dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/button_border_bottom"
+                    android:src="@drawable/ic_baseline_search" />
+
+                <androidx.leanback.widget.SearchEditText
+                    android:id="@+id/searchText"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="start"
+                    android:layout_marginLeft="220dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginRight="50dp"
+                    android:background="@color/vrtnu_black_tint_2"
+                    android:cursorVisible="true"
+                    android:editable="true"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:fontFamily="sans-serif"
+                    android:gravity="center_vertical"
+                    android:hint="@string/lb_search_bar_hint"
+                    android:imeOptions="normal|flagNoExtractUi|actionSearch"
+                    android:inputType="text|textAutoComplete"
+                    android:paddingLeft="30dp"
+                    android:singleLine="true"
+                    android:textColor="@color/lb_search_bar_text"
+                    android:textColorHint="@color/lb_search_bar_hint"
+                    android:textCursorDrawable="@null"
+                    android:textSize="@dimen/lb_search_bar_text_size"
+                    android:visibility="visible" />
+
                 <LinearLayout
                     android:id="@+id/menuNavigationContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="170dp"
+                    android:layout_marginLeft="220dp"
                     android:layout_marginTop="20dp"
                     android:layout_marginRight="50dp"
                     android:orientation="horizontal" />
