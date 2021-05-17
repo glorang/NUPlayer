@@ -446,11 +446,17 @@ public class ProgramService extends IntentService {
 
     }
 
-    public static Video parseVideoFromJSON(JSONObject inputObject, String imageServer) throws JSONException{
+    public static Video parseVideoFromJSON(JSONObject inputObject, String imageServer) throws JSONException {
 
         // fields get with getString are mandatory and will throw a JSONException if not set
         // fields get with optString are optional and have a default value of ""
         String title = inputObject.getString(TAG_TITLE);
+
+        // Check if title ends with a date, if so, remove it
+        if(title.matches("^.*[0-9]{8}$")) {
+            title = title.substring(0, title.length() - 8);
+        }
+
         String description = inputObject.optString(TAG_DESCRIPTION);
         String seasonName = inputObject.optString(TAG_SEASONNAME);
         String seasonTitle = inputObject.optString(TAG_SEASONTITLE);
