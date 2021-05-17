@@ -22,6 +22,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
+import android.view.View;
 
 import androidx.leanback.app.VideoSupportFragment;
 import androidx.leanback.app.VideoSupportFragmentGlueHost;
@@ -29,6 +30,7 @@ import androidx.leanback.media.PlaybackGlue;
 
 import com.google.android.exoplayer2.ExoPlayer;
 
+import be.lorang.nuplayer.R;
 import be.lorang.nuplayer.model.Video;
 import be.lorang.nuplayer.services.StreamService;
 
@@ -84,6 +86,12 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
 
         playWhenReady(mMediaPlayerGlue);
 
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        playerAdapter.setSubtitleView(view.findViewById(R.id.leanback_subtitles));
     }
 
     static void playWhenReady(PlaybackGlue glue) {

@@ -34,6 +34,7 @@ import androidx.leanback.media.PlayerAdapter;
 import androidx.leanback.widget.Action;
 import androidx.leanback.widget.ArrayObjectAdapter;
 import androidx.leanback.widget.PlaybackControlsRow;
+import androidx.leanback.widget.SeekBar;
 
 import com.google.gson.Gson;
 
@@ -49,6 +50,8 @@ public class VideoMediaPlayerGlue<T extends PlayerAdapter> extends PlaybackTrans
 
     private static final String TAG = "VideoMediaPlayerGlue";
 
+    private PlaybackControlsRow.ClosedCaptioningAction closedCaptioningAction;
+
     private static final int TIMESEEK = 30; // in seconds
     private static final int MAX_MULTIPLIER = 5;
     private static final int MAX_BUTTON_COUNT = 5;
@@ -60,15 +63,31 @@ public class VideoMediaPlayerGlue<T extends PlayerAdapter> extends PlaybackTrans
 
     public VideoMediaPlayerGlue(Activity context, T impl) {
         super(context, impl);
+        closedCaptioningAction = new PlaybackControlsRow.ClosedCaptioningAction(context);
     }
 
     @Override
     protected void onCreatePrimaryActions(ArrayObjectAdapter adapter) {
         super.onCreatePrimaryActions(adapter);
+        adapter.add(closedCaptioningAction);
+    }
+
+    @Override
+    public void onActionClicked(Action action) {
+        if (action == closedCaptioningAction) {
+            PlaybackControlsRow.MultiAction multiAction = (PlaybackControlsRow.MultiAction) action;
+            multiAction.nextIndex();
+            notifyActionChanged(multiAction);
+            toggleClosedCaptions();
+        } else {
+            super.onActionClicked(action);
+        }
     }
 
     @Override
     public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+        View focusedView = v.findFocus();
 
         // Reset counters when other button is pressed
         if(prevKeyCode != keyCode) {
@@ -84,18 +103,22 @@ public class VideoMediaPlayerGlue<T extends PlayerAdapter> extends PlaybackTrans
                     return true;
                 case KeyEvent.KEYCODE_DPAD_RIGHT:
                 case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
-                    updateMultiplier(keyCode);
-                    fastForward();
-                    getControlsRow().setCurrentPosition(getPlayerAdapter().isPrepared() ? getPlayerAdapter().getCurrentPosition() : -1);
-                    prevKeyCode = keyCode;
-                    return true;
+                    if(focusedView instanceof SeekBar) {
+                        updateMultiplier(keyCode);
+                        fastForward();
+                        getControlsRow().setCurrentPosition(getPlayerAdapter().isPrepared() ? getPlayerAdapter().getCurrentPosition() : -1);
+                        prevKeyCode = keyCode;
+                        return true;
+                    }
                 case KeyEvent.KEYCODE_DPAD_LEFT:
                 case KeyEvent.KEYCODE_MEDIA_REWIND:
-                    updateMultiplier(keyCode);
-                    rewind();
-                    getControlsRow().setCurrentPosition(getPlayerAdapter().isPrepared() ? getPlayerAdapter().getCurrentPosition() : -1);
-                    prevKeyCode = keyCode;
-                    return true;
+                    if(focusedView instanceof SeekBar) {
+                        updateMultiplier(keyCode);
+                        rewind();
+                        getControlsRow().setCurrentPosition(getPlayerAdapter().isPrepared() ? getPlayerAdapter().getCurrentPosition() : -1);
+                        prevKeyCode = keyCode;
+                        return true;
+                    }
                 case KeyEvent.KEYCODE_MEDIA_STOP:
                     // Once the video is stopped we can no longer query it for its current position
                     // so we intercept KEYCODE_MEDIA_STOP here and update the video progress
@@ -148,6 +171,17 @@ public class VideoMediaPlayerGlue<T extends PlayerAdapter> extends PlaybackTrans
             getPlayerAdapter().pause();
         } else {
             getPlayerAdapter().play();
+        }
+    }
+
+    public void toggleClosedCaptions() {
+        ExoPlayerAdapter adapter = (ExoPlayerAdapter)getPlayerAdapter();
+        if(adapter != null) {
+            if(!adapter.getSubtitlesEnabled()) {
+                adapter.enableSubtitles();
+            } else {
+                adapter.disableSubtitles();
+            }
         }
     }
 

@@ -30,6 +30,7 @@ import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.SurfaceHolder;
 
 import com.google.android.exoplayer2.C;
@@ -42,7 +43,9 @@ import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector;
 import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.TrackGroupArray;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
+import com.google.android.exoplayer2.ui.SubtitleView;
 import com.google.android.exoplayer2.video.VideoListener;
 
 import java.io.UnsupportedEncodingException;
@@ -72,17 +75,29 @@ public class ExoPlayerAdapter extends PlayerAdapter implements ExoPlayer.EventLi
     String drmToken = "";
     boolean mHasDisplay;
     boolean mBufferingStart;
-    @C.StreamType int mAudioStreamType;
 
     private MediaSessionCompat mediaSession;
     private MediaSessionConnector mediaSessionConnector;
+
+    private DefaultTrackSelector trackSelector;
+    private boolean subtitlesEnabled = false;
+
     /**
      * Constructor.
      */
     public ExoPlayerAdapter(Context context, String program, String title) {
         mContext = context;
 
-        mPlayer = new SimpleExoPlayer.Builder(context).build();
+        trackSelector = new DefaultTrackSelector(context);
+
+        trackSelector.setParameters(
+                trackSelector
+                .buildUponParameters()
+                .setRendererDisabled(2, true)
+                .setPreferredTextLanguage("nl")
+        );
+
+        mPlayer = new SimpleExoPlayer.Builder(context).setTrackSelector(trackSelector).build();
         mPlayer.addListener(this);
         mPlayer.addVideoListener(this);
 
@@ -334,6 +349,42 @@ public class ExoPlayerAdapter extends PlayerAdapter implements ExoPlayer.EventLi
         if(mediaSession != null) {
             mediaSession.setActive(state);
         }
+    }
+
+    public void setSubtitleView(SubtitleView subtitleView) {
+        if (subtitleView != null) {
+            Player.TextComponent textComponent = mPlayer.getTextComponent();
+            textComponent.addTextOutput(subtitleView);
+
+            subtitleView.setApplyEmbeddedFontSizes(false);
+            subtitleView.setFixedTextSize(TypedValue.COMPLEX_UNIT_PX, 50);
+        }
+    }
+
+    public boolean getSubtitlesEnabled() {
+        return subtitlesEnabled;
+    }
+
+    public void enableSubtitles() {
+
+        trackSelector.setParameters(
+                trackSelector
+                .buildUponParameters()
+                .setRendererDisabled(2, false)
+        );
+
+        subtitlesEnabled = true;
+    }
+
+    public void disableSubtitles() {
+
+        trackSelector.setParameters(
+                trackSelector
+                .buildUponParameters()
+                .setRendererDisabled(2, true)
+        );
+
+        subtitlesEnabled = false;
     }
 
     /**
