@@ -374,6 +374,7 @@ public class ProgramService extends IntentService {
             }
 
             url = String.format(getString(R.string.service_program_program_url),
+                    program.getProgramType().equals("daily") ? "broadcastDate" : "episodeNumber",
                     defineSortOrder(program.getProgramType()),
                     Integer.toString(size),
                     Integer.toString(startIndex),
