@@ -19,18 +19,18 @@ For now only tested on Google 2020 Chromecast (the one with remote) and TADAAM T
 - TV Guide
 - Browsing the VRT.NU catalog
 - Playback of any on-demand program in the catalog
+- Categories
 - Latest episode listing
 - Series listing
 - Resume points
 - Favorites
 - Watch later
+- Closed captions
 
 ## Not (yet) implemented / known limitations / known bugs
 
 - TV Guide doesn't always navigate properly
-- Sort order of "Het Journaal" is wrong
 - The app might crash in rare cases, mostly when navigating too fast
-- The search can be voice controlled but is rather useless in English
 - EPG data is not updated when Live TV stream switches program
 - A lof of info is not displayed (Description, Geo-location availability, Age restrictions, Genre, etc etc)
 

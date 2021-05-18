@@ -1,3 +1,9 @@
+## v1.3.1 (2021-05-18)
+
+- Add Closed Captions
+- Integrate search into UI, disabled voice search
+- Fix sorting issue of daily shows (e.g. Het Journaal)
+
 ## v1.3.0 (2021-05-07)
 
 - Recreate GUI with horizontal top navigation
