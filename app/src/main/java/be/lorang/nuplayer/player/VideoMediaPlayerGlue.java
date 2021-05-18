@@ -98,9 +98,11 @@ public class VideoMediaPlayerGlue<T extends PlayerAdapter> extends PlaybackTrans
         if(event.getAction() == KeyEvent.ACTION_DOWN) {
             switch(keyCode) {
                 case KeyEvent.KEYCODE_DPAD_CENTER:
-                    togglePlayState();
-                    prevKeyCode = -1;
-                    return true;
+                    if(focusedView instanceof SeekBar) {
+                        togglePlayState();
+                        prevKeyCode = -1;
+                        return true;
+                    }
                 case KeyEvent.KEYCODE_DPAD_RIGHT:
                 case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
                     if(focusedView instanceof SeekBar) {
