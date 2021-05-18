@@ -32,7 +32,7 @@ For now only tested on Google 2020 Chromecast (the one with remote) and TADAAM T
 - TV Guide doesn't always navigate properly
 - The app might crash in rare cases, mostly when navigating too fast
 - EPG data is not updated when Live TV stream switches program
-- A lof of info is not displayed (Description, Geo-location availability, Age restrictions, Genre, etc etc)
+- A lof of info is not displayed (Description, Age restrictions, Genre, etc etc)
 
 # Installation
 
@@ -65,5 +65,16 @@ See [Changelog](CHANGELOG.md)
     <tr>
         <td><img src="screenshots/screenshot_journaal.png" width="400"></td>
         <td><img src="screenshots/screenshot_series.png" width="400"></td>
+    </tr>
+</table>
+
+<table>
+    <tr>
+        <th>TV Guide</th>
+        <th>Categories</th>
+    </tr>
+    <tr>
+        <td><img src="screenshots/screenshot_tvguide.png" width="400"></td>
+        <td><img src="screenshots/screenshot_categories.png" width="400"></td>
     </tr>
 </table>
