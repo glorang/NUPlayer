@@ -363,7 +363,7 @@ public class TVGuideFragment extends Fragment implements BrowseSupportFragment.M
                                     epgDescription.setText(Html.fromHtml(epgEntry.getDescription(), Html.FROM_HTML_MODE_COMPACT));
                                 }
 
-                                if (epgImage != null) {
+                                if (epgImage != null && getActivity() != null) {
                                     Glide.with(getActivity())
                                             .asBitmap()
                                             .load(epgEntry.getThumbnail())
