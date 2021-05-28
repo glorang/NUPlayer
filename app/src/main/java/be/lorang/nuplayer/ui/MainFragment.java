@@ -22,6 +22,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
+import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -30,6 +31,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -88,7 +91,7 @@ public class MainFragment extends HorizontalMenuFragment implements TextWatcher 
 
                     ValueAnimator slideAnimator = ValueAnimator
                             .ofInt(0, menuNavigationContainer.getWidth())
-                            .setDuration(500);
+                            .setDuration(200);
 
                     slideAnimator.addUpdateListener(animation1 -> {
                         Integer value = (Integer) animation1.getAnimatedValue();
@@ -116,7 +119,7 @@ public class MainFragment extends HorizontalMenuFragment implements TextWatcher 
 
                     ValueAnimator slideAnimator = ValueAnimator
                             .ofInt(searchText.getWidth(), 0)
-                            .setDuration(500);
+                            .setDuration(200);
 
                     slideAnimator.addUpdateListener(animation1 -> {
                         Integer value = (Integer) animation1.getAnimatedValue();
@@ -144,6 +147,23 @@ public class MainFragment extends HorizontalMenuFragment implements TextWatcher 
 
         // Set search text listener to update search results
         searchText.addTextChangedListener(this);
+
+        // show soft keyboard when searchText has focus
+        searchText.setOnFocusChangeListener((v, hasFocus) -> {
+            if(hasFocus) {
+                InputMethodManager in = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                in.showSoftInput(searchText, 0);
+            }
+        });
+
+        // hide soft keyboard when search is pressed
+        searchText.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                InputMethodManager in = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                in.hideSoftInputFromWindow(searchText.getWindowToken(), 0);
+            }
+            return false;
+        });
 
         for(int i=0;i<menuItems.length;i++) {
 
