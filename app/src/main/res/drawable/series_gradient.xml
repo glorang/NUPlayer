@@ -4,9 +4,11 @@
     <item>
         <shape android:shape="rectangle">
             <gradient
+                android:angle="0.0"
                 android:startColor="@color/vrtnu_black_tint_1"
                 android:centerColor="@color/vrtnu_black_tint_1_alpha_60"
-                android:endColor="@color/vrtnu_black_tint_1"/>
+                android:endColor="@color/vrtnu_black_tint_1_alpha_20"
+                android:type="linear" />
         </shape>
     </item>
 </layer-list>
