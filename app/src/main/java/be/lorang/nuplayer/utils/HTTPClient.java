@@ -159,7 +159,11 @@ public class HTTPClient {
 
             // read response
             StringBuilder sb = new StringBuilder();
-            reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), StandardCharsets.UTF_8));
+            try {
+                reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream(), StandardCharsets.UTF_8));
+            } catch(IOException ex) {
+                reader = new BufferedReader(new InputStreamReader(urlConnection.getErrorStream(), StandardCharsets.UTF_8));
+            }
             String line;
             while ((line = reader.readLine()) != null) {
                 sb.append(line);
