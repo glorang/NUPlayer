@@ -56,7 +56,7 @@ import be.lorang.nuplayer.utils.HTTPClient;
 
 import static android.content.Context.MODE_PRIVATE;
 
-public class SettingsFragment extends Fragment implements BrowseSupportFragment.MainFragmentAdapterProvider {
+public class SettingsFragment extends Fragment {
 
     private BrowseSupportFragment.MainFragmentAdapter mMainFragmentAdapter = new BrowseSupportFragment.MainFragmentAdapter(this);
     private static final String TAG = "SettingsFragment";
@@ -80,18 +80,15 @@ public class SettingsFragment extends Fragment implements BrowseSupportFragment.
     private Button catalogButton;
     private Button cacheButton;
     private Button loginButton;
+    private Button refreshTokenButton;
 
     private LinearLayout catalogContainer;
     private LinearLayout jsonCacheContainer;
+    private LinearLayout refreshTokenContainer;
 
     private ProgressBar catalogProgressBar;
 
-    private String xvrttoken;
-
-    @Override
-    public BrowseSupportFragment.MainFragmentAdapter getMainFragmentAdapter() {
-        return mMainFragmentAdapter;
-    }
+    private String vrtnu_site_profile_vt;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -118,10 +115,12 @@ public class SettingsFragment extends Fragment implements BrowseSupportFragment.
         catalogProgressBar = view.findViewById(R.id.progressBarSettingsCatalogRefresh);
         cacheButton = view.findViewById(R.id.buttonSettingsJSONCache);
         loginButton = view.findViewById(R.id.buttonSettingsLoggedIn);
+        refreshTokenButton = view.findViewById(R.id.buttonSettingsRefreshToken);
 
         // get layouts only visible when developer mode enabled
         catalogContainer = view.findViewById(R.id.catalogContainer);
         jsonCacheContainer = view.findViewById(R.id.jsonCacheContainer);
+        refreshTokenContainer = view.findViewById(R.id.refreshTokenContainer);
 
         // set initial values
         setDeveloperMode();
@@ -202,10 +201,10 @@ public class SettingsFragment extends Fragment implements BrowseSupportFragment.
                 editor.putBoolean(AuthService.COMPLETED_AUTHENTICATION, false);
                 editor.remove("firstName");
                 editor.remove("lastName");
-                editor.remove("X-VRT-Token");
-                editor.remove("vrtlogin-at");
-                editor.remove("vrtlogin-rt");
-                editor.remove("vrtlogin-expiry");
+                editor.remove("vrtnu-site_profile_dt");
+                editor.remove("vrtnu-site_profile_et");
+                editor.remove("vrtnu-site_profile_rt");
+                editor.remove("vrtnu-site_profile_vt");
                 editor.remove(VrtPlayerTokenService.VRTPLAYERTOKEN_ANONYMOUS);
                 editor.remove(VrtPlayerTokenService.VRTPLAYERTOKEN_ANONYMOUS_EXPIRY);
                 editor.remove(VrtPlayerTokenService.VRTPLAYERTOKEN_AUTHENTICATED);
@@ -224,6 +223,26 @@ public class SettingsFragment extends Fragment implements BrowseSupportFragment.
             setJSONCacheText(JSONcacheField);
             setLoginText(loggedinField);
             setLoginButtonState();
+        });
+
+        refreshTokenButton.setOnClickListener(v -> {
+
+            accessTokenIntent = new Intent(getActivity(), AccessTokenService.class);
+            accessTokenIntent.putExtra("FORCE_REFRESH", true);
+            accessTokenIntent.putExtra(AccessTokenService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
+                @Override
+                protected void onReceiveResult(int resultCode, Bundle resultData) {
+                    super.onReceiveResult(resultCode, resultData);
+                    if (resultCode == Activity.RESULT_OK) {
+                        Toast.makeText(getActivity(), "New token successfully obtained", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getActivity(), resultData.getString("MSG"), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+            getActivity().startService(accessTokenIntent);
+
         });
 
     }
@@ -261,9 +280,11 @@ public class SettingsFragment extends Fragment implements BrowseSupportFragment.
         if(developerMode) {
             catalogContainer.setVisibility(View.VISIBLE);
             jsonCacheContainer.setVisibility(View.VISIBLE);
+            refreshTokenContainer.setVisibility(View.VISIBLE);
         } else {
             catalogContainer.setVisibility(View.GONE);
             jsonCacheContainer.setVisibility(View.GONE);
+            refreshTokenContainer.setVisibility(View.GONE);
         }
 
     }
@@ -347,7 +368,7 @@ public class SettingsFragment extends Fragment implements BrowseSupportFragment.
             protected void onReceiveResult(int resultCode, Bundle resultData) {
                 super.onReceiveResult(resultCode, resultData);
                 if (resultCode == Activity.RESULT_OK) {
-                    xvrttoken = resultData.getString("X-VRT-Token", "");
+                    vrtnu_site_profile_vt = resultData.getString("vrtnu_site_profile_vt", "");
                     getActivity().startService(favoritesIntent);
                 } else {
                     // user not logged in
@@ -359,7 +380,7 @@ public class SettingsFragment extends Fragment implements BrowseSupportFragment.
 
         favoritesIntent = new Intent(getActivity(), FavoriteService.class);
         favoritesIntent.putExtra("ACTION", FavoriteService.ACTION_GET);
-        favoritesIntent.putExtra("X-VRT-Token", xvrttoken);
+        favoritesIntent.putExtra("vrtnu_site_profile_vt", vrtnu_site_profile_vt);
         favoritesIntent.putExtra(FavoriteService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
             @Override
             protected void onReceiveResult(int resultCode, Bundle resultData) {
