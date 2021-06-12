@@ -54,7 +54,7 @@ public class FavoriteService extends IntentService {
 
     private HTTPClient httpClient = new HTTPClient();
     private Bundle resultData = new Bundle();
-    private String xvrttoken = "";
+    private String vrtnu_site_profile_vt = "";
 
     public FavoriteService() {
         super(TAG);
@@ -68,7 +68,7 @@ public class FavoriteService extends IntentService {
         try {
 
             String action = workIntent.getExtras().getString("ACTION");
-            xvrttoken = workIntent.getExtras().getString("X-VRT-Token", "");
+            vrtnu_site_profile_vt = workIntent.getExtras().getString("vrtnu_site_profile_vt", "");
 
             switch (action) {
                 case FavoriteService.ACTION_GET:
@@ -102,8 +102,8 @@ public class FavoriteService extends IntentService {
         }
 
         Map<String, String> headers = new HashMap<>();
-        if(xvrttoken.length() > 0) {
-            headers.put("authorization", "Bearer " + xvrttoken);
+        if(vrtnu_site_profile_vt.length() > 0) {
+            headers.put("authorization", "Bearer " + vrtnu_site_profile_vt);
         }
 
         JSONObject returnObject = httpClient.getRequest(getString(R.string.service_catalog_favorites_url), headers);
@@ -150,8 +150,8 @@ public class FavoriteService extends IntentService {
         Log.d(TAG, "Updating Favorite, url = " + url + " post data = " + postData);
 
         Map<String, String> headers = new HashMap<>();
-        if(xvrttoken.length() > 0) {
-            headers.put("authorization", "Bearer " + xvrttoken);
+        if(vrtnu_site_profile_vt.length() > 0) {
+            headers.put("authorization", "Bearer " + vrtnu_site_profile_vt);
         }
 
         httpClient.postRequest(url, "application/json", postData, headers);

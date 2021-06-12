@@ -80,10 +80,10 @@ public class TokenStatusFragment extends Fragment implements BrowseSupportFragme
         prefKeyToLabel.put(VrtPlayerTokenService.VRTPLAYERTOKEN_ANONYMOUS_EXPIRY, "text_vrtPlayerTokenAnonDate");
         prefKeyToLabel.put(VrtPlayerTokenService.VRTPLAYERTOKEN_AUTHENTICATED, "text_vrtPlayerTokenAuth");
         prefKeyToLabel.put(VrtPlayerTokenService.VRTPLAYERTOKEN_AUTHENTICATED_EXPIRY, "text_vrtPlayerTokenAuthDate");
-        prefKeyToLabel.put("X-VRT-Token", "text_xvrttoken");
-        prefKeyToLabel.put("vrtlogin-at", "text_vrtlogin_at");
-        prefKeyToLabel.put("vrtlogin-rt", "text_vrtlogin_rt");
-        prefKeyToLabel.put("vrtlogin-expiry", "text_vrtlogin_expiry");
+        prefKeyToLabel.put("vrtnu-site_profile_dt", "text_vrtnu_site_profile_dt");
+        prefKeyToLabel.put("vrtnu-site_profile_et", "text_vrtnu_site_profile_et");
+        prefKeyToLabel.put("vrtnu-site_profile_rt", "text_vrtnu_site_profile_rt");
+        prefKeyToLabel.put("vrtnu-site_profile_vt", "text_vrtnu_site_profile_vt");
 
         // Update TextFields
         for (Map.Entry<String, String> entry : prefKeyToLabel.entrySet()) {
@@ -112,10 +112,10 @@ public class TokenStatusFragment extends Fragment implements BrowseSupportFragme
 
                 // dates in a cookie (timestamp format)
                 try {
-                    if(entry.getKey().equals("X-VRT-Token") ||
-                            entry.getKey().equals("vrtlogin-at") ||
-                            entry.getKey().equals("vrtlogin-rt") ||
-                            entry.getKey().equals("vrtlogin-expiry")
+                    if(entry.getKey().equals("vrtnu-site_profile_dt") ||
+                            entry.getKey().equals("vrtnu-site_profile_et") ||
+                            entry.getKey().equals("vrtnu-site_profile_rt") ||
+                            entry.getKey().equals("vrtnu-site_profile_vt")
                     ) {
                         JSONObject cookieJSON = new JSONObject(value);
                         long expireDate = cookieJSON.getLong("whenCreated") +

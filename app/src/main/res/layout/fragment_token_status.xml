@@ -72,36 +72,35 @@
                         android:text="Auth vrtPlayerToken expiry" />
 
                     <TextView
-                        android:id="@+id/label_xvrtplayer"
+                        android:id="@+id/label_vrtnu_site_profile_dt"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:paddingRight="50dp"
-                        android:text="X-VRT-Token" />
+                        android:text="vrtnu-site_profile_dt (profile)" />
 
                     <TextView
-                        android:id="@+id/label_vrtlogin_at"
+                        android:id="@+id/label_vrtnu_site_profile_et"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:paddingRight="50dp"
-                        android:text="vrtlogin-at" />
+                        android:text="vrtnu-site_profile_et (expiry)" />
 
                     <TextView
-                        android:id="@+id/label_vrtlogin_rt"
+                        android:id="@+id/label_vrtnu_site_profile_rt"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:paddingRight="50dp"
-                        android:text="vrtlogin-rt" />
-
+                        android:text="vrtnu-site_profile_rt (refresh)" />
                     <TextView
-                        android:id="@+id/label_vrtlogin_expiry"
+                        android:id="@+id/label_vrtnu_site_profile_vt"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:paddingRight="50dp"
-                        android:text="vrtlogin-expiry" />
+                        android:text="vrtnu-site_profile_vt (player)" />
 
                 </LinearLayout>
 
@@ -132,22 +131,22 @@
                         android:layout_height="wrap_content" />
 
                     <TextView
-                        android:id="@+id/text_xvrttoken"
+                        android:id="@+id/text_vrtnu_site_profile_dt"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 
                     <TextView
-                        android:id="@+id/text_vrtlogin_at"
+                        android:id="@+id/text_vrtnu_site_profile_et"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 
                     <TextView
-                        android:id="@+id/text_vrtlogin_rt"
+                        android:id="@+id/text_vrtnu_site_profile_rt"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 
                     <TextView
-                        android:id="@+id/text_vrtlogin_expiry"
+                        android:id="@+id/text_vrtnu_site_profile_vt"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 

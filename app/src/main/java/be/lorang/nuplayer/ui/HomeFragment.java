@@ -91,7 +91,7 @@ public class HomeFragment extends RowsSupportFragment {
     private boolean favoritesLoaded = false;
     private boolean resumePointsLoaded = false;
 
-    private String xvrttoken;
+    private String vrtnu_site_profile_vt;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -101,8 +101,6 @@ public class HomeFragment extends RowsSupportFragment {
         setupAdapters();
 
         // setup intents for all stuff we want to add to the front page
-        setupResumePointsIntent();
-        setupFavoritesIntent();
         setupAccessTokenIntent();
 
         // add live TV
@@ -309,13 +307,15 @@ public class HomeFragment extends RowsSupportFragment {
                     // return if activity got destroyed in the mean time
                     if(getActivity() == null) { return ; }
 
-                    // Store X-VRT-Token
-                    xvrttoken = resultData.getString("X-VRT-Token", "");
+                    // Store vrtnu_site_profile_vt
+                    vrtnu_site_profile_vt = resultData.getString("vrtnu_site_profile_vt", "");
 
                     // Get Favorites
+                    setupFavoritesIntent();
                     getActivity().startService(favoritesIntent);
 
                     // Get Watch Later + Continue Watching
+                    setupResumePointsIntent();
                     getActivity().startService(resumePointsIntent);
 
                 } else {
@@ -344,7 +344,8 @@ public class HomeFragment extends RowsSupportFragment {
 
         favoritesIntent = new Intent(getActivity(), FavoriteService.class);
         favoritesIntent.putExtra("ACTION", FavoriteService.ACTION_GET);
-        favoritesIntent.putExtra("X-VRT-Token", xvrttoken);
+        favoritesIntent.putExtra("vrtnu_site_profile_vt", vrtnu_site_profile_vt);
+        Log.d(TAG, "vrtnu_site_profile_vt = " + vrtnu_site_profile_vt);
         favoritesIntent.putExtra(FavoriteService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
             @Override
             protected void onReceiveResult(int resultCode, Bundle resultData) {
@@ -381,7 +382,7 @@ public class HomeFragment extends RowsSupportFragment {
 
         resumePointsIntent = new Intent(getActivity(), ResumePointsService.class);
         resumePointsIntent.putExtra("ACTION", ResumePointsService.ACTION_GET);
-        resumePointsIntent.putExtra("X-VRT-Token", xvrttoken);
+        resumePointsIntent.putExtra("vrtnu_site_profile_vt", vrtnu_site_profile_vt);
         resumePointsIntent.putExtra(ResumePointsService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
             @Override
             protected void onReceiveResult(int resultCode, Bundle resultData) {

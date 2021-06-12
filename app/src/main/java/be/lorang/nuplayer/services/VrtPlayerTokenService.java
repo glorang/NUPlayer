@@ -82,21 +82,21 @@ public class VrtPlayerTokenService extends IntentService {
 
             // get passed token type
             String tokenType = workIntent.getExtras().getString("TOKEN_TYPE", VRTPLAYERTOKEN_ANONYMOUS);
-            String xvrttoken = workIntent.getExtras().getString("X-VRT-Token", "");
+            String vrtnu_site_profile_vt = workIntent.getExtras().getString("vrtnu_site_profile_vt", "");
 
             postData = new JSONObject();
 
-            if(tokenType.equals(VRTPLAYERTOKEN_AUTHENTICATED) && xvrttoken.length() == 0) {
+            if(tokenType.equals(VRTPLAYERTOKEN_AUTHENTICATED) && vrtnu_site_profile_vt.length() == 0) {
                 resultData.putString("MSG", "Trying to get authenticated vrtPlayerToken without logging in.");
                 receiver.send(Activity.RESULT_CANCELED, resultData);
                 return;
-            } else if(tokenType.equals(VRTPLAYERTOKEN_AUTHENTICATED) && xvrttoken.length() > 0) {
+            } else if(tokenType.equals(VRTPLAYERTOKEN_AUTHENTICATED) && vrtnu_site_profile_vt.length() > 0) {
 
                 sharedPrefTokenTarget = VRTPLAYERTOKEN_AUTHENTICATED;
                 sharedPrefExpiryTarget = VRTPLAYERTOKEN_AUTHENTICATED_EXPIRY;
 
-                // add X-VRT-Token
-                postData.put("identityToken", xvrttoken);
+                // add vrtnu_site_profile_vt token
+                postData.put("identityToken", vrtnu_site_profile_vt);
             }
 
             JSONObject returnData = httpClient.postRequest(

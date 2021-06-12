@@ -44,9 +44,9 @@ import java.util.Iterator;
 import java.util.Map;
 
 /*
- * This class will provide valid vrtnutoken (X-VRT-Token) and vrtprofiletoken (vrtlogin-at) tokens
+ * This class will provide valid vrtnu-site_profile_{dt,vt} tokens
  *
- * If any of the tokens are expired they will be refreshed, given the refresh token (vrtlogin-rt)
+ * If any of the tokens are expired they will be refreshed, given the refresh token (vrtnu-site_profile_rt)
  * is still valid, it this is not the case we return false and the calling Fragment should start
  * a new Auth intent
  *
@@ -66,6 +66,11 @@ public class AccessTokenService extends IntentService {
     private String vrtloginRtJSON;
     private String vrtloginExpiryJSON;
 
+    private String vrtnu_site_profile_dt_json;
+    private String vrtnu_site_profile_et_json;
+    private String vrtnu_site_profile_rt_json;
+    private String vrtnu_site_profile_vt_json;
+
     private SharedPreferences.Editor editor;
     private Iterator cookieIterator;
     private JSONObject returnObject;
@@ -81,6 +86,9 @@ public class AccessTokenService extends IntentService {
 
         try {
 
+            // Check for 'force' boolean
+            Boolean forceRefresh = workIntent.getExtras().getBoolean("FORCE_REFRESH", false);
+
             // Open SharedPreferences
             editor = getSharedPreferences(MainActivity.PREFERENCES_NAME, MODE_PRIVATE).edit();
 
@@ -91,15 +99,20 @@ public class AccessTokenService extends IntentService {
             vrtloginRtJSON = prefs.getString("vrtlogin-rt", null);
             vrtloginExpiryJSON = prefs.getString("vrtlogin-expiry", null);
 
-            // Check if existing X-VRT-Token contains Gson serialized Cookie, if not (<= 1.0.1-beta)
-            // force user to re-authenticate
-            if(xvrttokenJSON != null && !xvrttokenJSON.startsWith("{")) {
-                xvrttokenJSON = null;
-            }
+            vrtnu_site_profile_dt_json = prefs.getString("vrtnu-site_profile_dt", null);
+            vrtnu_site_profile_et_json = prefs.getString("vrtnu-site_profile_et", null);
+            vrtnu_site_profile_rt_json = prefs.getString("vrtnu-site_profile_rt", null);
+            vrtnu_site_profile_vt_json = prefs.getString("vrtnu-site_profile_vt", null);
+
+            // Check if legacy cookies are set, if so, unset them. To be removed in a later NUPlayer version
+            if(xvrttokenJSON != null) { editor.remove("X-VRT-Token"); }
+            if(vrtloginAtJSON != null) { editor.remove("vrtlogin-at"); }
+            if(vrtloginRtJSON != null) { editor.remove("vrtlogin-rt"); }
+            if(vrtloginExpiryJSON != null) { editor.remove("vrtlogin-expiry"); }
 
             // If any of the cookies is missing force user to re-authenticate
-            if(xvrttokenJSON == null || vrtloginAtJSON == null ||
-                    vrtloginRtJSON == null || vrtloginExpiryJSON == null) {
+            if(vrtnu_site_profile_dt_json == null || vrtnu_site_profile_et_json == null ||
+                    vrtnu_site_profile_rt_json == null || vrtnu_site_profile_vt_json == null) {
                 Log.d(TAG, "Cookies missing, user must re-authenticate");
                 editor.putBoolean(AuthService.COMPLETED_AUTHENTICATION, false);
                 editor.apply();
@@ -108,23 +121,23 @@ public class AccessTokenService extends IntentService {
             }
 
             // Parse cookies
-            HttpCookie xvrttoken = new Gson().fromJson(xvrttokenJSON, HttpCookie.class);
-            HttpCookie vrtlogin_at = new Gson().fromJson(vrtloginAtJSON, HttpCookie.class);
-            HttpCookie vrtlogin_rt = new Gson().fromJson(vrtloginRtJSON, HttpCookie.class);
-            HttpCookie vrtlogin_expiry = new Gson().fromJson(vrtloginExpiryJSON, HttpCookie.class);
+            HttpCookie vrtnu_site_profile_dt_cookie = new Gson().fromJson(vrtnu_site_profile_dt_json, HttpCookie.class);
+            HttpCookie vrtnu_site_profile_et_cookie = new Gson().fromJson(vrtnu_site_profile_et_json, HttpCookie.class);
+            HttpCookie vrtnu_site_profile_rt_cookie = new Gson().fromJson(vrtnu_site_profile_rt_json, HttpCookie.class);
+            HttpCookie vrtnu_site_profile_vt_cookie = new Gson().fromJson(vrtnu_site_profile_vt_json, HttpCookie.class);
 
             // Add cookies to running CookieStore, this will make sure all Cookies are sent
             // on every HTTP request we make. CookieManager is non-persistent/in-memory only.
             CookieManager cookieManager = (CookieManager) CookieHandler.getDefault();
             CookieStore cookieStore = cookieManager.getCookieStore();
-            cookieStore.add(URI.create(xvrttoken.getDomain()), xvrttoken);
-            cookieStore.add(URI.create(vrtlogin_at.getDomain()), vrtlogin_at);
-            cookieStore.add(URI.create(vrtlogin_rt.getDomain()), vrtlogin_rt);
-            cookieStore.add(URI.create(vrtlogin_expiry.getDomain()), vrtlogin_expiry);
+            cookieStore.add(URI.create(vrtnu_site_profile_dt_cookie.getDomain()), vrtnu_site_profile_dt_cookie);
+            cookieStore.add(URI.create(vrtnu_site_profile_et_cookie.getDomain()), vrtnu_site_profile_et_cookie);
+            cookieStore.add(URI.create(vrtnu_site_profile_rt_cookie.getDomain()), vrtnu_site_profile_rt_cookie);
+            cookieStore.add(URI.create(vrtnu_site_profile_vt_cookie.getDomain()), vrtnu_site_profile_vt_cookie);
 
             // If our refresh token has expired we need to re-authenticate
-            if(vrtlogin_rt.hasExpired()) {
-                Log.d(TAG, "vrtlogin-rt expired, user must re-authenticate");
+            if(vrtnu_site_profile_rt_cookie.hasExpired()) {
+                Log.d(TAG, "vrtnu_site_profile_rt_cookie expired, user must re-authenticate");
                 editor.putBoolean(AuthService.COMPLETED_AUTHENTICATION, false);
                 editor.apply();
                 receiver.send(Activity.RESULT_CANCELED, resultData);
@@ -132,19 +145,26 @@ public class AccessTokenService extends IntentService {
             }
 
             // Refresh tokens if expired
-            if(xvrttoken.hasExpired() || vrtlogin_at.hasExpired()) {
+            if(vrtnu_site_profile_vt_cookie.hasExpired() || forceRefresh) {
 
                 Log.d(TAG, "Token expired, refreshing");
-                Log.d(TAG, "xvrttoken = " + xvrttokenJSON);
-                Log.d(TAG, "vrtlogin_at = " + vrtloginAtJSON);
+                Log.d(TAG, "Force = " + forceRefresh);
+                Log.d(TAG, "vrtnu_site_profile_vt = " + vrtnu_site_profile_vt_json);
 
-                returnObject = httpClient.getRequest(
-                        getString(R.string.service_access_token_refresh));
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Referer", getString(R.string.service_auth_referer_link));
+
+                returnObject = httpClient.getRequest(getString(R.string.service_access_token_refresh), headers);
 
                 Log.d(TAG, "Refresh token result = " + returnObject.toString());
 
                 if(httpClient.getResponseCode() != 200) {
-                    throw new HttpException(httpClient.getResponseCode() + ": " + httpClient.getResponseMessage());
+                    String errorMsg = "";
+                    if(returnObject.has("error")) {
+                        errorMsg = returnObject.getString("error");
+                    }
+                    errorMsg += " - " + httpClient.getResponseCode() + ": " + httpClient.getResponseMessage();
+                    throw new HttpException(errorMsg);
                 }
 
                 // Store cookies
@@ -152,10 +172,10 @@ public class AccessTokenService extends IntentService {
                 while(cookieIterator.hasNext()) {
                     HttpCookie cookie = (HttpCookie)cookieIterator.next();
                     String cookieName = cookie.getName();
-                    if(cookieName.equals("X-VRT-Token") ||
-                            cookieName.equals("vrtlogin-at") ||
-                            cookieName.equals("vrtlogin-rt") ||
-                            cookieName.equals("vrtlogin-expiry")
+                    if(cookieName.equals("vrtnu-site_profile_dt") ||
+                            cookieName.equals("vrtnu-site_profile_et") ||
+                            cookieName.equals("vrtnu-site_profile_rt") ||
+                            cookieName.equals("vrtnu-site_profile_vt")
                     ) {
                         Log.d(TAG, "Setting cookie as preference = " + new Gson().toJson(cookie, HttpCookie.class));
                         editor.putString(cookie.getName(), new Gson().toJson(cookie, HttpCookie.class));
@@ -166,18 +186,12 @@ public class AccessTokenService extends IntentService {
                 editor.apply();
             }
 
-            // Return X-VRT-Token and vrtlogin-at values
-            xvrttokenJSON = prefs.getString("X-VRT-Token", null);
-            vrtloginAtJSON = prefs.getString("vrtlogin-at", null);
+            // Return vrtnu-site_profile_vt token
+            vrtnu_site_profile_vt_json = prefs.getString("vrtnu-site_profile_vt", null);
 
-            if(xvrttokenJSON != null) {
-                HttpCookie resultToken = new Gson().fromJson(xvrttokenJSON, HttpCookie.class);
-                resultData.putString("X-VRT-Token", resultToken.getValue());
-            }
-
-            if(vrtloginAtJSON != null) {
-                HttpCookie resultToken = new Gson().fromJson(vrtloginAtJSON, HttpCookie.class);
-                resultData.putString("vrtlogin-at", resultToken.getValue());
+            if(vrtnu_site_profile_vt_json != null) {
+                HttpCookie resultToken = new Gson().fromJson(vrtnu_site_profile_vt_json, HttpCookie.class);
+                resultData.putString("vrtnu_site_profile_vt", resultToken.getValue());
             }
 
             receiver.send(Activity.RESULT_OK, resultData);

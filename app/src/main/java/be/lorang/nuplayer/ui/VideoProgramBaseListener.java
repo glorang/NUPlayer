@@ -148,9 +148,9 @@ public class VideoProgramBaseListener {
                             // return if activity got destroyed in the mean time
                             if(activity == null) { return; }
 
-                            String token = resultData.getString("X-VRT-Token", "");
-                            Log.d(TAG, "Successfully obtained X-VRT-Token:" + token);
-                            playerTokenIntent.putExtra("X-VRT-Token", token);
+                            String token = resultData.getString("vrtnu_site_profile_vt", "");
+                            Log.d(TAG, "Successfully obtained vrtnu_site_profile_vt:" + token);
+                            playerTokenIntent.putExtra("vrtnu_site_profile_vt", token);
                             activity.startService(playerTokenIntent);
                         }
                     }
