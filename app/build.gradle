@@ -47,6 +47,10 @@ dependencies {
 
     implementation 'com.github.bumptech.glide:glide:4.11.0'
 
+    implementation 'com.squareup.okhttp3:okhttp:4.9.0'
+    implementation 'com.squareup.okhttp3:okhttp-urlconnection:4.9.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.9.0'
+
     implementation 'com.google.android.exoplayer:exoplayer:2.12.2'
     implementation 'com.google.android.exoplayer:extension-leanback:2.12.2'
     implementation 'com.google.android.exoplayer:exoplayer-dash:2.12.2'
