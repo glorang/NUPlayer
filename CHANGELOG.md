@@ -1,3 +1,8 @@
+## v1.3.2 (2021-06-12)
+
+- Update to new VRT.NU cookie names and SSO URLs (#6)
+- Some minor bug fixes and improvements
+
 ## v1.3.1 (2021-05-18)
 
 - Add Closed Captions
