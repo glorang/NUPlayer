@@ -51,6 +51,12 @@ public class MainActivity extends FragmentActivity {
         SharedPreferences prefs = getSharedPreferences(MainActivity.PREFERENCES_NAME, MODE_PRIVATE);
         boolean isAuthenticated = prefs.getBoolean(AuthService.COMPLETED_AUTHENTICATION, false);
 
+        // Temporary check to force re-authentication if using old cookie names
+        String xvrttoken = prefs.getString("X-VRT-Token", null);
+        if(xvrttoken != null && xvrttoken.length() > 0) {
+            isAuthenticated = false;
+        }
+
         // Start Login Activity if not
         if(!isAuthenticated) {
             startActivity(new Intent(this, LoginActivity.class));
