@@ -5,11 +5,11 @@
 <resources>
     <!-- PROD -->
     <string name="model_image_server">https://images.vrt.be</string>
-    <string name="service_auth_initlogin_server">https://token.vrt.be/vrtnuinitlogin?provider=site&amp;destination=https://www.vrt.be/vrtnu/</string>
-    <string name="service_auth_performlogin_server">https://login.vrt.be/perform_login?client_id=vrtnu-site</string>
+    <string name="service_auth_referer_link">https://www.vrt.be/vrtnu/</string>
+    <string name="service_auth_initlogin_server">https://www.vrt.be/vrtnu/sso/login?scope=openid,mid</string>
+    <string name="service_auth_performlogin_server">https://login.vrt.be/perform_login</string>
     <string name="service_auth_authentication_server">https://accounts.vrt.be/accounts.login</string>
-    <string name="service_auth_token_server">https://token.vrt.be</string>
-    <string name="service_access_token_refresh">https://token.vrt.be/refreshtoken?legacy=false</string>
+    <string name="service_access_token_refresh">https://www.vrt.be/vrtnu/sso/refresh</string>
     <string name="service_catalog_catalog_url">https://vrtnu-api.vrt.be/suggest?facets[transcodingStatus]=AVAILABLE&amp;facets[programType]=%s</string>
     <string name="service_catalog_favorites_url">https://video-user-data.vrt.be/favorites</string>
     <string name="service_categories_url">https://www.vrt.be/vrtnu/categorieen.model.json</string>

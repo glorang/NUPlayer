@@ -25,44 +25,53 @@ import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.util.Log;
 
-import com.bumptech.glide.load.HttpException;
 import com.google.gson.Gson;
 
+import be.lorang.nuplayer.BuildConfig;
 import be.lorang.nuplayer.R;
-import be.lorang.nuplayer.utils.HTTPClient;
 import be.lorang.nuplayer.ui.MainActivity;
+import okhttp3.FormBody;
+import okhttp3.JavaNetCookieJar;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.net.CookieHandler;
+import java.net.CookieManager;
 import java.net.HttpCookie;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 /*
- * This class will take care of VRT authentication. Authentication is a multi-step process.
+ * This class will take care of VRT authentication. Authentication is a multi-step process:
+ *  - First you need to get oidcstate, OIDCXSRF and SESSION cookies from "service_auth_initlogin_server"
+ *  - Next, you need to authenticate the user's credentials against "service_auth_authentication_server"
+ *      This will give you a JSON response of which you need UID, UIDSignature and signatureTimestamp
+ *  - Finally you can get VRT.NU tokens (as cookies) from "service_auth_performlogin_server"
+ *    using previously received data + value of OIDCXSRF + static clientID
  *
- * Once authenticated you'll receive a X-VRT-Token, vrtlogin-at, vrtlogin-rt and vrtlogin-expiry cookie
+ * When the last step is completed you'll receive following cookies:
  *
- *  - X-VRT-Token: used for all media playback, valid for 1 hour
- *  - vrtlogin-at (access token): used for accessing Resume Points, Favorites, Watch later etc, valid for 1 hour
- *  - vrtlogin-rt (refresh token): used to refresh vrtlogin-at and X-VRT-Token, valid for 1 year
- *  - vrtlogin-expiry, timestamp when X-VRT-Token and vrtlogin-at will expire, cookie itself is valid for 1 year
+ *  - vrtnu-site_profile_dt (name unknown) : contains your entire VRT profile, stored but unused for now, valid for 1 hour
+ *  - vrtnu-site_profile_et (end time) : contains timestamp when _dt and _vt expire (in 1 hour), cookie itself is valid for 350(?) days
+ *  - vrtnu-site_profile_rt (refresh token) : refresh token, valid for 1 year
+ *  - vrtnu-site_profile_vt (vrt.nu token) : used for all video, watch later, resume point, ... requests. valid for 1 hour
  *
- * Every time you refresh your token (AccessTokenService) vrtlogin-at and X-VRT-Token are valid again for 1 hour.
- * vrtlogin-rt and vrtlogin-expiry are currently set to expire after 1 year.
+ * Every time you refresh your token (AccessTokenService) vrtnu-site_profile_dt and vrtnu-site_profile_vt are valid again for 1 hour.
  *
- * - They do not auto extend but this might "magically" be the case when expiry dates comes closer
- * - If you call refresh token without vrtlogin-at and X-VRT-Token cookies set you get a new vrtlogin-{rt,expiry}
- *   again valid for 1 year but unsure if this is the purpose
- *
- * X-VRT-Token and vrtlogin-at are always refreshed at the same time
+ * vrtnu-site_profile_dt and vrtnu-site_profile_vt are always refreshed at the same time
  *
  * The statically defined "gigyApiKey" is some static API key valid for everybody
  * using the official VRT.NU app / website. It can be obtained from the backendData tag
  * on the login page at:
  * https://token.vrt.be/vrtnuinitlogin?provider=site&destination=https://www.vrt.be/vrtnu/
+ *
+ * The project's HTTPClient from Utils was unable to authenticate anymore, it has been replaced by
+ * OkHttp library, it is only in use here in AuthService. All other Services are still using our own
+ * HTTPClient, the JSON caching feature is still heavily used but can probably be replaced by OkHttp's Caching
  *
  */
 
@@ -72,7 +81,11 @@ public class AuthService extends IntentService {
     public final static String BUNDLED_LISTENER = "listener";
     public final static String COMPLETED_AUTHENTICATION = "completedAuthentication";
 
-    private HTTPClient httpClient = new HTTPClient();
+    private JavaNetCookieJar cookieJar;
+    private CookieManager cookieManager;
+    private OkHttpClient httpClient;
+    private Request request;
+
     private Bundle resultData = new Bundle();
 
     private String UID;
@@ -83,8 +96,7 @@ public class AuthService extends IntentService {
     private String sessionCookie = "";
 
     // processing variables
-    private int statusCode;
-    private JSONObject postData;
+    private RequestBody postData;
     private JSONObject returnObject;
     private SharedPreferences.Editor editor;
     private SharedPreferences prefs;
@@ -109,20 +121,35 @@ public class AuthService extends IntentService {
 
         try {
 
+            // setup OkHttp client and cookiejar
+            cookieManager = (CookieManager)CookieHandler.getDefault();
+            cookieJar = new JavaNetCookieJar(cookieManager);
+            httpClient = new OkHttpClient()
+                    .newBuilder()
+                    .cookieJar(cookieJar)
+                    .build();
+
+            // Remove all previous cookies
+            cookieManager.getCookieStore().removeAll();
+
             // get passed data
             String loginID = workIntent.getExtras().getString("loginID");
             String password = workIntent.getExtras().getString("password");
 
             Log.d(TAG, "Start authentication, username = " + loginID);
 
-            // Get OIDCXSRF and SESSION cookie from init login
-            httpClient.getRequest(getString(R.string.service_auth_initlogin_server));
+            // Get OIDCXSRF cookie
+            request = new Request.Builder()
+                    .url(getString(R.string.service_auth_initlogin_server))
+                    .addHeader("User-Agent", "NUPlayer/" + BuildConfig.VERSION_NAME)
+                    .addHeader("Referer", getString(R.string.service_auth_referer_link))
+                    .build();
 
-            if (httpClient.getResponseCode() != 200) {
-                throw new HttpException(httpClient.getResponseCode() + ": " + httpClient.getResponseMessage());
+            try (Response response = httpClient.newCall(request).execute()) {
+                if (!response.isSuccessful()) throw new IOException(response.code() + ": " + response.message());
             }
 
-            cookieIterator = httpClient.getCookies().getCookieStore().getCookies().iterator();
+            cookieIterator = cookieManager.getCookieStore().getCookies().iterator();
             while(cookieIterator.hasNext()) {
                 HttpCookie cookie = (HttpCookie)cookieIterator.next();
                 if(cookie.getName().equals("OIDCXSRF")) {
@@ -140,30 +167,23 @@ public class AuthService extends IntentService {
             Log.d(TAG, "Set xsrf = " + xsrfCookie);
 
             // Perform Login
-            postData = new JSONObject();
-            postData.put("loginID", loginID);
-            postData.put("password", password);
-            postData.put("sessionExpiration", sessionExpiration);
-            postData.put("APIKey", gigyaApiKey);
-            postData.put("targetEnv", targetEnv);
+            postData = new FormBody.Builder()
+                    .add("loginID", loginID)
+                    .add("password", password)
+                    .add("sessionExpiration", sessionExpiration)
+                    .add("APIKey", gigyaApiKey)
+                    .add("targetEnv", targetEnv)
+                    .build();
 
-            returnObject = httpClient.postRequest(
-                    getString(R.string.service_auth_authentication_server),
-                    "application/x-www-form-urlencoded", postData);
+            request = new Request.Builder()
+                    .url(getString(R.string.service_auth_authentication_server))
+                    .addHeader("User-Agent", "NUPlayer/" + BuildConfig.VERSION_NAME)
+                    .post(postData)
+                    .build();
 
-            Log.d(TAG, "Result authentication = " + returnObject.toString());
-
-            statusCode = returnObject.getInt("statusCode");
-            if(statusCode != 200) {
-                String message = "";
-                try {
-                    message = returnObject.getString("errorDetails");
-                }catch (JSONException e) {
-                    message = statusCode + ": " + httpClient.getResponseMessage();
-                    e.printStackTrace();
-                }
-
-                throw new HttpException(message);
+            try (Response response = httpClient.newCall(request).execute()) {
+                if (!response.isSuccessful()) throw new IOException(response.code() + ": " + response.message());
+                returnObject = new JSONObject(response.body().string());
             }
 
             UID = returnObject.getString("UID");
@@ -181,30 +201,34 @@ public class AuthService extends IntentService {
             editor.putString("firstName", profile.getString("firstName"));
             editor.putString("lastName", profile.getString("lastName"));
 
-            // get X-VRT-Token, vrtlogin-{at,rt,expiry} cookies
-            postData = new JSONObject();
-            postData.put("UID", UID);
-            postData.put("UIDSignature", UIDSignature);
-            postData.put("signatureTimestamp", signatureTimestamp);
-            postData.put("client_id", clientID);
-            postData.put("_csrf", xsrfCookie);
+            // get vrtnu-site_profile_{dt,et,rt,vt} cookies
+            postData = new FormBody.Builder()
+                    .add("UID", UID)
+                    .add("UIDSignature", UIDSignature)
+                    .add("signatureTimestamp", signatureTimestamp)
+                    .add("client_id", clientID)
+                    .add("_csrf", xsrfCookie)
+                    .build();
 
-            httpClient.postRequest(getString(R.string.service_auth_performlogin_server),
-                    "application/x-www-form-urlencoded", postData);
+            request = new Request.Builder()
+                    .url(getString(R.string.service_auth_performlogin_server))
+                    .addHeader("User-Agent", "NUPlayer/" + BuildConfig.VERSION_NAME)
+                    .post(postData)
+                    .build();
 
-            if(httpClient.getResponseCode() != 200) {
-                throw new HttpException(httpClient.getResponseCode() + ": " + httpClient.getResponseMessage());
+            try (Response response = httpClient.newCall(request).execute()) {
+                if (!response.isSuccessful()) throw new IOException(response.code() + ": " + response.message());
             }
 
-            cookieIterator = httpClient.getCookies().getCookieStore().getCookies().iterator();
+            cookieIterator = cookieManager.getCookieStore().getCookies().iterator();
             int cookiesCount = 0;
             while(cookieIterator.hasNext()) {
                 HttpCookie cookie = (HttpCookie)cookieIterator.next();
                 String cookieName = cookie.getName();
-                if(cookieName.equals("X-VRT-Token") ||
-                        cookieName.equals("vrtlogin-at") ||
-                        cookieName.equals("vrtlogin-rt") ||
-                        cookieName.equals("vrtlogin-expiry")
+                if(cookieName.equals("vrtnu-site_profile_dt") ||
+                        cookieName.equals("vrtnu-site_profile_et") ||
+                        cookieName.equals("vrtnu-site_profile_rt") ||
+                        cookieName.equals("vrtnu-site_profile_vt")
                 ) {
                     Log.d(TAG, "Setting cookie as preference = " + new Gson().toJson(cookie, HttpCookie.class));
                     editor.putString(cookie.getName(), new Gson().toJson(cookie, HttpCookie.class));
@@ -212,7 +236,7 @@ public class AuthService extends IntentService {
                 }
             }
 
-            // we expect 4 cookies: X-VRT-Token, vrtlogin-{at,rt,expiry} to be set at this point
+            // we expect 4 cookies: vrtnu-site_profile_{dt,et,rt,vt} to be set at this point
             // any missing cookie is considered a failure
             if(cookiesCount == 4) {
                 editor.putBoolean(AuthService.COMPLETED_AUTHENTICATION, true);

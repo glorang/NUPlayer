@@ -75,7 +75,7 @@ public class ResumePointsService extends IntentService {
 
     private HTTPClient httpClient = new HTTPClient();
     private Bundle resultData = new Bundle();
-    private String xvrttoken = "";
+    private String vrtnu_site_profile_vt = "";
     private Video video;
 
     public ResumePointsService() {
@@ -90,7 +90,7 @@ public class ResumePointsService extends IntentService {
         try {
 
             String action = workIntent.getExtras().getString("ACTION");
-            xvrttoken = workIntent.getExtras().getString("X-VRT-Token", "");
+            vrtnu_site_profile_vt = workIntent.getExtras().getString("vrtnu_site_profile_vt", "");
 
             switch(action) {
                 case ResumePointsService.ACTION_GET:
@@ -131,8 +131,8 @@ public class ResumePointsService extends IntentService {
 
         // Get all resume points from VRT
         Map<String, String> headers = new HashMap<>();
-        if(xvrttoken.length() > 0){
-            headers.put("authorization", "Bearer " + xvrttoken);
+        if(vrtnu_site_profile_vt.length() > 0){
+            headers.put("authorization", "Bearer " + vrtnu_site_profile_vt);
         }
 
         JSONObject returnObject = httpClient.getRequest(getString(R.string.service_resumepoints_url), headers);
@@ -314,8 +314,8 @@ public class ResumePointsService extends IntentService {
         String url = getString(R.string.service_resumepoints_url) + "/" + assetPath;
 
         Map<String, String> headers = new HashMap<>();
-        if(xvrttoken.length() > 0) {
-            headers.put("authorization", "Bearer " + xvrttoken);
+        if(vrtnu_site_profile_vt.length() > 0) {
+            headers.put("authorization", "Bearer " + vrtnu_site_profile_vt);
         }
 
         httpClient.postRequest(url, "application/json", postData, headers);
@@ -366,8 +366,8 @@ public class ResumePointsService extends IntentService {
         String url = getString(R.string.service_resumepoints_url) + "/" + assetPath;
 
         Map<String, String> headers = new HashMap<>();
-        if(xvrttoken.length() > 0) {
-            headers.put("authorization", "Bearer " + xvrttoken);
+        if(vrtnu_site_profile_vt.length() > 0) {
+            headers.put("authorization", "Bearer " + vrtnu_site_profile_vt);
         }
 
         httpClient.postRequest(url, "application/json", postData, headers);

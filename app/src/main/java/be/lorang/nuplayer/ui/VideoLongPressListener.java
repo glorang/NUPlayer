@@ -141,7 +141,7 @@ public class VideoLongPressListener implements View.OnLongClickListener {
 
                     Intent resumePointsIntent = new Intent(context, ResumePointsService.class);
                     resumePointsIntent.putExtra("ACTION", ResumePointsService.ACTION_UPDATE_RESUME_POINT);
-                    resumePointsIntent.putExtra("X-VRT-Token", resultData.getString("X-VRT-Token"));
+                    resumePointsIntent.putExtra("vrtnu_site_profile_vt", resultData.getString("vrtnu_site_profile_vt"));
                     resumePointsIntent.putExtra("PLAYER_CURRENT_POSITION", video.getDuration());
                     resumePointsIntent.putExtra("VIDEO_OBJECT", new Gson().toJson(video));
 
@@ -179,7 +179,7 @@ public class VideoLongPressListener implements View.OnLongClickListener {
 
                     Intent resumePointsIntent = new Intent(context, ResumePointsService.class);
                     resumePointsIntent.putExtra("ACTION", ResumePointsService.ACTION_UPDATE_WATCH_LATER);
-                    resumePointsIntent.putExtra("X-VRT-Token", resultData.getString("X-VRT-Token"));
+                    resumePointsIntent.putExtra("vrtnu_site_profile_vt", resultData.getString("vrtnu_site_profile_vt"));
                     resumePointsIntent.putExtra("VIDEO_OBJECT", new Gson().toJson(video));
                     resumePointsIntent.putExtra("WATCH_LATER", watchLater);
 
