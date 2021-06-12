@@ -103,6 +103,7 @@ public class VideoMediaPlayerGlue<T extends PlayerAdapter> extends PlaybackTrans
                         prevKeyCode = -1;
                         return true;
                     }
+                    break;
                 case KeyEvent.KEYCODE_DPAD_RIGHT:
                 case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
                     if(focusedView instanceof SeekBar) {
@@ -112,6 +113,7 @@ public class VideoMediaPlayerGlue<T extends PlayerAdapter> extends PlaybackTrans
                         prevKeyCode = keyCode;
                         return true;
                     }
+                    break;
                 case KeyEvent.KEYCODE_DPAD_LEFT:
                 case KeyEvent.KEYCODE_MEDIA_REWIND:
                     if(focusedView instanceof SeekBar) {
@@ -121,6 +123,7 @@ public class VideoMediaPlayerGlue<T extends PlayerAdapter> extends PlaybackTrans
                         prevKeyCode = keyCode;
                         return true;
                     }
+                    break;
                 case KeyEvent.KEYCODE_MEDIA_STOP:
                     // Once the video is stopped we can no longer query it for its current position
                     // so we intercept KEYCODE_MEDIA_STOP here and update the video progress
@@ -129,6 +132,7 @@ public class VideoMediaPlayerGlue<T extends PlayerAdapter> extends PlaybackTrans
                         updateVideoProgress();
                     }
                     buttonCount++;
+                    break;
             }
         }
 
