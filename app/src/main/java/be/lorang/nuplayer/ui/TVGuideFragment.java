@@ -364,6 +364,10 @@ public class TVGuideFragment extends Fragment implements BrowseSupportFragment.M
                                 }
 
                                 if (epgImage != null && getActivity() != null) {
+
+                                    // https://github.com/bumptech/glide/issues/1484
+                                    if(getActivity().isFinishing() || getActivity().isDestroyed()) { return; }
+
                                     Glide.with(getActivity())
                                             .asBitmap()
                                             .load(epgEntry.getThumbnail())
