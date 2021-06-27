@@ -30,6 +30,9 @@
         android:theme="@style/Theme.Leanback"
         tools:ignore="GoogleAppIndexingWarning">
         <service
+            android:name=".services.LogoutService"
+            android:exported="false" />
+        <service
             android:name=".services.CategoryService"
             android:exported="false" />
         <service

@@ -43,15 +43,12 @@ import androidx.leanback.app.BrowseSupportFragment;
 
 import be.lorang.nuplayer.R;
 import be.lorang.nuplayer.model.ProgramList;
-import be.lorang.nuplayer.model.ResumePointList;
-import be.lorang.nuplayer.model.VideoContinueWatchingList;
-import be.lorang.nuplayer.model.VideoWatchLaterList;
 import be.lorang.nuplayer.services.AccessTokenService;
 import be.lorang.nuplayer.services.AuthService;
 import be.lorang.nuplayer.services.CatalogService;
 import be.lorang.nuplayer.services.FavoriteService;
+import be.lorang.nuplayer.services.LogoutService;
 import be.lorang.nuplayer.services.SeriesService;
-import be.lorang.nuplayer.services.VrtPlayerTokenService;
 import be.lorang.nuplayer.utils.HTTPClient;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -67,6 +64,7 @@ public class SettingsFragment extends Fragment {
     private Intent seriesIntent;
     private Intent accessTokenIntent;
     private Intent favoritesIntent;
+    private Intent logoutIntent;
 
     private boolean catalogLoaded;
     private boolean seriesLoaded;
@@ -89,6 +87,8 @@ public class SettingsFragment extends Fragment {
     private ProgressBar catalogProgressBar;
 
     private String vrtnu_site_profile_vt;
+
+    private int LOGIN_ACTIVITY = 0x1234;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -177,52 +177,36 @@ public class SettingsFragment extends Fragment {
         loginButton.setOnClickListener(v -> {
 
             SharedPreferences prefs = getActivity().getSharedPreferences(MainActivity.PREFERENCES_NAME, MODE_PRIVATE);
-            SharedPreferences.Editor editor = getActivity().getSharedPreferences(MainActivity.PREFERENCES_NAME, MODE_PRIVATE).edit();
             boolean isAuthenticated = prefs.getBoolean(AuthService.COMPLETED_AUTHENTICATION, false);
 
             if(isAuthenticated) {
 
-                // Clear catalog
-                ProgramList.getInstance().clear();
+                logoutIntent = new Intent(getActivity(), LogoutService.class);
+                logoutIntent.putExtra(LogoutService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
+                    @Override
+                    protected void onReceiveResult(int resultCode, Bundle resultData) {
+                        super.onReceiveResult(resultCode, resultData);
 
-                // Cleare Resume Points
-                ResumePointList.getInstance().clear();
+                        // show messages, if any
+                        if (resultData.getString("MSG", "").length() > 0) {
+                            Toast.makeText(getActivity(), resultData.getString("MSG"), Toast.LENGTH_SHORT).show();
+                        }
 
-                // Clear continue watching
-                VideoContinueWatchingList.getInstance().clear();
+                        // Update text fields with new status
+                        setCatalogText(catalogField);
+                        setJSONCacheText(JSONcacheField);
+                        setLoginText(loggedinField);
+                        setLoginButtonState();
+                    }
+                });
 
-                // Clear Watch Later
-                VideoWatchLaterList.getInstance().clear();
-
-                // Clear all caches
-                HTTPClient.clearCache(getActivity().getCacheDir());
-
-                // Unset all shared pref keys
-                editor.putBoolean(AuthService.COMPLETED_AUTHENTICATION, false);
-                editor.remove("firstName");
-                editor.remove("lastName");
-                editor.remove("vrtnu-site_profile_dt");
-                editor.remove("vrtnu-site_profile_et");
-                editor.remove("vrtnu-site_profile_rt");
-                editor.remove("vrtnu-site_profile_vt");
-                editor.remove(VrtPlayerTokenService.VRTPLAYERTOKEN_ANONYMOUS);
-                editor.remove(VrtPlayerTokenService.VRTPLAYERTOKEN_ANONYMOUS_EXPIRY);
-                editor.remove(VrtPlayerTokenService.VRTPLAYERTOKEN_AUTHENTICATED);
-                editor.remove(VrtPlayerTokenService.VRTPLAYERTOKEN_AUTHENTICATED_EXPIRY);
-                editor.apply();
+                getActivity().startService(logoutIntent);
 
             } else {
-
                 // Start loginActivity
-                startActivity(new Intent(getActivity(), LoginActivity.class));
-
+                startActivityForResult(new Intent(getActivity(), LoginActivity.class), LOGIN_ACTIVITY);
             }
 
-            // Update text fields with new status
-            setCatalogText(catalogField);
-            setJSONCacheText(JSONcacheField);
-            setLoginText(loggedinField);
-            setLoginButtonState();
         });
 
         refreshTokenButton.setOnClickListener(v -> {
@@ -245,6 +229,38 @@ public class SettingsFragment extends Fragment {
 
         });
 
+    }
+
+    // Called when authentication activity is completed
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == LOGIN_ACTIVITY) {
+
+            SharedPreferences prefs = getActivity().getSharedPreferences(MainActivity.PREFERENCES_NAME, MODE_PRIVATE);
+            boolean isAuthenticated = prefs.getBoolean(AuthService.COMPLETED_AUTHENTICATION, false);
+
+            if(isAuthenticated) {
+
+                // Update text fields with new status
+                setCatalogText(catalogField);
+                setJSONCacheText(JSONcacheField);
+
+                catalogLoaded = false;
+                seriesLoaded = false;
+                favoritesLoaded = false;
+                setCatalogButtonState();
+
+                getActivity().startService(catalogIntent);
+            }
+
+            // Update text fields with new status
+            setCatalogText(catalogField);
+            setJSONCacheText(JSONcacheField);
+            setLoginText(loggedinField);
+            setLoginButtonState();
+        }
     }
 
     private void setCatalogText(TextView field) {
