@@ -53,11 +53,15 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
         if(getActivity() == null) { return; }
 
         // get Video object and videoUrl from VideoPlaybackActivity (still not sure this is how it's done)
-        VideoPlaybackActivity vpa = (VideoPlaybackActivity) getActivity();
+        if (getActivity() instanceof VideoPlaybackActivity) {
+            VideoPlaybackActivity vpa = (VideoPlaybackActivity) getActivity();
+            video = vpa.getVideo();
+            videoUrl = vpa.getVideoUrl();
+            drmToken = vpa.getDrmToken();
+        }
 
-        video = vpa.getVideo();
-        videoUrl = vpa.getVideoUrl();
-        drmToken = vpa.getDrmToken();
+        // return if video null
+        if(video == null) { return; }
 
         playerAdapter = new ExoPlayerAdapter(getActivity(), video.getProgram(), video.getTitle());
         mMediaPlayerGlue = new VideoMediaPlayerGlue(getActivity(), playerAdapter);
