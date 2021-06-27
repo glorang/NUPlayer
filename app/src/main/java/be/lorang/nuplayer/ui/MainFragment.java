@@ -26,6 +26,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -269,6 +270,48 @@ public class MainFragment extends HorizontalMenuFragment implements TextWatcher 
 
     @Override
     public void afterTextChanged(Editable s) {
+
+    }
+
+    public void fadeInMainMenuBar() {
+
+        if(getView() == null) { return; }
+
+        LinearLayout menuNavigation = getView().findViewById(R.id.menuNavigation);
+
+        if(menuNavigation != null) {
+
+            int height = menuNavigation.getLayoutParams().height;
+
+            if(menuNavigation.getVisibility() == View.INVISIBLE) {
+
+                // Set height to 0
+                menuNavigation.getLayoutParams().height = 0;
+                menuNavigation.requestLayout();
+
+                // Make nav visible
+                menuNavigation.setVisibility(View.VISIBLE);
+
+                // Fade in
+                ValueAnimator slideAnimator = ValueAnimator
+                        .ofInt(0, height)
+                        .setDuration(500);
+
+                slideAnimator.addUpdateListener(animation -> {
+                    Integer value = (Integer) animation.getAnimatedValue();
+                    menuNavigation.getLayoutParams().height = value.intValue();
+                    menuNavigation.requestLayout();
+                });
+
+                AnimatorSet animationSet = new AnimatorSet();
+                animationSet.setInterpolator(new AccelerateInterpolator());
+                animationSet.setStartDelay(500);
+                animationSet.play(slideAnimator);
+                animationSet.start();
+
+            }
+
+        }
 
     }
 

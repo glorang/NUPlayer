@@ -163,6 +163,7 @@ public class HomeFragment extends RowsSupportFragment {
             if(getFragmentManager() != null) {
                 for (Fragment fragment : getFragmentManager().getFragments()) {
                     if (fragment instanceof MainFragment) {
+                        ((MainFragment) fragment).fadeInMainMenuBar();
                         ((MainFragment) fragment).hideProgressBar();
                     }
                 }
