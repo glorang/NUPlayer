@@ -59,6 +59,8 @@ public class VideoMediaPlayerGlue<T extends PlayerAdapter> extends PlaybackTrans
     private int buttonCount = 0;
     private int currentMultiplier = 1;
 
+    private int previousPosition = -1;
+
     private final Handler handler = new Handler(Looper.getMainLooper());
 
     public VideoMediaPlayerGlue(Activity context, T impl) {
@@ -241,7 +243,9 @@ public class VideoMediaPlayerGlue<T extends PlayerAdapter> extends PlaybackTrans
         VideoPlaybackActivity vpa = (VideoPlaybackActivity) getContext();
         Video video = vpa.getVideo();
         int position = (int)(getPlayerAdapter().getCurrentPosition() / 1000);
-        if(position == 0) { return; }
+        if(position == 0 || position == previousPosition) { return; }
+
+        previousPosition = position;
 
         Log.d(TAG, "Setting position = " + position + " total = " + video.getDuration());
 
@@ -282,23 +286,9 @@ public class VideoMediaPlayerGlue<T extends PlayerAdapter> extends PlaybackTrans
     @Override
     protected void onPlayStateChanged() {
         Log.d(TAG, "In onPlayStateChanged");
-
-        // Stopped or paused, update progress
-        if(!getPlayerAdapter().isPlaying()) {
-                updateVideoProgress();
-        }
-
-        super.onPlayStateChanged();
-    }
-
-    @Override
-    protected void onDetachedFromHost() {
-        Log.d(TAG, "On detached from host");
-
-        // Return from ExoPLayer, update Video progress
         updateVideoProgress();
 
-        super.onDetachedFromHost();
+        super.onPlayStateChanged();
     }
 
 }
