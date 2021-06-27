@@ -127,7 +127,7 @@ public class VideoLongPressListener implements View.OnLongClickListener {
         }
     }
 
-    // remove from continue watching by settings progress == video length (this is what VRT.NU does)
+    // remove from continue watching
     private void removeFromContinueWatching() {
 
         if(context == null || video == null) { return; }
@@ -140,9 +140,8 @@ public class VideoLongPressListener implements View.OnLongClickListener {
                 if (resultCode == Activity.RESULT_OK) {
 
                     Intent resumePointsIntent = new Intent(context, ResumePointsService.class);
-                    resumePointsIntent.putExtra("ACTION", ResumePointsService.ACTION_UPDATE_RESUME_POINT);
+                    resumePointsIntent.putExtra("ACTION", ResumePointsService.ACTION_DELETE_RESUME_POINT);
                     resumePointsIntent.putExtra("vrtnu_site_profile_vt", resultData.getString("vrtnu_site_profile_vt"));
-                    resumePointsIntent.putExtra("PLAYER_CURRENT_POSITION", video.getDuration());
                     resumePointsIntent.putExtra("VIDEO_OBJECT", new Gson().toJson(video));
 
                     resumePointsIntent.putExtra(ResumePointsService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
