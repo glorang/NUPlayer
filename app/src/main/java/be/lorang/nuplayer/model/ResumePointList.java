@@ -63,6 +63,14 @@ public class ResumePointList {
         resumePoints.remove(resumePoint);
     }
 
+    public void remove(Video video) {
+        for (ResumePoint resumePoint : resumePoints) {
+            if(resumePoint.getUrl().equals(video.getURL())) {
+                resumePoints.remove(resumePoint);
+            }
+        }
+    }
+
     public boolean setProgress(Video video, int position) {
         int progress = (int) (((double) position / video.getDuration()) * 100);
 

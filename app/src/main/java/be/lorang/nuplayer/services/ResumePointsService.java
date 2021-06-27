@@ -27,6 +27,7 @@ import android.util.Log;
 import com.bumptech.glide.load.HttpException;
 import com.google.gson.Gson;
 
+import be.lorang.nuplayer.BuildConfig;
 import be.lorang.nuplayer.R;
 import be.lorang.nuplayer.model.ResumePoint;
 import be.lorang.nuplayer.model.ResumePointList;
@@ -36,6 +37,9 @@ import be.lorang.nuplayer.model.VideoList;
 import be.lorang.nuplayer.model.VideoWatchLaterList;
 import be.lorang.nuplayer.utils.HTTPClient;
 import be.lorang.nuplayer.model.ProgramList;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -71,6 +75,7 @@ public class ResumePointsService extends IntentService {
 
     public final static String ACTION_GET = "getContinueWatchingWatchLater";
     public final static String ACTION_UPDATE_RESUME_POINT = "updateResumePoint";
+    public final static String ACTION_DELETE_RESUME_POINT = "deleteResumePoint";
     public final static String ACTION_UPDATE_WATCH_LATER = "updateWatchLater";
 
     private HTTPClient httpClient = new HTTPClient();
@@ -100,6 +105,10 @@ public class ResumePointsService extends IntentService {
                     video = new Gson().fromJson(workIntent.getExtras().getString("VIDEO_OBJECT"), Video.class);
                     int position = workIntent.getExtras().getInt("PLAYER_CURRENT_POSITION");
                     updateResumePoint(video, position);
+                    break;
+                case ResumePointsService.ACTION_DELETE_RESUME_POINT:
+                    video = new Gson().fromJson(workIntent.getExtras().getString("VIDEO_OBJECT"), Video.class);
+                    deleteResumePoint(video);
                     break;
                 case ResumePointsService.ACTION_UPDATE_WATCH_LATER:
                     video = new Gson().fromJson(workIntent.getExtras().getString("VIDEO_OBJECT"), Video.class);
@@ -324,6 +333,43 @@ public class ResumePointsService extends IntentService {
         }
 
         Log.d(TAG, "Resume point updated successfully");
+
+    }
+
+    // Delete resume point
+    private void deleteResumePoint(Video video) throws IOException {
+
+        if(video == null) { return; }
+
+        // Remove from VideoWatchLaterList
+        VideoWatchLaterList.getInstance().removeVideo(video);
+
+        // Remove from VideoContinueWatchList
+        VideoContinueWatchingList.getInstance().removeVideo(video);
+
+        // Remove from ResumePointList
+        ResumePointList.getInstance().remove(video);
+
+        // Remove at VRT
+        String assetPath = video.getAssetPath()
+                .replaceAll("[^a-zA-Z0-9]", "")
+                .toLowerCase();
+
+        Log.d(TAG, "Deleting resume point at = " + assetPath);
+
+        OkHttpClient httpClient = new OkHttpClient().newBuilder().build();
+        Request request = new Request.Builder()
+                .url(getString(R.string.service_resumepoints_url) + "/" + assetPath)
+                .addHeader("User-Agent", "NUPlayer/" + BuildConfig.VERSION_NAME)
+                .addHeader("Authorization", "Bearer " + vrtnu_site_profile_vt)
+                .delete()
+                .build();
+
+        try (Response response = httpClient.newCall(request).execute()) {
+            if (!response.isSuccessful()) throw new IOException(response.code() + ": " + response.message());
+        }
+
+        Log.d(TAG, "Resume point deleted successfully");
 
     }
 
