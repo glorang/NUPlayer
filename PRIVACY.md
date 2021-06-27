@@ -13,7 +13,7 @@ If you need to re-authenticate the app will request new credentials.
 
 ## Cookies
 
-This app stores 4 session cookies (vrtlogin-at, vrtlogin-rt, vrtlogin-expiry and X-VRT-Token) which are required for proper functioning of this app.
+This app stores 4 session cookies : vrtnu-site_profile_dt, vrtnu-site_profile_et, vrtnu-site_profile_rt and vrtnu-site_profile_vt.
 They are sent, as required, to the VRT servers for proper functioning of the app.
 
 ## Removal of personal data
