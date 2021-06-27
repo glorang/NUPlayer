@@ -11,10 +11,12 @@
         android:orientation="vertical">
 
         <LinearLayout
+            android:id="@+id/menuNavigation"
             android:layout_width="match_parent"
             android:layout_height="80dp"
             android:background="@color/vrtnu_black_tint_1"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:visibility="invisible">
 
             <FrameLayout
                 android:id="@+id/menuNavigationOverlay"
