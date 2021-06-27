@@ -1,3 +1,7 @@
+## v1.3.3 (2021-06-27)
+
+- Few UI improvements and bugfixes
+
 ## v1.3.2 (2021-06-12)
 
 - Update to new VRT.NU cookie names and SSO URLs (#6)
