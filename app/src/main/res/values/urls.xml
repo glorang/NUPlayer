@@ -9,6 +9,7 @@
     <string name="service_auth_initlogin_server">https://www.vrt.be/vrtnu/sso/login?scope=openid,mid</string>
     <string name="service_auth_performlogin_server">https://login.vrt.be/perform_login</string>
     <string name="service_auth_authentication_server">https://accounts.vrt.be/accounts.login</string>
+    <string name="service_logout_url">https://www.vrt.be/vrtnu/sso/logout?resumePage=https://www.vrt.be/vrtnu/</string>
     <string name="service_access_token_refresh">https://www.vrt.be/vrtnu/sso/refresh</string>
     <string name="service_catalog_catalog_url">https://vrtnu-api.vrt.be/suggest?facets[transcodingStatus]=AVAILABLE&amp;facets[programType]=%s</string>
     <string name="service_catalog_favorites_url">https://video-user-data.vrt.be/favorites</string>
