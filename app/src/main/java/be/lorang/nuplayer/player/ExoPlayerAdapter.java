@@ -32,6 +32,8 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.SurfaceHolder;
+import android.view.View;
+import android.widget.TextView;
 
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -45,6 +47,7 @@ import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
+import com.google.android.exoplayer2.ui.DebugTextViewHelper;
 import com.google.android.exoplayer2.ui.SubtitleView;
 import com.google.android.exoplayer2.video.VideoListener;
 
@@ -81,6 +84,9 @@ public class ExoPlayerAdapter extends PlayerAdapter implements ExoPlayer.EventLi
 
     private DefaultTrackSelector trackSelector;
     private boolean subtitlesEnabled = false;
+
+    private TextView debugTextView;
+    private DebugTextViewHelper debugTextViewHelper;
 
     /**
      * Constructor.
@@ -385,6 +391,25 @@ public class ExoPlayerAdapter extends PlayerAdapter implements ExoPlayer.EventLi
         );
 
         subtitlesEnabled = false;
+    }
+
+    public void setDebugTextView(TextView debugTextView) {
+        if (debugTextView != null) {
+            this.debugTextView = debugTextView;
+            debugTextViewHelper = new DebugTextViewHelper(mPlayer, debugTextView);
+        }
+    }
+
+    public boolean getDebugEnabled() { return debugTextView.getVisibility() == View.VISIBLE; }
+
+    public void enableDebug() {
+        debugTextView.setVisibility(View.VISIBLE);
+        debugTextViewHelper.start();
+    }
+
+    public void disableDebug() {
+        debugTextView.setVisibility(View.INVISIBLE);
+        debugTextViewHelper.stop();
     }
 
     /**
