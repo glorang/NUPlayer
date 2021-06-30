@@ -19,4 +19,6 @@
     <item type="id" name="buttonSubSettingsTokenStatus" />
     <item type="id" name="buttonSubSettingsAbout" />
 
+    <!-- Debug Action button -->
+    <item type="id" name="buttonDebugAction" />
 </resources>

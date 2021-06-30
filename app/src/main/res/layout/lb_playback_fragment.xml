@@ -29,5 +29,16 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
+        <TextView
+            android:id="@+id/exoPlayerDebug"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:background="@color/vrtnu_black_tint_1_alpha_60"
+            android:fontFamily="monospace"
+            android:paddingLeft="60dp"
+            android:paddingTop="20dp"
+            android:paddingRight="60dp"
+            android:visibility="invisible" />
+
     </com.google.android.exoplayer2.ui.AspectRatioFrameLayout>
 </FrameLayout>

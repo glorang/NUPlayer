@@ -18,6 +18,7 @@
 
 package be.lorang.nuplayer.player;
 
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
@@ -33,6 +34,10 @@ import com.google.android.exoplayer2.ExoPlayer;
 import be.lorang.nuplayer.R;
 import be.lorang.nuplayer.model.Video;
 import be.lorang.nuplayer.services.StreamService;
+import be.lorang.nuplayer.ui.MainActivity;
+import be.lorang.nuplayer.ui.SettingsFragment;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class VideoPlaybackFragment extends VideoSupportFragment {
 
@@ -63,8 +68,12 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
         // return if video null
         if(video == null) { return; }
 
+        // Check if developer mode is enabled
+        SharedPreferences prefs = getActivity().getSharedPreferences(MainActivity.PREFERENCES_NAME, MODE_PRIVATE);
+        boolean developerModeEnabled = prefs.getBoolean(SettingsFragment.SETTING_DEVELOPER_MODE, false);
+
         playerAdapter = new ExoPlayerAdapter(getActivity(), video.getProgram(), video.getTitle());
-        mMediaPlayerGlue = new VideoMediaPlayerGlue(getActivity(), playerAdapter);
+        mMediaPlayerGlue = new VideoMediaPlayerGlue(getActivity(), playerAdapter, developerModeEnabled);
         mMediaPlayerGlue.setHost(mHost);
         mMediaPlayerGlue.setTitle(video.getTitle());
         mMediaPlayerGlue.setSubtitle(Html.fromHtml(video.getDescription(), Html.FROM_HTML_MODE_COMPACT));
@@ -96,6 +105,7 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         playerAdapter.setSubtitleView(view.findViewById(R.id.leanback_subtitles));
+        playerAdapter.setDebugTextView(view.findViewById(R.id.exoPlayerDebug));
     }
 
     static void playWhenReady(PlaybackGlue glue) {

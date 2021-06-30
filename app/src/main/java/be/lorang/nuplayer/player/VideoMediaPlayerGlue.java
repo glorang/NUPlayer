@@ -51,6 +51,7 @@ public class VideoMediaPlayerGlue<T extends PlayerAdapter> extends PlaybackTrans
     private static final String TAG = "VideoMediaPlayerGlue";
 
     private PlaybackControlsRow.ClosedCaptioningAction closedCaptioningAction;
+    private DebugAction debugAction;
 
     private static final int TIMESEEK = 30; // in seconds
     private static final int MAX_MULTIPLIER = 5;
@@ -61,17 +62,26 @@ public class VideoMediaPlayerGlue<T extends PlayerAdapter> extends PlaybackTrans
 
     private int previousPosition = -1;
 
+    private boolean developerModeEnabled;
+
     private final Handler handler = new Handler(Looper.getMainLooper());
 
-    public VideoMediaPlayerGlue(Activity context, T impl) {
+    public VideoMediaPlayerGlue(Activity context, T impl, boolean developerModeEnabled) {
         super(context, impl);
+        this.developerModeEnabled = developerModeEnabled;
+
         closedCaptioningAction = new PlaybackControlsRow.ClosedCaptioningAction(context);
+        debugAction = new DebugAction(context);
     }
 
     @Override
     protected void onCreatePrimaryActions(ArrayObjectAdapter adapter) {
         super.onCreatePrimaryActions(adapter);
         adapter.add(closedCaptioningAction);
+
+        if(developerModeEnabled) {
+            adapter.add(debugAction);
+        }
     }
 
     @Override
@@ -81,6 +91,11 @@ public class VideoMediaPlayerGlue<T extends PlayerAdapter> extends PlaybackTrans
             multiAction.nextIndex();
             notifyActionChanged(multiAction);
             toggleClosedCaptions();
+        } else if (action == debugAction) {
+            PlaybackControlsRow.MultiAction multiAction = (PlaybackControlsRow.MultiAction) action;
+            multiAction.nextIndex();
+            notifyActionChanged(multiAction);
+            toggleDebug();
         } else {
             super.onActionClicked(action);
         }
@@ -189,6 +204,17 @@ public class VideoMediaPlayerGlue<T extends PlayerAdapter> extends PlaybackTrans
                 adapter.enableSubtitles();
             } else {
                 adapter.disableSubtitles();
+            }
+        }
+    }
+
+    public void toggleDebug() {
+        ExoPlayerAdapter adapter = (ExoPlayerAdapter)getPlayerAdapter();
+        if(adapter != null) {
+            if(!adapter.getDebugEnabled()) {
+                adapter.enableDebug();
+            } else {
+                adapter.disableDebug();
             }
         }
     }
