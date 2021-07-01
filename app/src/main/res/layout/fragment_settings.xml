@@ -7,270 +7,298 @@
     android:paddingTop="20dp"
     android:paddingRight="50dp">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
         <LinearLayout
-            android:id="@+id/developerModeContainer"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <LinearLayout
+                android:id="@+id/developerModeContainer"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingTop="10dp">
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/labelDeveloperMode"
-                    android:layout_width="200dp"
-                    android:layout_height="30dp"
-                    android:text="Enable developer mode:"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/valueDeveloperMode"
-                    android:layout_width="400dp"
-                    android:layout_height="30dp" />
-
-                <FrameLayout
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-                    <Switch
-                        android:id="@+id/switchDeveloperMode"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerInParent="true"
-                        android:layout_gravity="center"
-                        android:gravity="center"
-                        android:nextFocusLeft="@+id/buttonSubSettingsSettings"
-                        android:nextFocusUp="@+id/buttonSubSettingsSettings" />
-                </FrameLayout>
+                    <TextView
+                        android:id="@+id/labelDeveloperMode"
+                        android:layout_width="200dp"
+                        android:layout_height="30dp"
+                        android:fontFamily="sans-serif-condensed"
+                        android:text="Enable developer mode:"
+                        android:textColor="@color/vrtnu_white" />
+
+                    <TextView
+                        android:id="@+id/valueDeveloperMode"
+                        android:layout_width="400dp"
+                        android:layout_height="30dp"
+                        android:fontFamily="sans-serif-condensed"
+                        android:textColor="@color/vrtnu_white" />
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp">
+
+                        <Switch
+                            android:id="@+id/switchDeveloperMode"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:nextFocusLeft="@+id/buttonSubSettingsSettings"
+                            android:nextFocusUp="@+id/buttonSubSettingsSettings" />
+                    </FrameLayout>
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-condensed-light"
+                    android:text="Enables some internal testing tools (nerds only)." />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="3dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp"
+                    android:background="@color/vrtnu_white_alpha_20" />
+
 
             </LinearLayout>
 
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="3dp"
-                android:layout_marginTop="15dp"
-                android:background="@color/vrtnu_white_alpha_20" />
-
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/catalogContainer"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:visibility="gone">
-
             <LinearLayout
+                android:id="@+id/catalogContainer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingTop="10dp">
+                android:orientation="vertical"
+                android:visibility="visible">
 
-                <TextView
-                    android:id="@+id/labelSettingsCatalog"
-                    android:layout_width="200dp"
-                    android:layout_height="30dp"
-                    android:text="Catalog:"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/valueSettingsCatalog"
-                    android:layout_width="400dp"
-                    android:layout_height="30dp" />
-
-                <FrameLayout
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="visible">
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-                    <Button
-                        android:id="@+id/buttonSettingsCatalogRefresh"
+                    <TextView
+                        android:id="@+id/labelSettingsCatalog"
+                        android:layout_width="200dp"
+                        android:layout_height="30dp"
+                        android:fontFamily="sans-serif-condensed"
+                        android:text="Catalog:"
+                        android:textColor="@color/vrtnu_white" />
+
+                    <TextView
+                        android:id="@+id/valueSettingsCatalog"
+                        android:layout_width="400dp"
+                        android:layout_height="30dp"
+                        android:fontFamily="sans-serif-condensed"
+                        android:textColor="@color/vrtnu_white" />
+
+                    <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/button_default"
-                        android:nextFocusLeft="@+id/buttonSubSettingsSettings"
-                        android:text="Refresh"
-                        android:visibility="visible" />
+                        android:visibility="visible">
 
-                    <ProgressBar
-                        android:id="@+id/progressBarSettingsCatalogRefresh"
-                        android:layout_width="30dp"
+                        <Button
+                            android:id="@+id/buttonSettingsCatalogRefresh"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:background="@drawable/button_default"
+                            android:fontFamily="sans-serif-condensed"
+                            android:nextFocusLeft="@+id/buttonSubSettingsSettings"
+                            android:text="Refresh"
+                            android:visibility="visible" />
+
+                        <ProgressBar
+                            android:id="@+id/progressBarSettingsCatalogRefresh"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_gravity="center_horizontal"
+                            android:indeterminate="true"
+                            android:progressTintMode="multiply"
+                            android:visibility="invisible" />
+
+                    </FrameLayout>
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-condensed-light"
+                    android:text="Developer mode only: refreshes the internal catalog, it is only built at startup." />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="3dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp"
+                    android:background="@color/vrtnu_white_alpha_20" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/jsonCacheContainer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/labelSettingsJSONCache"
+                        android:layout_width="200dp"
                         android:layout_height="30dp"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="10dp"
-                        android:indeterminate="true"
-                        android:progressTintMode="multiply"
-                        android:visibility="invisible" />
+                        android:drawableTop="@android:color/white"
+                        android:fontFamily="sans-serif-condensed"
+                        android:text="JSON cache:"
+                        android:textColor="@color/vrtnu_white" />
 
-                </FrameLayout>
+                    <TextView
+                        android:id="@+id/valueSettingsJSONCache"
+                        android:layout_width="400dp"
+                        android:layout_height="30dp"
+                        android:fontFamily="sans-serif-condensed"
+                        android:textColor="@color/vrtnu_white" />
 
-            </LinearLayout>
+                    <Button
+                        android:id="@+id/buttonSettingsJSONCache"
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:background="@drawable/button_default"
+                        android:fontFamily="sans-serif-condensed"
+                        android:nextFocusLeft="@+id/buttonSubSettingsSettings"
+                        android:text="Purge" />
 
-            <TextView
-                android:id="@+id/labelCatalogInfo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:text="Info: the catalog is only built at startup so if you cannot find a new, just released, program hit the refresh button"
-                android:textSize="10sp"
-                android:textStyle="italic" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="3dp"
-                android:layout_marginTop="15dp"
-                android:background="@color/vrtnu_white_alpha_20" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/jsonCacheContainer"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingTop="10dp">
+                </LinearLayout>
 
                 <TextView
-                    android:id="@+id/labelSettingsJSONCache"
-                    android:layout_width="200dp"
-                    android:layout_height="30dp"
-                    android:drawableTop="@android:color/white"
-                    android:text="JSON cache:"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/valueSettingsJSONCache"
-                    android:layout_width="400dp"
-                    android:layout_height="30dp" />
-
-                <Button
-                    android:id="@+id/buttonSettingsJSONCache"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/button_default"
-                    android:nextFocusLeft="@+id/buttonSubSettingsSettings"
-                    android:text="Purge" />
+                    android:fontFamily="sans-serif-condensed-light"
+                    android:text="Developer mode only: clears JSON cache of all cached HTTP requests." />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="3dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp"
+                    android:background="@color/vrtnu_white_alpha_20" />
 
             </LinearLayout>
-
-            <TextView
-                android:id="@+id/labelJSONCacheInfo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:text="Info: in the rare event you get unexpected results (e.g. wrong program shown) press purge and try again"
-                android:textSize="10sp"
-                android:textStyle="italic" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="3dp"
-                android:layout_marginTop="15dp"
-                android:background="@color/vrtnu_white_alpha_20" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/refreshTokenContainer"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:visibility="gone">
 
             <LinearLayout
+                android:id="@+id/refreshTokenContainer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingTop="10dp">
+                android:orientation="vertical"
+                android:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/labelRefreshToken"
+                        android:layout_width="200dp"
+                        android:layout_height="30dp"
+                        android:drawableTop="@android:color/white"
+                        android:fontFamily="sans-serif-condensed"
+                        android:text="Force token refresh:"
+                        android:textColor="@color/vrtnu_white" />
+
+                    <TextView
+                        android:id="@+id/valueSettingsRefreshToken"
+                        android:layout_width="400dp"
+                        android:layout_height="30dp"
+                        android:fontFamily="sans-serif-condensed"
+                        android:textColor="@color/vrtnu_white" />
+
+                    <Button
+                        android:id="@+id/buttonSettingsRefreshToken"
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:background="@drawable/button_default"
+                        android:fontFamily="sans-serif-condensed"
+                        android:nextFocusLeft="@+id/buttonSubSettingsSettings"
+                        android:text="Refresh" />
+
+                </LinearLayout>
 
                 <TextView
-                    android:id="@+id/labelRefreshToken"
-                    android:layout_width="200dp"
-                    android:layout_height="30dp"
-                    android:drawableTop="@android:color/white"
-                    android:text="Force token refresh:"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/valueSettingsRefreshToken"
-                    android:layout_width="400dp"
-                    android:layout_height="30dp" />
-
-                <Button
-                    android:id="@+id/buttonSettingsRefreshToken"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/button_default"
-                    android:nextFocusLeft="@+id/buttonSubSettingsSettings"
-                    android:text="Refresh" />
+                    android:fontFamily="sans-serif-condensed-light"
+                    android:text="Developer mode only: force token refresh of vrtnu-site_profile_{dt,vt}." />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="3dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp"
+                    android:background="@color/vrtnu_white_alpha_20" />
 
             </LinearLayout>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="3dp"
-                android:layout_marginTop="15dp"
-                android:background="@color/vrtnu_white_alpha_20" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/logoutContainer"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
 
             <LinearLayout
+                android:id="@+id/logoutContainer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingTop="10dp">
+                android:layout_marginBottom="50dp"
+                android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/labelSettingsLoggedIn"
-                    android:layout_width="200dp"
-                    android:layout_height="30dp"
-                    android:gravity="top"
-                    android:text="Logged in as:"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/valueSettingsLoggedIn"
-                    android:layout_width="400dp"
-                    android:layout_height="30dp" />
-
-                <Button
-                    android:id="@+id/buttonSettingsLoggedIn"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/button_default"
-                    android:nextFocusLeft="@+id/buttonSubSettingsSettings"
-                    android:text="Logout" />
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
+                    <TextView
+                        android:id="@+id/labelSettingsLoggedIn"
+                        android:layout_width="200dp"
+                        android:layout_height="30dp"
+                        android:fontFamily="sans-serif-condensed"
+                        android:gravity="top"
+                        android:text="Logged in as:"
+                        android:textColor="@color/vrtnu_white" />
+
+                    <TextView
+                        android:id="@+id/valueSettingsLoggedIn"
+                        android:layout_width="400dp"
+                        android:layout_height="30dp"
+                        android:fontFamily="sans-serif-condensed"
+                        android:textColor="@color/vrtnu_white" />
+
+                    <Button
+                        android:id="@+id/buttonSettingsLoggedIn"
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:background="@drawable/button_default"
+                        android:fontFamily="sans-serif-condensed"
+                        android:nextFocusLeft="@+id/buttonSubSettingsSettings"
+                        android:text="Logout" />
+
+                </LinearLayout>
             </LinearLayout>
-        </LinearLayout>
 
-    </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
 
 </FrameLayout>
