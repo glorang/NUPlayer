@@ -10,6 +10,7 @@
     <uses-permission android:name="${applicationId}.ACCESS_VIDEO_DATA" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="com.android.providers.tv.permission.WRITE_EPG_DATA" />
 
     <uses-feature
         android:name="android.hardware.microphone"
@@ -29,6 +30,9 @@
         android:logo="@drawable/ic_logo"
         android:theme="@style/Theme.Leanback"
         tools:ignore="GoogleAppIndexingWarning">
+        <service
+            android:name=".services.ChannelService"
+            android:exported="false" />
         <service
             android:name=".services.LogoutService"
             android:exported="false" />
@@ -81,6 +85,15 @@
 
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data
+                    android:host="be.lorang.nuplayer"
+                    android:pathPrefix="/startapp"
+                    android:scheme="nuplayer" />
+            </intent-filter>
         </activity>
         <activity android:name=".ui.ProgramActivity" />
         <activity android:name=".ui.LoginActivity" />
@@ -88,8 +101,19 @@
             android:name=".player.VideoPlaybackActivity"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|layoutDirection"
             android:launchMode="singleTask"
-            android:theme="@style/LeanbackPreferences"
-            android:resizeableActivity="true" />
+            android:resizeableActivity="true"
+            android:theme="@style/LeanbackPreferences" />
+        <activity android:name=".player.VideoPlaybackHomeScreenActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data
+                    android:host="be.lorang.nuplayer"
+                    android:pathPrefix="/playvideo"
+                    android:scheme="nuplayer" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
