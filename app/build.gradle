@@ -44,6 +44,7 @@ dependencies {
     implementation 'androidx.recommendation:recommendation:1.0.0'
     implementation 'androidx.leanback:leanback-preference:1.0.0'
     implementation 'androidx.annotation:annotation:1.1.0'
+    implementation 'androidx.tvprovider:tvprovider:1.0.0'
 
     implementation 'com.github.bumptech.glide:glide:4.11.0'
 

@@ -17,6 +17,65 @@
             android:orientation="vertical">
 
             <LinearLayout
+                android:id="@+id/enableChannelContainer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/labelEnableChannel"
+                        android:layout_width="200dp"
+                        android:layout_height="30dp"
+                        android:fontFamily="sans-serif-condensed"
+                        android:text="Enable home screen channel"
+                        android:textColor="@color/vrtnu_white" />
+
+                    <TextView
+                        android:id="@+id/valueEnableChannel"
+                        android:layout_width="400dp"
+                        android:layout_height="30dp"
+                        android:fontFamily="sans-serif-medium"
+                        android:textColor="@color/vrtnu_white" />
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp">
+
+                        <Switch
+                            android:id="@+id/switchEnableChannel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:nextFocusLeft="@+id/buttonSubSettingsSettings"
+                            android:nextFocusUp="@+id/buttonSubSettingsSettings" />
+                    </FrameLayout>
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-condensed-light"
+                    android:text="Adds the NUPlayer channel to your Android TV home screen." />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="3dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp"
+                    android:background="@color/vrtnu_white_alpha_20" />
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/developerModeContainer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -33,7 +92,7 @@
                         android:layout_width="200dp"
                         android:layout_height="30dp"
                         android:fontFamily="sans-serif-condensed"
-                        android:text="Enable developer mode:"
+                        android:text="Enable developer mode"
                         android:textColor="@color/vrtnu_white" />
 
                     <TextView
@@ -53,9 +112,7 @@
                             android:layout_height="wrap_content"
                             android:layout_centerInParent="true"
                             android:layout_gravity="center"
-                            android:gravity="center"
-                            android:nextFocusLeft="@+id/buttonSubSettingsSettings"
-                            android:nextFocusUp="@+id/buttonSubSettingsSettings" />
+                            android:gravity="center" />
                     </FrameLayout>
 
                 </LinearLayout>
@@ -81,7 +138,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -94,7 +151,7 @@
                         android:layout_width="200dp"
                         android:layout_height="30dp"
                         android:fontFamily="sans-serif-condensed"
-                        android:text="Catalog:"
+                        android:text="Catalog"
                         android:textColor="@color/vrtnu_white" />
 
                     <TextView
@@ -152,7 +209,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -166,7 +223,7 @@
                         android:layout_height="30dp"
                         android:drawableTop="@android:color/white"
                         android:fontFamily="sans-serif-condensed"
-                        android:text="JSON cache:"
+                        android:text="JSON cache"
                         android:textColor="@color/vrtnu_white" />
 
                     <TextView
@@ -207,7 +264,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -221,7 +278,7 @@
                         android:layout_height="30dp"
                         android:drawableTop="@android:color/white"
                         android:fontFamily="sans-serif-condensed"
-                        android:text="Force token refresh:"
+                        android:text="Force token refresh"
                         android:textColor="@color/vrtnu_white" />
 
                     <TextView
@@ -276,7 +333,7 @@
                         android:layout_height="30dp"
                         android:fontFamily="sans-serif-condensed"
                         android:gravity="top"
-                        android:text="Logged in as:"
+                        android:text="Logged in as"
                         android:textColor="@color/vrtnu_white" />
 
                     <TextView

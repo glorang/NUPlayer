@@ -46,6 +46,7 @@ import be.lorang.nuplayer.model.ProgramList;
 import be.lorang.nuplayer.services.AccessTokenService;
 import be.lorang.nuplayer.services.AuthService;
 import be.lorang.nuplayer.services.CatalogService;
+import be.lorang.nuplayer.services.ChannelService;
 import be.lorang.nuplayer.services.FavoriteService;
 import be.lorang.nuplayer.services.LogoutService;
 import be.lorang.nuplayer.services.SeriesService;
@@ -59,7 +60,9 @@ public class SettingsFragment extends Fragment {
     private static final String TAG = "SettingsFragment";
 
     public final static String SETTING_DEVELOPER_MODE = "developerMode";
+    public final static String SETTING_HOME_SCREEN_CHANNEL = "homeScreenChannel";
 
+    private Intent channelIntent;
     private Intent catalogIntent;
     private Intent seriesIntent;
     private Intent accessTokenIntent;
@@ -74,6 +77,7 @@ public class SettingsFragment extends Fragment {
     private TextView JSONcacheField;
     private TextView loggedinField;
 
+    private Switch channelSwitch;
     private Switch developerModeSwitch;
     private Button catalogButton;
     private Button cacheButton;
@@ -110,6 +114,7 @@ public class SettingsFragment extends Fragment {
         loggedinField = view.findViewById(R.id.valueSettingsLoggedIn);
 
         // get form controls
+        channelSwitch = view.findViewById(R.id.switchEnableChannel);
         developerModeSwitch = view.findViewById(R.id.switchDeveloperMode);
         catalogButton = view.findViewById(R.id.buttonSettingsCatalogRefresh);
         catalogProgressBar = view.findViewById(R.id.progressBarSettingsCatalogRefresh);
@@ -123,11 +128,40 @@ public class SettingsFragment extends Fragment {
         refreshTokenContainer = view.findViewById(R.id.refreshTokenContainer);
 
         // set initial values
+        setChannelState();
         setDeveloperMode();
         setCatalogText(catalogField);
         setJSONCacheText(JSONcacheField);
         setLoginText(loggedinField);
         setLoginButtonState();
+
+        // enable home screen channel switch listener
+        channelSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+
+            // Store new state in shared preference
+            SharedPreferences.Editor editor = getActivity().getSharedPreferences(MainActivity.PREFERENCES_NAME, MODE_PRIVATE).edit();
+            editor.putBoolean(SETTING_HOME_SCREEN_CHANNEL, isChecked);
+            editor.apply();
+
+            // Start intent to add/remove channel from home screen
+            channelIntent = new Intent(getActivity(), ChannelService.class);
+            channelIntent.putExtra("ACTION", ChannelService.ACTION_ADD_REMOVE);
+            channelIntent.putExtra("CHANNEL_STATE", isChecked);
+            channelIntent.putExtra(ChannelService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
+                @Override
+                protected void onReceiveResult(int resultCode, Bundle resultData) {
+                    super.onReceiveResult(resultCode, resultData);
+
+                    // show messages, if any
+                    if (resultData.getString("MSG", "").length() > 0) {
+                        Toast.makeText(getActivity(), resultData.getString("MSG"), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+            getActivity().startService(channelIntent);
+
+        });
 
         // developer mode switch listener
         developerModeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -285,6 +319,15 @@ public class SettingsFragment extends Fragment {
             catalogProgressBar.setVisibility(View.VISIBLE);
         }
     }
+
+    private void setChannelState() {
+        SharedPreferences prefs = getActivity().getSharedPreferences(MainActivity.PREFERENCES_NAME, MODE_PRIVATE);
+        boolean channelState = prefs.getBoolean(SETTING_HOME_SCREEN_CHANNEL, false);
+        if(channelSwitch != null) {
+            channelSwitch.setChecked(channelState);
+        }
+    }
+
 
     private void setDeveloperMode() {
         SharedPreferences prefs = getActivity().getSharedPreferences(MainActivity.PREFERENCES_NAME, MODE_PRIVATE);
