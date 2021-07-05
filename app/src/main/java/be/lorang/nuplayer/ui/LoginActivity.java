@@ -117,6 +117,14 @@ public class LoginActivity extends FragmentActivity {
                     return;
                 }
 
+                // Disable login button after first click
+                action.setTitle(getString(R.string.pref_title_authenticating));
+                action.setEnabled(false);
+
+                // Notify GuidedAction of change (why-o-why?)
+                int actionIndex = findActionPositionById(SUBMIT);
+                notifyActionChanged(actionIndex);
+
                 // authenticate
                 Intent loginIntent = new Intent(getActivity(), AuthService.class);
                 loginIntent.putExtra("loginID", loginID);
@@ -136,6 +144,11 @@ public class LoginActivity extends FragmentActivity {
 
                         if (resultCode == Activity.RESULT_OK) {
                             getActivity().finishAfterTransition();
+                        } else {
+                            // Re-enable login button in case of wrong username/password
+                            action.setEnabled(true);
+                            action.setTitle(getString(R.string.pref_title_login));
+                            notifyActionChanged(actionIndex);
                         }
                     }
                 });
