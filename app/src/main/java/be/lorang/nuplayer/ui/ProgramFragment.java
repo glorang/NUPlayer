@@ -37,6 +37,7 @@ import androidx.leanback.widget.Presenter;
 import androidx.leanback.widget.Row;
 import androidx.leanback.widget.RowPresenter;
 
+import android.os.Looper;
 import android.os.ResultReceiver;
 import android.util.Log;
 import android.view.View;
@@ -97,6 +98,12 @@ public class ProgramFragment extends VerticalGridSupportFragment implements OnIt
 
         setupAdapter();
         loadData(1);
+    }
+
+    public void refreshAdapters() {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            mAdapter.notifyArrayItemRangeChanged(0, mAdapter.size());
+        }, 500);
     }
 
     private void setupUi() {
