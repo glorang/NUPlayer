@@ -101,8 +101,8 @@ public class VideoLongPressListener implements View.OnLongClickListener {
                             updateWatchLater(false);
                         }
 
-                        // Update adapters on HomeFragment
-                        notifyHomeFragment();
+                        // Update adapters on HomeFragment or ProgramFragment
+                        notifyFragments();
 
                     }
                 });
@@ -111,8 +111,8 @@ public class VideoLongPressListener implements View.OnLongClickListener {
         return false;
     }
 
-    // Refresh adapters on HomeFragment to make sure they are updated (add/remove/empty)
-    private void notifyHomeFragment() {
+    // Refresh adapter(s) on HomeFragment or ProgramFragment to make sure they are updated (add/remove/empty/progress)
+    private void notifyFragments() {
 
         if(context instanceof MainActivity) {
             MainActivity activity = (MainActivity) context;
@@ -125,12 +125,27 @@ public class VideoLongPressListener implements View.OnLongClickListener {
                 }
             }
         }
+
+        if(context instanceof ProgramActivity) {
+            ProgramActivity activity = (ProgramActivity) context;
+            if(activity.getSupportFragmentManager() != null) {
+                for (Fragment fragment : activity.getSupportFragmentManager().getFragments()) {
+                    if (fragment instanceof ProgramFragment) {
+                        ProgramFragment programFragment = (ProgramFragment) fragment;
+                        programFragment.refreshAdapters();
+                    }
+                }
+            }
+        }
     }
 
     // remove from continue watching
     private void removeFromContinueWatching() {
 
         if(context == null || video == null) { return; }
+
+        // Reset progress
+        video.setProgressPct(0);
 
         Intent accessTokenIntent = new Intent(context, AccessTokenService.class);
         accessTokenIntent.putExtra(AccessTokenService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
