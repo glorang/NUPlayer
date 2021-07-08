@@ -36,7 +36,9 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.VideoView;
 
+import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -219,6 +221,18 @@ public class Utils {
         drawable.draw(canvas);
 
         return bitmap;
+    }
+
+    // Tests if an input string is valid JSON
+    public static boolean isStringJSON(String input) {
+
+        try {
+            new JSONTokener(input).nextValue();
+        } catch(JSONException e) {
+            return false;
+        }
+
+        return true;
     }
 
 
