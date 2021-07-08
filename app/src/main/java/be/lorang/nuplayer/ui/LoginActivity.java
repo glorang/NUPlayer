@@ -19,7 +19,9 @@
 package be.lorang.nuplayer.ui;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -31,6 +33,11 @@ import androidx.leanback.widget.GuidedAction;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.text.InputType;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import be.lorang.nuplayer.R;
@@ -58,6 +65,8 @@ public class LoginActivity extends FragmentActivity {
         private String loginID = "";
         private String password = "";
 
+        private boolean debugLoginState;
+
         @Override
         public int onProvideTheme() {
             return R.style.Theme_Leanback_GuidedStep;
@@ -69,6 +78,11 @@ public class LoginActivity extends FragmentActivity {
             String title = getString(R.string.pref_title_screen_signin);
             String description = getString(R.string.pref_title_login_description);
             Drawable icon = getActivity().getDrawable(R.drawable.ic_logo);
+
+            // Check if login debug is enabled
+            SharedPreferences prefs = getActivity().getSharedPreferences(MainActivity.PREFERENCES_NAME, MODE_PRIVATE);
+            debugLoginState = prefs.getBoolean(SettingsFragment.SETTING_DEBUG_LOGIN, false);
+
             return new GuidanceStylist.Guidance(title, description, "", icon);
         }
 
@@ -129,6 +143,7 @@ public class LoginActivity extends FragmentActivity {
                 Intent loginIntent = new Intent(getActivity(), AuthService.class);
                 loginIntent.putExtra("loginID", loginID);
                 loginIntent.putExtra("password", password);
+                loginIntent.putExtra("DEBUG_ENABLED", debugLoginState);
 
                 loginIntent.putExtra(CatalogService.BUNDLED_LISTENER, new ResultReceiver(new Handler()) {
                     @Override
@@ -142,13 +157,47 @@ public class LoginActivity extends FragmentActivity {
                             Toast.makeText(getActivity(), resultData.getString("MSG"), Toast.LENGTH_SHORT).show();
                         }
 
-                        if (resultCode == Activity.RESULT_OK) {
-                            getActivity().finishAfterTransition();
+                        if(debugLoginState) {
+
+                            // Show debug dialog
+
+                            Dialog dialog = new Dialog(getContext());
+
+                            View view = LayoutInflater.from(getContext()).inflate(R.layout.dialog_auth_debug,null);
+                            dialog.setContentView(view);
+
+                            Button button = (Button)view.findViewById(R.id.buttonOK);
+                            button.setOnClickListener(v -> {
+
+                                dialog.dismiss();
+
+                                if (resultCode == Activity.RESULT_OK) {
+                                    getActivity().finishAfterTransition();
+                                } else {
+                                    // Re-enable login button in case of wrong username/password
+                                    action.setEnabled(true);
+                                    action.setTitle(getString(R.string.pref_title_login));
+                                    notifyActionChanged(actionIndex);
+                                }
+                            });
+
+                            TextView textView = (TextView)view.findViewById(R.id.textViewDebug);
+                            textView.setText(resultData.getString("DEBUG"));
+
+                            int width = (int)(getResources().getDisplayMetrics().widthPixels*0.90);
+                            int height = ViewGroup.LayoutParams.WRAP_CONTENT;
+
+                            dialog.getWindow().setLayout(width, height);
+                            dialog.show();
                         } else {
-                            // Re-enable login button in case of wrong username/password
-                            action.setEnabled(true);
-                            action.setTitle(getString(R.string.pref_title_login));
-                            notifyActionChanged(actionIndex);
+                            if (resultCode == Activity.RESULT_OK) {
+                                getActivity().finishAfterTransition();
+                            } else {
+                                // Re-enable login button in case of wrong username/password
+                                action.setEnabled(true);
+                                action.setTitle(getString(R.string.pref_title_login));
+                                notifyActionChanged(actionIndex);
+                            }
                         }
                     }
                 });

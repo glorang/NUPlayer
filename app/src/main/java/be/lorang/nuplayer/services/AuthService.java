@@ -30,6 +30,7 @@ import com.google.gson.Gson;
 import be.lorang.nuplayer.BuildConfig;
 import be.lorang.nuplayer.R;
 import be.lorang.nuplayer.ui.MainActivity;
+import be.lorang.nuplayer.utils.Utils;
 import okhttp3.FormBody;
 import okhttp3.JavaNetCookieJar;
 import okhttp3.OkHttpClient;
@@ -37,6 +38,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -94,6 +96,7 @@ public class AuthService extends IntentService {
     private Iterator cookieIterator;
     private String xsrfCookie = "";
     private String sessionCookie = "";
+    private JSONObject profile;
 
     // processing variables
     private RequestBody postData;
@@ -107,6 +110,8 @@ public class AuthService extends IntentService {
     private static final String targetEnv = "jssdk";
     private static final String clientID = "vrtnu-site";
 
+    private boolean debugLoginState;
+
     /**
      * Creates an IntentService with a default name for the worker thread.
      */
@@ -114,10 +119,23 @@ public class AuthService extends IntentService {
         super(TAG);
     }
 
+
+    private void appendDebugLog(String message) {
+
+        if(!debugLoginState) { return; }
+
+        if(resultData.get("DEBUG") == null) {
+            resultData.putString("DEBUG", "");
+        }
+
+        resultData.putString("DEBUG", resultData.get("DEBUG") + System.lineSeparator() + message + System.lineSeparator());
+    }
+
     @Override
     protected void onHandleIntent(Intent workIntent) {
 
         ResultReceiver receiver = workIntent.getParcelableExtra(CatalogService.BUNDLED_LISTENER);
+        debugLoginState = workIntent.getExtras().getBoolean("DEBUG_ENABLED", false);
 
         try {
 
@@ -137,6 +155,8 @@ public class AuthService extends IntentService {
             String password = workIntent.getExtras().getString("password");
 
             Log.d(TAG, "Start authentication, username = " + loginID);
+            appendDebugLog("Starting authentication.");
+            appendDebugLog("[STEP 1] Getting XSRF cookie using " + getString(R.string.service_auth_initlogin_server));
 
             // Get OIDCXSRF cookie
             request = new Request.Builder()
@@ -146,8 +166,11 @@ public class AuthService extends IntentService {
                     .build();
 
             try (Response response = httpClient.newCall(request).execute()) {
+                appendDebugLog("[STEP 1] HTTP call result : " + response.code() + ": " + response.message());
                 if (!response.isSuccessful()) throw new IOException(response.code() + ": " + response.message());
             }
+
+            appendDebugLog("[STEP 1] Looking for XSRF cookie");
 
             cookieIterator = cookieManager.getCookieStore().getCookies().iterator();
             while(cookieIterator.hasNext()) {
@@ -158,13 +181,17 @@ public class AuthService extends IntentService {
             }
 
             if(xsrfCookie.length() == 0) {
+                appendDebugLog("[STEP 1] FAILURE - Could not get XSRF cookie!");
                 Log.d(TAG, "Could not acquire OIDCXSRF cookie");
                 resultData.putString("MSG", "Could not acquire OIDCXSRF cookie.");
                 receiver.send(Activity.RESULT_CANCELED, resultData);
                 return;
             }
 
+            appendDebugLog("[STEP 1] OK - XSRF value = " + xsrfCookie);
             Log.d(TAG, "Set xsrf = " + xsrfCookie);
+
+            appendDebugLog("[STEP 2] Start authentication at VRT");
 
             // Perform Login
             postData = new FormBody.Builder()
@@ -175,6 +202,16 @@ public class AuthService extends IntentService {
                     .add("targetEnv", targetEnv)
                     .build();
 
+            appendDebugLog("[STEP 2] Adding POST data:");
+            appendDebugLog("NOTE : The single quotes around the email address and password are added for debugging purposes only, they are not sent to the server. This is to detect any spacing issue.");
+            appendDebugLog("- loginID = '" + loginID + "'");
+            appendDebugLog("- password = '" +  password + "'");
+            appendDebugLog("- sessionExpiration = " +  sessionExpiration);
+            appendDebugLog("- APIKey = " + gigyaApiKey);
+            appendDebugLog("- targetEnv = " + targetEnv);
+
+            appendDebugLog("[STEP 2] Authenticating at VRT using " + getString(R.string.service_auth_authentication_server));
+
             request = new Request.Builder()
                     .url(getString(R.string.service_auth_authentication_server))
                     .addHeader("User-Agent", "NUPlayer/" + BuildConfig.VERSION_NAME)
@@ -182,14 +219,37 @@ public class AuthService extends IntentService {
                     .build();
 
             try (Response response = httpClient.newCall(request).execute()) {
+                appendDebugLog("[STEP 2] HTTP call result : " + response.code() + ": " + response.message());
+
+                String body = response.body().string();
+
+                if(Utils.isStringJSON(body)) {
+                    returnObject = new JSONObject(body);
+                    appendDebugLog("[STEP 2] Return body : " + returnObject.toString(4));
+                } else {
+                    appendDebugLog("[STEP 2] Return body : " + body);
+                }
+
                 if (!response.isSuccessful()) throw new IOException(response.code() + ": " + response.message());
-                returnObject = new JSONObject(response.body().string());
             }
 
-            UID = returnObject.getString("UID");
-            UIDSignature = returnObject.getString("UIDSignature");
-            signatureTimestamp = returnObject.getString("signatureTimestamp");
-            JSONObject profile = returnObject.getJSONObject("profile");
+            appendDebugLog("[STEP 2] Login OK, getting attributes");
+
+            try {
+                UID = returnObject.getString("UID");
+                UIDSignature = returnObject.getString("UIDSignature");
+                signatureTimestamp = returnObject.getString("signatureTimestamp");
+                profile = returnObject.getJSONObject("profile");
+            } catch(JSONException e) {
+                appendDebugLog("[STEP 2] Getting attributes FAILED!");
+                appendDebugLog(e.getMessage());
+                throw e;
+            }
+
+            appendDebugLog("[STEP 2] Attributes OK.");
+            appendDebugLog("- UID = " + UID);
+            appendDebugLog("- UIDSignature = " + UIDSignature);
+            appendDebugLog("- signatureTimestamp = " + signatureTimestamp);
 
             Log.d(TAG, "Successfully authenticated, UID =" + UID +
                     " Sig = " + UIDSignature +
@@ -201,6 +261,8 @@ public class AuthService extends IntentService {
             editor.putString("firstName", profile.getString("firstName"));
             editor.putString("lastName", profile.getString("lastName"));
 
+            appendDebugLog("[STEP 3] Getting VRT.NU cookies vrtnu-site_profile_{dt,et,rt,vt}");
+
             // get vrtnu-site_profile_{dt,et,rt,vt} cookies
             postData = new FormBody.Builder()
                     .add("UID", UID)
@@ -210,6 +272,15 @@ public class AuthService extends IntentService {
                     .add("_csrf", xsrfCookie)
                     .build();
 
+            appendDebugLog("[STEP 3] Adding POST data:");
+            appendDebugLog("- UID = " + UID);
+            appendDebugLog("- UIDSignature = " +  UIDSignature);
+            appendDebugLog("- signatureTimestamp = " +  signatureTimestamp);
+            appendDebugLog("- client_id = " + clientID);
+            appendDebugLog("- _csrf = " + xsrfCookie);
+
+            appendDebugLog("[STEP 3] Getting cookies at using " + getString(R.string.service_auth_performlogin_server));
+
             request = new Request.Builder()
                     .url(getString(R.string.service_auth_performlogin_server))
                     .addHeader("User-Agent", "NUPlayer/" + BuildConfig.VERSION_NAME)
@@ -217,8 +288,11 @@ public class AuthService extends IntentService {
                     .build();
 
             try (Response response = httpClient.newCall(request).execute()) {
+                appendDebugLog("[STEP 3] HTTP call result : " + response.code() + ": " + response.message());
                 if (!response.isSuccessful()) throw new IOException(response.code() + ": " + response.message());
             }
+
+            appendDebugLog("[STEP 3] Looking for cookies");
 
             cookieIterator = cookieManager.getCookieStore().getCookies().iterator();
             int cookiesCount = 0;
@@ -230,6 +304,7 @@ public class AuthService extends IntentService {
                         cookieName.equals("vrtnu-site_profile_rt") ||
                         cookieName.equals("vrtnu-site_profile_vt")
                 ) {
+                    appendDebugLog("[STEP 3] Found cookie " + cookieName + " with value " + cookie.getValue());
                     Log.d(TAG, "Setting cookie as preference = " + new Gson().toJson(cookie, HttpCookie.class));
                     editor.putString(cookie.getName(), new Gson().toJson(cookie, HttpCookie.class));
                     cookiesCount++;
@@ -239,10 +314,12 @@ public class AuthService extends IntentService {
             // we expect 4 cookies: vrtnu-site_profile_{dt,et,rt,vt} to be set at this point
             // any missing cookie is considered a failure
             if(cookiesCount == 4) {
+                appendDebugLog("[STEP 3] All Cookies found, all OK - Authentication successful!");
                 editor.putBoolean(AuthService.COMPLETED_AUTHENTICATION, true);
                 resultData.putString("MSG", "Logged in successfully");
                 receiver.send(Activity.RESULT_OK, resultData);
             } else {
+                appendDebugLog("[STEP 3] FAILED - Not all cookies found!");
                 resultData.putString("MSG", "Not all required cookies were set. Found: " + cookiesCount + ", expected 4");
                 receiver.send(Activity.RESULT_CANCELED, resultData);
             }

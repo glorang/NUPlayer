@@ -61,6 +61,7 @@ public class SettingsFragment extends Fragment {
 
     public final static String SETTING_DEVELOPER_MODE = "developerMode";
     public final static String SETTING_HOME_SCREEN_CHANNEL = "homeScreenChannel";
+    public final static String SETTING_DEBUG_LOGIN = "debugLogin";
 
     private Intent channelIntent;
     private Intent catalogIntent;
@@ -79,6 +80,7 @@ public class SettingsFragment extends Fragment {
 
     private Switch channelSwitch;
     private Switch developerModeSwitch;
+    private Switch debugLoginSwitch;
     private Button catalogButton;
     private Button cacheButton;
     private Button loginButton;
@@ -87,6 +89,7 @@ public class SettingsFragment extends Fragment {
     private LinearLayout catalogContainer;
     private LinearLayout jsonCacheContainer;
     private LinearLayout refreshTokenContainer;
+    private LinearLayout loginDebugContainer;
 
     private ProgressBar catalogProgressBar;
 
@@ -121,15 +124,18 @@ public class SettingsFragment extends Fragment {
         cacheButton = view.findViewById(R.id.buttonSettingsJSONCache);
         loginButton = view.findViewById(R.id.buttonSettingsLoggedIn);
         refreshTokenButton = view.findViewById(R.id.buttonSettingsRefreshToken);
+        debugLoginSwitch = view.findViewById(R.id.switchDebugLogin);
 
         // get layouts only visible when developer mode enabled
         catalogContainer = view.findViewById(R.id.catalogContainer);
         jsonCacheContainer = view.findViewById(R.id.jsonCacheContainer);
         refreshTokenContainer = view.findViewById(R.id.refreshTokenContainer);
+        loginDebugContainer = view.findViewById(R.id.loginDebugContainer);
 
         // set initial values
         setChannelState();
         setDeveloperMode();
+        setDebugLoginState();
         setCatalogText(catalogField);
         setJSONCacheText(JSONcacheField);
         setLoginText(loggedinField);
@@ -174,6 +180,13 @@ public class SettingsFragment extends Fragment {
             fragmentTransaction.replace(R.id.mainContainerLayout, new SettingsMainFragment());
             fragmentTransaction.commit();
 
+        });
+
+        // debug login switch listener
+        debugLoginSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            SharedPreferences.Editor editor = getActivity().getSharedPreferences(MainActivity.PREFERENCES_NAME, MODE_PRIVATE).edit();
+            editor.putBoolean(SETTING_DEBUG_LOGIN, isChecked);
+            editor.apply();
         });
 
         // Catalog listener
@@ -226,11 +239,10 @@ public class SettingsFragment extends Fragment {
                             Toast.makeText(getActivity(), resultData.getString("MSG"), Toast.LENGTH_SHORT).show();
                         }
 
-                        // Update text fields with new status
-                        setCatalogText(catalogField);
-                        setJSONCacheText(JSONcacheField);
-                        setLoginText(loggedinField);
-                        setLoginButtonState();
+                        // Reload fragment as all shared preferences will be removed in LogoutService
+                        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                        fragmentTransaction.replace(R.id.mainContainerLayout, new SettingsMainFragment());
+                        fragmentTransaction.commit();
                     }
                 });
 
@@ -328,6 +340,14 @@ public class SettingsFragment extends Fragment {
         }
     }
 
+    private void setDebugLoginState() {
+        SharedPreferences prefs = getActivity().getSharedPreferences(MainActivity.PREFERENCES_NAME, MODE_PRIVATE);
+        boolean debugLoginState = prefs.getBoolean(SETTING_DEBUG_LOGIN, false);
+        if(debugLoginSwitch != null) {
+            debugLoginSwitch.setChecked(debugLoginState);
+        }
+    }
+
 
     private void setDeveloperMode() {
         SharedPreferences prefs = getActivity().getSharedPreferences(MainActivity.PREFERENCES_NAME, MODE_PRIVATE);
@@ -340,10 +360,12 @@ public class SettingsFragment extends Fragment {
             catalogContainer.setVisibility(View.VISIBLE);
             jsonCacheContainer.setVisibility(View.VISIBLE);
             refreshTokenContainer.setVisibility(View.VISIBLE);
+            loginDebugContainer.setVisibility(View.VISIBLE);
         } else {
             catalogContainer.setVisibility(View.GONE);
             jsonCacheContainer.setVisibility(View.GONE);
             refreshTokenContainer.setVisibility(View.GONE);
+            loginDebugContainer.setVisibility(View.GONE);
         }
 
     }
