@@ -1,3 +1,8 @@
+## v1.3.4 (2021-07-09)
+
+- Add NUPlayer channel to Android TV home screen (#7)
+- Add debug login setting
+
 ## v1.3.3 (2021-06-27)
 
 - Few UI improvements and bugfixes
