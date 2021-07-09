@@ -361,7 +361,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-condensed-light"
-                    android:text="Developer mode only: enables debug of login process. Only use when you're having troube logging in." />
+                    android:text="Developer mode only: enables debug of login process. Only use when you're having trouble logging in." />
 
                 <TextView
                     android:layout_width="match_parent"
