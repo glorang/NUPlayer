@@ -227,10 +227,23 @@ public class AuthService extends IntentService {
                     returnObject = new JSONObject(body);
                     appendDebugLog("[STEP 2] Return body : " + returnObject.toString(4));
                 } else {
+                    returnObject = null;
                     appendDebugLog("[STEP 2] Return body : " + body);
                 }
 
                 if (!response.isSuccessful()) throw new IOException(response.code() + ": " + response.message());
+
+                if(returnObject instanceof JSONObject) {
+                    if(returnObject.has("statusCode")) {
+                        if(returnObject.getInt("statusCode") != 200) {
+                            String message = "Authentication failed";
+                            if(returnObject.has("errorDetails")) {
+                                message = returnObject.getString("errorDetails");
+                            }
+                            throw new Exception(message);
+                        }
+                    }
+                }
             }
 
             appendDebugLog("[STEP 2] Login OK, getting attributes");
