@@ -92,6 +92,8 @@ public class LoginActivity extends FragmentActivity {
                     .id(EMAIL)
                     .title(getString(R.string.pref_title_email))
                     .descriptionEditable(true)
+                    .descriptionEditInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS | InputType.TYPE_CLASS_TEXT)
+                    .descriptionInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS | InputType.TYPE_CLASS_TEXT)
                     .build();
             GuidedAction enterPassword = new GuidedAction.Builder(getContext())
                     .id(PASSWORD)
