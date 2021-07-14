@@ -25,8 +25,9 @@
                 android:id="@+id/labelTokenStatusInfo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-condensed"
                 android:paddingBottom="20dp"
-                android:text="The table below lists current VRT.NU token status. You shouldn't be too worried about this as tokens should refresh automatically.\nWhen vrtnu_site_profile_rt expires you need to login again which should be once a year."/>
+                android:text="The table below lists current VRT.NU token status. You shouldn't be too worried about this as tokens should refresh automatically.\nWhen vrtnu_site_profile_rt expires you need to login again which should be once a year." />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -44,6 +45,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:fontFamily="sans-serif-condensed"
                         android:paddingRight="50dp"
                         android:text="Anon vrtPlayerToken " />
 
@@ -52,6 +54,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:fontFamily="sans-serif-condensed"
                         android:paddingRight="50dp"
                         android:text="Anon vrtPlayerToken expiry" />
 
@@ -60,6 +63,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:fontFamily="sans-serif-condensed"
                         android:paddingRight="50dp"
                         android:text="Auth vrtPlayerToken " />
 
@@ -68,6 +72,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:fontFamily="sans-serif-condensed"
                         android:paddingRight="50dp"
                         android:text="Auth vrtPlayerToken expiry" />
 
@@ -76,6 +81,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:fontFamily="sans-serif-condensed"
                         android:paddingRight="50dp"
                         android:text="vrtnu-site_profile_dt (profile)" />
 
@@ -84,6 +90,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:fontFamily="sans-serif-condensed"
                         android:paddingRight="50dp"
                         android:text="vrtnu-site_profile_et (expiry)" />
 
@@ -92,13 +99,16 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:fontFamily="sans-serif-condensed"
                         android:paddingRight="50dp"
                         android:text="vrtnu-site_profile_rt (refresh)" />
+
                     <TextView
                         android:id="@+id/label_vrtnu_site_profile_vt"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:fontFamily="sans-serif-condensed"
                         android:paddingRight="50dp"
                         android:text="vrtnu-site_profile_vt (player)" />
 
@@ -113,42 +123,50 @@
                     <TextView
                         android:id="@+id/text_vrtPlayerTokenAnon"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-condensed" />
 
                     <TextView
                         android:id="@+id/text_vrtPlayerTokenAnonDate"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-condensed" />
 
                     <TextView
                         android:id="@+id/text_vrtPlayerTokenAuth"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-condensed" />
 
                     <TextView
                         android:id="@+id/text_vrtPlayerTokenAuthDate"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-condensed" />
 
                     <TextView
                         android:id="@+id/text_vrtnu_site_profile_dt"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-condensed" />
 
                     <TextView
                         android:id="@+id/text_vrtnu_site_profile_et"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-condensed" />
 
                     <TextView
                         android:id="@+id/text_vrtnu_site_profile_rt"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-condensed" />
 
                     <TextView
                         android:id="@+id/text_vrtnu_site_profile_vt"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-condensed" />
 
                 </LinearLayout>
 
