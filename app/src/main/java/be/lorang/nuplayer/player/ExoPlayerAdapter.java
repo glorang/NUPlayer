@@ -47,7 +47,7 @@ import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
-import com.google.android.exoplayer2.ui.DebugTextViewHelper;
+import com.google.android.exoplayer2.util.DebugTextViewHelper;
 import com.google.android.exoplayer2.ui.SubtitleView;
 import com.google.android.exoplayer2.video.VideoListener;
 
@@ -359,7 +359,7 @@ public class ExoPlayerAdapter extends PlayerAdapter implements ExoPlayer.EventLi
 
     public void setSubtitleView(SubtitleView subtitleView) {
         if (subtitleView != null) {
-            Player.TextComponent textComponent = mPlayer.getTextComponent();
+            ExoPlayer.TextComponent textComponent = mPlayer.getTextComponent();
             textComponent.addTextOutput(subtitleView);
 
             subtitleView.setApplyEmbeddedFontSizes(false);
