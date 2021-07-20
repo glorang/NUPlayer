@@ -19,6 +19,7 @@
     <color name="vrtnu_blue">#063e8a</color>
     <color name="vrtnu_blue_alpha_80">#cc063e8a</color>
     <color name="vrtnu_blue_alpha_20">#33063e8a</color>
+    <color name="vrtnu_blue_tint_2">#0B6EEF</color>
     <color name="vrtnu_green">#00B600</color>
     <color name="vrtnu_red">#B60000</color>
 

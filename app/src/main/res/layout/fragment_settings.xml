@@ -55,7 +55,9 @@
                             android:layout_gravity="center"
                             android:gravity="center"
                             android:nextFocusLeft="@+id/buttonSubSettingsSettings"
-                            android:nextFocusUp="@+id/buttonSubSettingsSettings" />
+                            android:nextFocusUp="@+id/buttonSubSettingsSettings"
+                            android:thumb="@drawable/switch_thumb"
+                            android:track="@drawable/switch_track" />
                     </FrameLayout>
 
                 </LinearLayout>
@@ -112,7 +114,9 @@
                             android:layout_height="wrap_content"
                             android:layout_centerInParent="true"
                             android:layout_gravity="center"
-                            android:gravity="center" />
+                            android:gravity="center"
+                            android:thumb="@drawable/switch_thumb"
+                            android:track="@drawable/switch_track" />
                     </FrameLayout>
 
                 </LinearLayout>
@@ -352,7 +356,9 @@
                             android:layout_height="wrap_content"
                             android:layout_centerInParent="true"
                             android:layout_gravity="center"
-                            android:gravity="center" />
+                            android:gravity="center"
+                            android:thumb="@drawable/switch_thumb"
+                            android:track="@drawable/switch_track" />
                     </FrameLayout>
 
                 </LinearLayout>
