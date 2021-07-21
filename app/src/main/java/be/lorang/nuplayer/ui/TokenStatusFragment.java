@@ -128,7 +128,7 @@ public class TokenStatusFragment extends Fragment implements BrowseSupportFragme
 
                 if(date != null) {
                     try {
-                        if (Utils.isDateInPast(date.toString())) {
+                        if (Utils.isDateInPast(Utils.instantToISO8601String(date))) {
                             destField.setTextColor(ContextCompat.getColor(getContext(), R.color.vrtnu_red));
                         } else {
                             destField.setTextColor(ContextCompat.getColor(getContext(), R.color.vrtnu_green));
