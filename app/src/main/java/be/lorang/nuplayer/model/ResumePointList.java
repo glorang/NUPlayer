@@ -64,10 +64,16 @@ public class ResumePointList {
     }
 
     public void remove(Video video) {
+        ResumePoint resumePointToRemove = null;
         for (ResumePoint resumePoint : resumePoints) {
             if(resumePoint.getUrl().equals(video.getURL())) {
-                resumePoints.remove(resumePoint);
+                resumePointToRemove = resumePoint;
+                break;
             }
+        }
+
+        if(resumePointToRemove != null) {
+            resumePoints.remove(resumePointToRemove);
         }
     }
 
