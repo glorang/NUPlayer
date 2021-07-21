@@ -1,3 +1,8 @@
+## v1.3.5 (2021-07-21)
+
+- Temporarily set max video size to 540p / 576p (#8)
+- Some minor UI fixes
+
 ## v1.3.4 (2021-07-09)
 
 - Add NUPlayer channel to Android TV home screen (#7)
