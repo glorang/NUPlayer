@@ -175,7 +175,7 @@ public class Utils {
 
     public static String instantToISO8601String(Instant inputDate) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-                .withZone(ZoneId.of("Europe/Brussels"));
+                .withZone(ZoneId.of("Z"));
         return formatter.format(inputDate);
     }
 
