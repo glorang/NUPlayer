@@ -19,6 +19,7 @@
     <item type="id" name="buttonSubSettingsTokenStatus" />
     <item type="id" name="buttonSubSettingsAbout" />
 
-    <!-- Debug Action button -->
+    <!-- Custom video player buttons -->
     <item type="id" name="buttonDebugAction" />
+    <item type="id" name="buttonSettingsAction" />
 </resources>

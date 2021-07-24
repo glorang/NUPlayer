@@ -54,4 +54,7 @@
     <!-- EPG Dialog -->
     <string name="epg_dialog_title">Select date</string>
 
+    <!-- Video player -->
+    <string name="player_select_quality">Select quality</string>
+
 </resources>

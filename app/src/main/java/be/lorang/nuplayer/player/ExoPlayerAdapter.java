@@ -38,14 +38,17 @@ import android.widget.TextView;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector;
 import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.TrackGroup;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.MappingTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.util.DebugTextViewHelper;
 import com.google.android.exoplayer2.ui.SubtitleView;
@@ -53,6 +56,7 @@ import com.google.android.exoplayer2.video.VideoListener;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.LinkedHashMap;
 
 /**
  * This implementation extends the {@link PlayerAdapter} with a {@link SimpleExoPlayer}.
@@ -101,8 +105,8 @@ public class ExoPlayerAdapter extends PlayerAdapter implements ExoPlayer.EventLi
                 .buildUponParameters()
                 .setRendererDisabled(2, true)
                 .setPreferredTextLanguage("nl")
-                // Temporarily set max video size to 540p / 576p - see issue #8
-                .setMaxVideoSize(Integer.MAX_VALUE, 577)
+                // Temporarily set max video size to 540p - see issue #8
+                .setMaxVideoSize(Integer.MAX_VALUE, 540)
         );
 
         mPlayer = new SimpleExoPlayer.Builder(context).setTrackSelector(trackSelector).build();
@@ -412,6 +416,50 @@ public class ExoPlayerAdapter extends PlayerAdapter implements ExoPlayer.EventLi
     public void disableDebug() {
         debugTextView.setVisibility(View.INVISIBLE);
         debugTextViewHelper.stop();
+    }
+
+    // Get all available "heights" from all available streams of current playing media
+    public LinkedHashMap<Integer, String> getAvailableStreams() {
+
+        LinkedHashMap<Integer, String> result = new LinkedHashMap<>();
+        result.put(Integer.MAX_VALUE, "Auto");
+
+        MappingTrackSelector.MappedTrackInfo mappedTrackInfo = trackSelector.getCurrentMappedTrackInfo();
+
+        if (mappedTrackInfo != null) {
+            for (int i = 0; i < mappedTrackInfo.getRendererCount(); i++) {
+                if (mappedTrackInfo.getRendererType(i) == C.TRACK_TYPE_VIDEO) {
+                    TrackGroupArray trackGroups = mappedTrackInfo.getTrackGroups(i);
+                    for (int j = 0; j < trackGroups.length; j++) {
+                        TrackGroup trackGroup = trackGroups.get(j);
+                        for (int k = 0; k < trackGroup.length; k++) {
+                            Format format = trackGroup.getFormat(k);
+                            if (format.height != Format.NO_VALUE) {
+                                result.put(format.height, format.height + "p");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public int getCurrentMaxHeight() {
+        DefaultTrackSelector.Parameters parameters = trackSelector.getParameters();
+        return parameters.maxVideoHeight;
+    }
+
+    public void setMaxHeight(int height) {
+
+        Log.d(TAG, "Setting new max height to " + height);
+
+        trackSelector.setParameters(
+                trackSelector
+                    .buildUponParameters()
+                    .setMaxVideoSize(Integer.MAX_VALUE, height)
+        );
     }
 
     /**
