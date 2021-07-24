@@ -1,3 +1,9 @@
+## v1.3.6 (2021-07-24)
+
+Beta build only
+
+- Add video quality selector dialog to video player (#8)
+
 ## v1.3.5 (2021-07-21)
 
 - Temporarily set max video size to 540p / 576p (#8)
