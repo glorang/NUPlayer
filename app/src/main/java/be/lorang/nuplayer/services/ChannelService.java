@@ -137,7 +137,8 @@ public class ChannelService extends IntentService {
             Uri imageUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://"
                     + getResources().getResourcePackageName(logoID) + '/'
                     + getResources().getResourceTypeName(logoID) + '/'
-                    + String.valueOf(logoID));
+                    + String.valueOf(logoID)
+                    + '?' + channelId);
 
             PreviewProgram program = new PreviewProgram.Builder()
                     .setChannelId(channelId)
