@@ -108,7 +108,7 @@ public class VideoMediaPlayerGlue<T extends PlayerAdapter> extends PlaybackTrans
             toggleDebug();
         } else if (action == settingsAction) {
             showSettingsDialog();
-        } {
+        } else {
             super.onActionClicked(action);
         }
     }
@@ -247,15 +247,15 @@ public class VideoMediaPlayerGlue<T extends PlayerAdapter> extends PlaybackTrans
 
     public void showSettingsDialog() {
         ExoPlayerAdapter adapter = (ExoPlayerAdapter)getPlayerAdapter();
-        LinkedHashMap<Integer, String> availableStreams = adapter.getAvailableStreams();
+        LinkedHashMap<Integer, String> availableHeights = adapter.getAvailableHeights();
         int currentHeight = adapter.getCurrentMaxHeight();
 
-        int[] keys = new int[availableStreams.size()];
-        String[] values = new String[availableStreams.size()];
+        int[] keys = new int[availableHeights.size()];
+        String[] values = new String[availableHeights.size()];
 
         int i=0;
         int selectedIndex = 0;
-        for (Map.Entry<Integer, String> entry : availableStreams.entrySet()) {
+        for (Map.Entry<Integer, String> entry : availableHeights.entrySet()) {
             keys[i] = entry.getKey();
             values[i] = entry.getValue();
 

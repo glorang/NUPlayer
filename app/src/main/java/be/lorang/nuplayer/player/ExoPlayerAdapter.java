@@ -419,7 +419,7 @@ public class ExoPlayerAdapter extends PlayerAdapter implements ExoPlayer.EventLi
     }
 
     // Get all available "heights" from all available streams of current playing media
-    public LinkedHashMap<Integer, String> getAvailableStreams() {
+    public LinkedHashMap<Integer, String> getAvailableHeights() {
 
         LinkedHashMap<Integer, String> result = new LinkedHashMap<>();
         result.put(Integer.MAX_VALUE, "Auto");
