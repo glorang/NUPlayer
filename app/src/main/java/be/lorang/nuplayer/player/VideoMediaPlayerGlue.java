@@ -19,12 +19,15 @@
 package be.lorang.nuplayer.player;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.ResultReceiver;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Toast;
@@ -38,6 +41,10 @@ import androidx.leanback.widget.SeekBar;
 
 import com.google.gson.Gson;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import be.lorang.nuplayer.R;
 import be.lorang.nuplayer.model.Video;
 import be.lorang.nuplayer.services.AccessTokenService;
 import be.lorang.nuplayer.services.ResumePointsService;
@@ -52,6 +59,7 @@ public class VideoMediaPlayerGlue<T extends PlayerAdapter> extends PlaybackTrans
 
     private PlaybackControlsRow.ClosedCaptioningAction closedCaptioningAction;
     private DebugAction debugAction;
+    private SettingsAction settingsAction;
 
     private static final int TIMESEEK = 30; // in seconds
     private static final int MAX_MULTIPLIER = 5;
@@ -72,12 +80,14 @@ public class VideoMediaPlayerGlue<T extends PlayerAdapter> extends PlaybackTrans
 
         closedCaptioningAction = new PlaybackControlsRow.ClosedCaptioningAction(context);
         debugAction = new DebugAction(context);
+        settingsAction = new SettingsAction(context);
     }
 
     @Override
     protected void onCreatePrimaryActions(ArrayObjectAdapter adapter) {
         super.onCreatePrimaryActions(adapter);
         adapter.add(closedCaptioningAction);
+        adapter.add(settingsAction);
 
         if(developerModeEnabled) {
             adapter.add(debugAction);
@@ -96,7 +106,9 @@ public class VideoMediaPlayerGlue<T extends PlayerAdapter> extends PlaybackTrans
             multiAction.nextIndex();
             notifyActionChanged(multiAction);
             toggleDebug();
-        } else {
+        } else if (action == settingsAction) {
+            showSettingsDialog();
+        } {
             super.onActionClicked(action);
         }
     }
@@ -232,6 +244,40 @@ public class VideoMediaPlayerGlue<T extends PlayerAdapter> extends PlaybackTrans
             getPlayerAdapter().seekTo(newPosition);
         }
     }
+
+    public void showSettingsDialog() {
+        ExoPlayerAdapter adapter = (ExoPlayerAdapter)getPlayerAdapter();
+        LinkedHashMap<Integer, String> availableStreams = adapter.getAvailableStreams();
+        int currentHeight = adapter.getCurrentMaxHeight();
+
+        int[] keys = new int[availableStreams.size()];
+        String[] values = new String[availableStreams.size()];
+
+        int i=0;
+        int selectedIndex = 0;
+        for (Map.Entry<Integer, String> entry : availableStreams.entrySet()) {
+            keys[i] = entry.getKey();
+            values[i] = entry.getValue();
+
+            if(entry.getKey() == currentHeight) {
+                selectedIndex = i;
+            }
+
+            i++;
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(
+                new ContextThemeWrapper(getContext(), R.style.dialogAlertTheme));
+
+        builder.setTitle(getContext().getString(R.string.player_select_quality))
+                .setSingleChoiceItems(values, selectedIndex, (DialogInterface.OnClickListener) (dialog, index) -> {
+                    adapter.setMaxHeight(keys[index]);
+                    dialog.cancel();
+                });
+        builder.create().show();
+
+    }
+
 
     private void notifyActionChanged(PlaybackControlsRow.MultiAction action) {
         int index = -1;
