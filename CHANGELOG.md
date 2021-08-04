@@ -1,3 +1,7 @@
+## v1.3.7 (2021-08-04)
+
+- Remove 540p stream limit (#8)
+
 ## v1.3.6 (2021-07-24)
 
 Beta build only
