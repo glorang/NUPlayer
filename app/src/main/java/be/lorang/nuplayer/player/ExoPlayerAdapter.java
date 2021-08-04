@@ -105,8 +105,6 @@ public class ExoPlayerAdapter extends PlayerAdapter implements ExoPlayer.EventLi
                 .buildUponParameters()
                 .setRendererDisabled(2, true)
                 .setPreferredTextLanguage("nl")
-                // Temporarily set max video size to 540p - see issue #8
-                .setMaxVideoSize(Integer.MAX_VALUE, 540)
         );
 
         mPlayer = new SimpleExoPlayer.Builder(context).setTrackSelector(trackSelector).build();
