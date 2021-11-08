@@ -84,7 +84,7 @@ public class SeriesService extends IntentService {
                         if (value.has("title") && value.getString("title").equals("Bekijk deze volledige fictiereeksen")) {
                             JSONArray itemsOrder = value.getJSONArray(":itemsOrder");
                             for (int i = 0; i < itemsOrder.length(); i++) {
-                                String programName = itemsOrder.get(i).toString();
+                                String programName = itemsOrder.get(i).toString().replaceFirst("[0-9]([0-9])?_", "");
                                 Log.d(TAG, "Setting isSerie = true for: " + programName);
                                 programList.setIsSerie(programName);
                             }
