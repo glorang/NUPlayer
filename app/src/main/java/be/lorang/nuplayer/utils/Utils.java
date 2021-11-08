@@ -169,20 +169,17 @@ public class Utils {
         ).atZone(ZoneId.of("UTC")).toInstant();
     }
 
-    public static Instant parseDateISO8601(String inputString) {
-        return parseDate(inputString, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-    }
-
-    public static String instantToISO8601String(Instant inputDate) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-                .withZone(ZoneId.of("Z"));
-        return formatter.format(inputDate);
-    }
-
     // Check if a ISO8601 date is in the past (token expired?)
     public static boolean isDateInPast(String inputDate) {
         if(inputDate.length() == 0) { return true; }
-        return Instant.now().compareTo(parseDateISO8601(inputDate)) > 0;
+
+        try {
+            return Instant.now().compareTo(Instant.parse(inputDate)) > 0;
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
+        return true;
     }
 
     // https://stackoverflow.com/a/11009612/5414711

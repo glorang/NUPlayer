@@ -104,7 +104,7 @@ public class TokenStatusFragment extends Fragment implements BrowseSupportFragme
                     if (entry.getKey().equals(VrtPlayerTokenService.VRTPLAYERTOKEN_AUTHENTICATED_EXPIRY) ||
                             entry.getKey().equals(VrtPlayerTokenService.VRTPLAYERTOKEN_ANONYMOUS_EXPIRY)
                     ) {
-                        date = Utils.parseDateISO8601(value);
+                        date = Instant.parse(value);
                     }
                 } catch(Exception e) {
                     e.printStackTrace();
@@ -128,7 +128,7 @@ public class TokenStatusFragment extends Fragment implements BrowseSupportFragme
 
                 if(date != null) {
                     try {
-                        if (Utils.isDateInPast(Utils.instantToISO8601String(date))) {
+                        if (Utils.isDateInPast(date.toString())) {
                             destField.setTextColor(ContextCompat.getColor(getContext(), R.color.vrtnu_red));
                         } else {
                             destField.setTextColor(ContextCompat.getColor(getContext(), R.color.vrtnu_green));
