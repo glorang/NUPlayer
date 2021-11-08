@@ -27,7 +27,9 @@
         <com.google.android.exoplayer2.ui.SubtitleView
             android:id="@+id/leanback_subtitles"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="150dp"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="50dp" />
 
         <TextView
             android:id="@+id/exoPlayerDebug"
