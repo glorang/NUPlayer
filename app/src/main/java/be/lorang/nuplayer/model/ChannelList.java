@@ -47,77 +47,35 @@ public class ChannelList {
     // There is a slight attribute abuse in formattedBroadcastShortDate and pubId
     private ChannelList() {
 
-        Video een = new Video(
-                "één",
-                "",
-                "",
-                "",
-                1,
-                0,
-                "https://www.vrt.be/vrtnu-static/screenshots/een_geo.jpg",
-                "vualto_een_geo",
-                "O8",
-                "",
-                "",
-                "een",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                StreamService.STREAMTYPE_LIVETV
-        );
+        Video een = new Video();
+        een.setTitle("één");
+        een.setEpisodeNumber(1);
+        een.setDuration(0);
+        een.setThumbnail("https://www.vrt.be/vrtnu-static/screenshots/een_geo.jpg");
+        een.setVideoId("vualto_een_geo");
+        een.setPubId("O8");
+        een.setBrand("een");
+        een.setStreamType(StreamService.STREAMTYPE_LIVETV);
 
-        Video canvas = new Video(
-                "Canvas",
-                "",
-                "",
-                "",
-                1,
-                0,
-                "https://www.vrt.be/vrtnu-static/screenshots/canvas_geo.jpg",
-                "vualto_canvas_geo",
-                "1H",
-                "",
-                "",
-                "canvas",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                StreamService.STREAMTYPE_LIVETV
-        );
+        Video canvas = new Video();
+        canvas.setTitle("Canvas");
+        canvas.setEpisodeNumber(1);
+        canvas.setDuration(0);
+        canvas.setThumbnail("https://www.vrt.be/vrtnu-static/screenshots/canvas_geo.jpg");
+        canvas.setVideoId("vualto_canvas_geo");
+        canvas.setPubId("1H");
+        canvas.setBrand("canvas");
+        canvas.setStreamType(StreamService.STREAMTYPE_LIVETV);
 
-        Video ketnet = new Video(
-                "Ketnet",
-                "",
-                "",
-                "",
-                1,
-                0,
-                "https://www.vrt.be/vrtnu-static/screenshots/ketnet_geo.jpg",
-                "vualto_ketnet_geo",
-                "O9",
-                "",
-                "",
-                "ketnet",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                StreamService.STREAMTYPE_LIVETV
-        );
+        Video ketnet = new Video();
+        ketnet.setTitle("Ketnet");
+        ketnet.setEpisodeNumber(1);
+        ketnet.setDuration(0);
+        ketnet.setThumbnail("https://www.vrt.be/vrtnu-static/screenshots/ketnet_geo.jpg");
+        ketnet.setVideoId("vualto_ketnet_geo");
+        ketnet.setPubId("O9");
+        ketnet.setBrand("ketnet");
+        ketnet.setStreamType(StreamService.STREAMTYPE_LIVETV);
 
         mChannels.add(een);
         mChannels.add(canvas);
@@ -134,12 +92,12 @@ public class ChannelList {
 
     public List<Video> getChannels() { return mChannels; }
 
-    public void setEPGInfo(String channel, String title, String description, String timeslot, int progress) {
+    public void setEPGInfo(String channel, String title, String subTitle, String timeSlot, int progress) {
         for(Video video : mChannels) {
             if(video.getPubId().equals(channel)) {
                 video.setTitle(title);
-                video.setDescription(description);
-                video.setFormattedBroadcastShortDate(timeslot);
+                video.setSubTitle(subTitle);
+                video.setOnTime(timeSlot);
                 video.setProgressPct(progress);
             }
         }

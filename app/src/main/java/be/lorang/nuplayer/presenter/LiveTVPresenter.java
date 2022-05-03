@@ -93,7 +93,7 @@ public class LiveTVPresenter<T extends BaseCardView> extends BaseCardPresenter {
 
         // set time slot
         TextView textViewDescription = cardView.findViewById(R.id.liveTVTimeslot);
-        textViewDescription.setText(Html.fromHtml(video.getFormattedBroadcastShortDate(), Html.FROM_HTML_MODE_COMPACT));
+        textViewDescription.setText(Html.fromHtml(video.getOnTime(), Html.FROM_HTML_MODE_COMPACT));
 
         // set progress (if set)
         ProgressBar progressBar = cardView.findViewById(R.id.progressBar);

@@ -65,7 +65,7 @@ public class ProgramService extends IntentService {
     private int size = 10;
 
     public static final String TAG_TITLE = "title";
-    public static final String TAG_DESCRIPTION = "shortDescription";
+    public static final String TAG_SUBTITLE = "subtitle";
     public static final String TAG_SEASONNAME = "seasonName";
     public static final String TAG_SEASONTITLE = "seasonTitle";
     public static final String TAG_EPISODENR = "episodeNumber";
@@ -73,17 +73,16 @@ public class ProgramService extends IntentService {
     public static final String TAG_THUMBNAIL = "videoThumbnailUrl";
     public static final String TAG_VIDEOID = "videoId";
     public static final String TAG_PUBID = "publicationId";
-    public static final String TAG_BROADCASTDATE = "formattedBroadcastDate";
-    public static final String TAG_BROADCASTSHORTDATEDATE = "formattedBroadcastShortDate";
     public static final String TAG_BRANDS = "brands";
-    public static final String TAG_PROGRAM = "program";
-    public static final String TAG_ASSETPATH = "assetPath";
+    public static final String TAG_PROGRAMNAME = "programName";
+    public static final String TAG_PROGRAMTITLE = "programTitle";
+    public static final String TAG_ASSETPATH = "assetPath"; // FIXME
     public static final String TAG_URL = "url";
     public static final String TAG_WHATSONID = "whatsonId";
     public static final String TAG_PROGRAMWHATSONID = "programWhatsonId";
     public static final String TAG_ALLOWEDREGION = "allowedRegion";
-    public static final String TAG_ASSETOFFTIME = "assetOffTime";
-    public static final String TAG_PROGRAMTYPE = "programType";
+    public static final String TAG_ONTIME = "onTime";
+    public static final String TAG_OFFTIME = "offTime";
 
     public ProgramService() {
         super(TAG);
@@ -374,11 +373,11 @@ public class ProgramService extends IntentService {
             }
 
             url = String.format(getString(R.string.service_program_program_url),
-                    program.getProgramType().equals("daily") ? "broadcastDate" : "episodeNumber",
+                    program.getProgramType().equals("daily") ? "onTime" : "episodeNumber",
                     defineSortOrder(program.getProgramType()),
                     Integer.toString(size),
                     Integer.toString(startIndex),
-                    program.getProgramUrl()
+                    program.getProgramName()
             );
 
             // get selected season
@@ -458,23 +457,23 @@ public class ProgramService extends IntentService {
             title = title.substring(0, title.length() - 8);
         }
 
-        String description = inputObject.optString(TAG_DESCRIPTION);
+        String subTitle = inputObject.optString(TAG_SUBTITLE);
         String seasonName = inputObject.optString(TAG_SEASONNAME);
         String seasonTitle = inputObject.optString(TAG_SEASONTITLE);
         int episodeNumber = inputObject.optInt(TAG_EPISODENR);
         int duration = inputObject.optInt(TAG_DURATION, 0) * 60;
         String videoId  = inputObject.getString(TAG_VIDEOID);
         String pubId  = inputObject.getString(TAG_PUBID);
-        String formattedBroadcastDate = inputObject.optString(TAG_BROADCASTDATE);
-        String formattedBroadcastShortDate = inputObject.optString(TAG_BROADCASTSHORTDATEDATE);
         JSONArray brands = inputObject.optJSONArray(TAG_BRANDS);
-        String program = inputObject.optString(TAG_PROGRAM);
+        String programName = inputObject.optString(TAG_PROGRAMNAME);
+        String programTitle = inputObject.optString(TAG_PROGRAMTITLE);
         String assetPath = inputObject.optString(TAG_ASSETPATH);
         String url = inputObject.optString(TAG_URL);
         String whatsonId = inputObject.optString(TAG_WHATSONID);
         String programWhatsonId = inputObject.optString(TAG_PROGRAMWHATSONID);
         String allowedRegion = inputObject.optString(TAG_ALLOWEDREGION);
-        String assetOffTime = inputObject.optString(TAG_ASSETOFFTIME);
+        String onTime = inputObject.optString(TAG_ONTIME);
+        String offTime = inputObject.optString(TAG_OFFTIME);
 
         // we replace the image server with the one defined in urls.xml
         // this prepends the (often) 'missing' 'https://' and allows us to query our own size ('orig' can go up to 18MB each(!))
@@ -486,7 +485,7 @@ public class ProgramService extends IntentService {
 
         Video video = new Video(
                 title,
-                description,
+                subTitle,
                 seasonName,
                 seasonTitle,
                 episodeNumber,
@@ -494,16 +493,16 @@ public class ProgramService extends IntentService {
                 thumbnail,
                 videoId,
                 pubId,
-                formattedBroadcastDate,
-                formattedBroadcastShortDate,
                 brand,
-                program,
+                programName,
+                programTitle,
                 assetPath,
                 url,
                 whatsonId,
                 programWhatsonId,
                 allowedRegion,
-                assetOffTime,
+                onTime,
+                offTime,
                 imageServer,
                 streamType
         );

@@ -485,7 +485,7 @@ public class ProgramFragment extends VerticalGridSupportFragment implements OnIt
                 }
             }
 
-            setAssetOffTime(((Video) item).getAssetOffTime());
+            setAssetOffTime(((Video) item).getOffTime());
         }
     }
 

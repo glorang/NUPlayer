@@ -31,6 +31,7 @@ import com.bumptech.glide.request.RequestOptions;
 import be.lorang.nuplayer.R;
 import be.lorang.nuplayer.model.Video;
 import be.lorang.nuplayer.ui.VideoLongPressListener;
+import be.lorang.nuplayer.utils.Utils;
 
 /*
  * Card presenter for Videos - will set Program Name, episode, run time, description
@@ -85,7 +86,7 @@ public class VideoPresenter<T extends BaseCardView> extends BaseCardPresenter {
 
         // set title
         TextView videoTitle = cardView.findViewById(R.id.videoTitle);
-        videoTitle.setText(video.getProgram());
+        videoTitle.setText(video.getProgramTitle());
 
         // set progress (if set)
         ProgressBar progressBar = cardView.findViewById(R.id.progressBar);
@@ -96,7 +97,7 @@ public class VideoPresenter<T extends BaseCardView> extends BaseCardPresenter {
         }
 
         // set video info
-        String primaryTextValue = video.getFormattedBroadcastShortDate() +
+        String primaryTextValue = Utils.getFormattedDate(video.getOnTime(), "dd/MM") +
                 " - " +
                 "episode " + video.getEpisodeNumber() +
                 " - " +
@@ -107,7 +108,7 @@ public class VideoPresenter<T extends BaseCardView> extends BaseCardPresenter {
 
         // set video description
         TextView secondaryText = cardView.findViewById(R.id.videoSecondaryText);
-        secondaryText.setText(Html.fromHtml(video.getDescription(), Html.FROM_HTML_MODE_COMPACT));
+        secondaryText.setText(Html.fromHtml(video.getSubTitle(), Html.FROM_HTML_MODE_COMPACT));
 
     }
 

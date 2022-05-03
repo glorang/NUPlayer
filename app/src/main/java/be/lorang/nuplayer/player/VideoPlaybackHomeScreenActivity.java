@@ -72,7 +72,7 @@ public class VideoPlaybackHomeScreenActivity extends FragmentActivity {
 
                 // Reset title and description, it might contain outdated EPG info
                 video.setTitle(ChannelList.getInstance().channelMapping.get(video.getPubId()));
-                video.setDescription("");
+                video.setSubTitle("");
 
                 VideoProgramBaseListener videoProgramBaseListener = new VideoProgramBaseListener(this);
                 videoProgramBaseListener.startVideoIntent(video);

@@ -72,11 +72,11 @@ public class VideoPlaybackFragment extends VideoSupportFragment {
         SharedPreferences prefs = getActivity().getSharedPreferences(MainActivity.PREFERENCES_NAME, MODE_PRIVATE);
         boolean developerModeEnabled = prefs.getBoolean(SettingsFragment.SETTING_DEVELOPER_MODE, false);
 
-        playerAdapter = new ExoPlayerAdapter(getActivity(), video.getProgram(), video.getTitle());
+        playerAdapter = new ExoPlayerAdapter(getActivity(), video.getProgramTitle(), video.getTitle());
         mMediaPlayerGlue = new VideoMediaPlayerGlue(getActivity(), playerAdapter, developerModeEnabled);
         mMediaPlayerGlue.setHost(mHost);
         mMediaPlayerGlue.setTitle(video.getTitle());
-        mMediaPlayerGlue.setSubtitle(Html.fromHtml(video.getDescription(), Html.FROM_HTML_MODE_COMPACT));
+        mMediaPlayerGlue.setSubtitle(Html.fromHtml(video.getSubTitle(), Html.FROM_HTML_MODE_COMPACT));
         mMediaPlayerGlue.getPlayerAdapter().setDrmToken(drmToken);
         mMediaPlayerGlue.getPlayerAdapter().setDataSource(Uri.parse(videoUrl));
         mMediaPlayerGlue.setControlsOverlayAutoHideEnabled(true);

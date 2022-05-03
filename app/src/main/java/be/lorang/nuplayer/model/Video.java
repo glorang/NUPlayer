@@ -29,7 +29,7 @@ import java.util.Arrays;
 public class Video {
 
     @SerializedName("title") private String mTitle = "";
-    @SerializedName("description") private String mDescription = "";
+    @SerializedName("subTitle") private String mSubTitle = "";
     @SerializedName("seasonName") private String mSeasonName = "";
     @SerializedName("seasonTitle") private String mSeasonTitle = "";
     @SerializedName("episodeNumber") private int mEpisodeNumber = 0;
@@ -37,24 +37,26 @@ public class Video {
     @SerializedName("thumbnail") private String mThumbnail = "";
     @SerializedName("videoId") private String mVideoId = "";
     @SerializedName("pubId") private String mPubId = "";
-    @SerializedName("formattedBroadcastDate") private String mFormattedBroadcastDate = "";
-    @SerializedName("formattedBroadcastShortDate") private String mFormattedBroadcastShortDate = "";
     @SerializedName("brand") private String mBrand = "";
-    @SerializedName("program") private String mProgram = "";
+    @SerializedName("programName") private String mProgramName = "";
+    @SerializedName("programTitle") private String mProgramTitle = "";
     @SerializedName("assetPath") private String mAssetPath = "";
     @SerializedName("url") private String mUrl = "";
     @SerializedName("whatsonId") private String mWhatsonId = "";
     @SerializedName("programWhatsonId") private String mProgramWhatsonId = "";
     @SerializedName("allowedRegion") private String mAllowedRegion = "";
-    @SerializedName("assetOffTime") private String mAssetOffTime = "";
+    @SerializedName("onTime") private String mOnTime = "";
+    @SerializedName("offTime") private String mOffTime = "";
     @SerializedName("imageServer") private String mImageServer = "";
     @SerializedName("streamType") private String mStreamType = "";
     @SerializedName("progressPct") private int mProgressPct = 0;
     @SerializedName("currentPosition") private int mCurrentPosition = 0;
     @SerializedName("validImageSizes") private static String[] mValidImageSizes = {"w160hx", "w320hx", "w640hx", "w1280hx", "w1600hx", "w1920hx", "VV_4x3_120", "VV_4x3_240", "VV_4x3_480"};
 
+    public Video() { }
+
     public Video(String title,
-                 String description,
+                 String subTitle,
                  String seasonName,
                  String seasonTitle,
                  int episodeNumber,
@@ -62,20 +64,20 @@ public class Video {
                  String thumbnail,
                  String videoId,
                  String pubId,
-                 String formattedBroadcastDate,
-                 String formattedBroadcastShortDate,
                  String brand,
-                 String program,
+                 String programName,
+                 String programTitle,
                  String assetPath,
                  String url,
                  String whatsonId,
                  String programWhatsonId,
                  String allowedRegion,
-                 String assetOffTime,
+                 String onTime,
+                 String offTime,
                  String imageServer,
                  String streamType) {
         mTitle = title;
-        mDescription = description;
+        mSubTitle = subTitle;
         mSeasonName = seasonName;
         mSeasonTitle = seasonTitle;
         mEpisodeNumber = episodeNumber;
@@ -83,16 +85,16 @@ public class Video {
         mThumbnail = thumbnail;
         mVideoId = videoId;
         mPubId = pubId;
-        mFormattedBroadcastDate = formattedBroadcastDate;
-        mFormattedBroadcastShortDate = formattedBroadcastShortDate;
         mBrand = brand;
-        mProgram = program;
+        mProgramName = programName;
+        mProgramTitle = programTitle;
         mAssetPath = assetPath;
         mUrl = url;
         mWhatsonId = whatsonId;
         mProgramWhatsonId = programWhatsonId;
         mAllowedRegion = allowedRegion;
-        mAssetOffTime = assetOffTime;
+        mOnTime = onTime;
+        mOffTime = offTime;
         mImageServer = imageServer;
         mStreamType = streamType;
     }
@@ -104,11 +106,11 @@ public class Video {
         mTitle = title;
     }
 
-    public String getDescription() {
-        return mDescription;
+    public String getSubTitle() {
+        return mSubTitle;
     }
-    public void setDescription(String description) {
-        mDescription = description;
+    public void setSubTitle(String subTitle) {
+        mSubTitle = subTitle;
     }
 
     public String getSeasonName() { return mSeasonName; }
@@ -157,17 +159,14 @@ public class Video {
     public String getPubId() { return mPubId; }
     public void setPubId(String pubId) { mPubId = pubId; }
 
-    public String getFormattedBroadcastDate() { return mFormattedBroadcastDate; }
-    public void setFormattedBroadcastDate(String formattedBroadcastDate) { mFormattedBroadcastDate = formattedBroadcastDate; }
-
-    public String getFormattedBroadcastShortDate() { return mFormattedBroadcastShortDate; }
-    public void setFormattedBroadcastShortDate(String formattedBroadcastShortDate) { mFormattedBroadcastShortDate = formattedBroadcastShortDate; }
-
     public String getBrand() { return mBrand; }
     public void setBrand(String brand) { mBrand = brand; }
 
-    public String getProgram() { return mProgram; }
-    public void setProgram(String program) { mProgram = program; }
+    public String getProgramName() { return mProgramName; }
+    public void setProgramName(String programName) { mProgramName = programName; }
+
+    public String getProgramTitle() { return mProgramTitle; }
+    public void setmProgramTitle(String programTitle) { mProgramTitle = programTitle; }
 
     public String getAssetPath() { return mAssetPath; }
     public void setAssetPath(String assetPath) { mAssetPath = assetPath; }
@@ -184,8 +183,11 @@ public class Video {
     public String getAllowedRegion() { return mAllowedRegion; }
     public void setAllowedRegion(String allowedRegion) { mAllowedRegion = allowedRegion; }
 
-    public String getAssetOffTime() { return mAssetOffTime; }
-    public void setAssetOffTime(String assetOffTime) { mAssetOffTime = assetOffTime; }
+    public String getOnTime() { return mOnTime; }
+    public void setOnTime(String onTime) { mOnTime = onTime; }
+
+    public String getOffTime() { return mOffTime; }
+    public void setOffTime(String offTime) { mOffTime = offTime; }
 
     public String getStreamType() { return mStreamType; }
     public void setStreamType(String streamType) { mStreamType = streamType; }

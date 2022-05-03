@@ -238,5 +238,16 @@ public class Utils {
         return true;
     }
 
+    public static String getFormattedDate(String inputDate,String format) {
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format).withZone(ZoneId.of("Europe/Brussels"));
+            Instant instant = Instant.parse(inputDate.replace("+0000","Z"));
+            return formatter.format(instant);
+        } catch(Exception e) {
+            e.printStackTrace();
+            return inputDate;
+        }
+    }
+
 
 }

@@ -79,14 +79,14 @@ public class WideVideoPresenter<T extends BaseCardView> extends BaseCardPresente
 
         // Overwrite title in Latest Fragment with Program name instead of Video name
         if(cardType.equals(CardType.LATEST)) {
-            title = video.getProgram();
+            title = video.getProgramTitle();
         }
 
         TextView titleTextView = cardView.findViewById(R.id.videoWideTitle);
         titleTextView.setText(Html.fromHtml(title, Html.FROM_HTML_MODE_COMPACT));
 
         TextView primaryTextView = cardView.findViewById(R.id.videoWidePrimaryText);
-        primaryTextView.setText(Html.fromHtml(video.getDescription(), Html.FROM_HTML_MODE_COMPACT));
+        primaryTextView.setText(Html.fromHtml(video.getSubTitle(), Html.FROM_HTML_MODE_COMPACT));
 
         TextView secondaryTextView = cardView.findViewById(R.id.videoWideSecondaryText);
         StringBuilder stringBuilder = new StringBuilder();
@@ -112,9 +112,9 @@ public class WideVideoPresenter<T extends BaseCardView> extends BaseCardPresente
                     System.lineSeparator());
         }
 
-        if(video.getFormattedBroadcastDate().length() > 0) {
+        if(video.getOnTime().length() > 0) {
             stringBuilder.append(getContext().getString(R.string.airdate) + " : " +
-                    video.getFormattedBroadcastDate() +
+                    Utils.getFormattedDate(video.getOnTime(), "dd/MM/yyyy") +
                     System.lineSeparator());
         }
 

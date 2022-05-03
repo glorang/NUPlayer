@@ -167,13 +167,13 @@ public class EPGService extends IntentService {
                 if(currentDateTime.isAfter(startTime) && currentDateTime.isBefore(endTime)) {
 
                     String title = epgEntry.getString("title");
-                    String description = epgEntry.optString("subtitle", "");
-                    String timeslot = hourFormatter.format(startTime) + " - " + hourFormatter.format(endTime);
+                    String subTitle = epgEntry.optString("subtitle", "");
+                    String timeSlot = hourFormatter.format(startTime) + " - " + hourFormatter.format(endTime);
 
                     long duration = endTime.toInstant().toEpochMilli() - startTime.toInstant().toEpochMilli();
                     int progress = (int) (((double) (currentDateTime.toInstant().toEpochMilli() - startTime.toInstant().toEpochMilli()) / duration) * 100);
-                    Log.d(TAG, "Setting EPG for channel " + channel + " to " + title + " " + timeslot);
-                    channelList.setEPGInfo(channel, title, description, timeslot, progress);
+                    Log.d(TAG, "Setting EPG for channel " + channel + " to " + title + " " + timeSlot);
+                    channelList.setEPGInfo(channel, title, subTitle, timeSlot, progress);
                     epgUpdated = true;
                     break;
                 }
