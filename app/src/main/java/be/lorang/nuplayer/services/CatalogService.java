@@ -102,7 +102,10 @@ public class CatalogService extends IntentService {
                         String imageServer = getString(R.string.model_image_server);
 
                         // we only use the 1st brand for now in the array
-                        String brand = (String)brands.get(0);
+                        String brand="";
+                        if(brands.length() > 0) {
+                            brand = (String)brands.get(0);
+                        }
 
                         Program program = new Program(
                                 title,
